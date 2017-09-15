@@ -36,3 +36,4 @@ void Player::fortify()
 {
     // Perform actions to fortify
 }
+

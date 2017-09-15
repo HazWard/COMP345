@@ -20,7 +20,7 @@ class Player
     void attack();
     void fortify();
   private:
-    int* countries[];
-	int* cards[];
+    int* countries[]; // TODO: Change to array of Country
+	int* hand[]; // TODO: Change to array of Cards
 };
 #endif // PLAYER_H
