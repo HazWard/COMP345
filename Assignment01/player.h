@@ -5,22 +5,21 @@
     Description: Header file for Risk player
 */
 
+#include <list>
 // #include "cards.h"
 // #include "dice.h"
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
 class Player
 {
   public:
-    Player(int[], int[]);
+    Player(std::list<int>, std::list<int>);
+    ~Player();
     int diceFactory(int);
     void reinforce();
     void attack();
     void fortify();
-  private:
-    int* countries[];
-	int* cards[];
+    std::list<int> countries; // TODO: Change to array of Country
+    std::list<int> hand; // TODO: Change to array of Cards
 };
-#endif // PLAYER_H
