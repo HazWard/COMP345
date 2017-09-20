@@ -11,10 +11,17 @@
 
 Player::Player(std::list<int> playerHand, std::list<int> playerCountries)
 {
-    hand = playerHand;
-    countries = playerCountries;
-    std::cout << hand.size() << std::endl;
-    std::cout << countries.size() << std::endl;
+
+    if (hand.size() < 1 || countries.size() < 1)
+    {
+        std::cout << "Invalid arguments for Player contructor." << std::endl;
+        // TODO: Find a way to get rid of an invalid object
+    }
+    else
+    {
+        hand = playerHand;
+        countries = playerCountries;
+    }
 }
 
 Player::~Player()
@@ -41,12 +48,4 @@ void Player::attack()
 void Player::fortify()
 {
     // Perform actions to fortify
-}
-
-int main()
-{
-    std::list<int> l = { 7, 5, 16, 8 };
-    std::cout << "\nIn Player constructor: " << std::endl;
-    Player p = Player(l, l);
-    return 0;
 }
