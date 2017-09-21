@@ -7,8 +7,8 @@
 
 #include <iostream>
 #include <list>
-#include "player.h"
-#include "../cards.h"
+#include "../include/player.h"
+#include "../include/cards.h"
 
 Player::Player(Hand* playerHand, std::list<int>* playerCountries)
 {
