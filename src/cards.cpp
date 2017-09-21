@@ -3,31 +3,21 @@
 #include <random>
 using namespace std;
 
-//#include "cards.h"
+#include "../include/cards.h"
 
+//Constants used to define card types, used in lieu of an enum
 const int INFANTRY = 0;
 const int CAVALRY = 1;
 const int ARTILLERY = 2;
 
-class Card {
-    /*
-    */
-    //Consider using an enum instead of the constants
-    friend std::ostream& operator<<(std::ostream&, const Card&);
-    public:
-        int type;
-        Card(int t, Card *nextCard);
-        Card *next;
-        void display(void);
-};
-
 Card::Card(int t, Card *nextCard){
-    //TODO: Initialize the object and determine its type
+    //Constructor for Card class
     type = t;
     next = nextCard;
 }
 
 std::ostream& operator<< (std::ostream &strm, const Card &card) {
+    //Overwritten implementation of the << operator, used as the C++ equivalent of toString
     switch(card.type) {
         case INFANTRY : return strm << "Infantry Card";
         case CAVALRY : return strm << "Cavalry Card";
@@ -36,24 +26,12 @@ std::ostream& operator<< (std::ostream &strm, const Card &card) {
     }
 }
 
-class Deck{
-    /*
-    Implemented as a LinkedList but could also be done as a Vector (C++ equivalent of Java's ArrayList)
-    */
-    int numberOfCards;
-    protected:
-        Card *top;
-    public:
-        Deck(int numberOfCountries);
-        ~Deck(void);
-        Card* draw(void);
-        void display(void);
-};
-
 Deck::Deck(int numberOfCountries){
     /**
-        Constructor for the Deck class. TODO: talk about how this is a linked list, Initializes each
-        card in the deck, making each type balanced, based on the modulo of 3 on the total number of cards.
+        Constructor for the Deck class. Number of cards is equal to the number of countries passed as
+        argument. Determines the number for each type of card by finding modulo 3, balancing in favour
+        of lower tier cards. Then iterates the number of cards and creates a random deck based on the
+        correct number of cards of each type.
     */
     this->numberOfCards = numberOfCountries;
 
@@ -67,9 +45,10 @@ Deck::Deck(int numberOfCountries){
     cardType[1] = (numberOfCards % 3 == 2 ? numberOfCards / 3 + 1 : numberOfCards / 3);
     cardType[2] = numberOfCards / 3;
 
+    //setting the top card to null, so that the first card created will have its next point to null
     top = NULL;
     for(int i = 0; i < numberOfCards; i++){
-        while(true){
+        while(true){ //will loop until generates a random value equal to a card type that still needs to be created
             int r = distr(eng);
             //int r = rand() % static_cast<int>(3); //non distributed random generator
             if(cardType[r] > 0){
@@ -82,6 +61,9 @@ Deck::Deck(int numberOfCountries){
 }
 
 Deck::~Deck(void){
+    /**
+        Destructor for the Deck class, iterates through the linked list and destroys every node.
+    */
     Card *temp = top;
     while(temp != NULL){
         temp = temp->next;
@@ -92,13 +74,23 @@ Deck::~Deck(void){
 }
 
 Card* Deck::draw(void){
-    Card *temp = top;
-    top = top->next;
-    int out = temp->type;
-    return temp;
+    /**
+        Draw method removes the first node from the linked list and returns the pointer to that node.
+        Used in conjuction with the draw method of the Hand class, with the return value of this method
+        being passed as the argument to the draw method of Hand.
+    */
+    if(this->numberOfCards > 0){
+        Card *temp = top;
+        top = top->next;
+        return temp;
+    }
+    return NULL;
 }
 
 void Deck::display(void){
+    /**
+        Used for debugging. Iterates through the linked list and prints each card.
+     */
     int counter = 1;
     Card *temp = top;
     while(temp != NULL){
@@ -106,20 +98,15 @@ void Deck::display(void){
         temp = temp->next;
         counter++;
     }
+    //Setting temp pointer to NULL to avoid weird stuff
     temp = NULL;
 }
 
-class Hand{
-    /*
-    */
-    int inf, cav, art;
-    public:
-        bool exchange(int t);
-        void draw(Card *c);
-        void display(void);
-};
-
 bool Hand::exchange(int t){
+    /**
+        Used when a player wants to exchange 3 cards of a certain type for additional units.
+        Returns true if successful, false otherwise.
+    */
     switch(t) {
         case INFANTRY : 
             if(inf >= 3){
@@ -144,12 +131,17 @@ bool Hand::exchange(int t){
 }
 
 void Hand::draw(Card *c){
+    /**
+        Draw method of Hand is passed a pointer to a card object and increments the counter
+        corresponding to that card type. Deletes the object when done.
+    */
     switch(c->type) {
         case INFANTRY : inf++; break;
         case CAVALRY : cav++; break;
         case ARTILLERY : art++; break;
         default : break;
     }
+    delete c;
 }
 
 void Hand::display(void){
