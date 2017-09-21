@@ -6,7 +6,7 @@
 */
 
 #include <list>
-// #include "cards.h"
+#include "../cards.h"
 // #include "dice.h"
 
 #pragma once
@@ -14,12 +14,12 @@
 class Player
 {
   public:
-    Player(std::list<int>, std::list<int>);
-    ~Player();
+    Player(Hand*, std::list<int>*);
+    ~Player(void);
     int diceFactory(int);
-    void reinforce();
-    void attack();
-    void fortify();
-    std::list<int> countries; // TODO: Change to array of Country
-    std::list<int> hand; // TODO: Change to array of Cards
+    void reinforce(void);
+    void attack(void);
+    void fortify(void);
+    Hand* hand;
+    std::list<int>* countries; // TODO: Change to array of Country
 };
