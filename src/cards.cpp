@@ -3,7 +3,7 @@
 #include <random>
 using namespace std;
 
-#include "cards.h"
+#include "../include/cards.h"
 
 //Constants used to define card types, used in lieu of an enum
 const int INFANTRY = 0;
