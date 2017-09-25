@@ -31,7 +31,9 @@ Player::Player(Hand* playerHand, std::list<int>* playerCountries)
 Player::~Player(void)
 {
     delete hand;
+    delete dice;
     hand = NULL;
+    dice = NULL;
     countries = NULL;
 }
 
@@ -39,14 +41,10 @@ int Player::roll(int nbOfDice)
 {
     // Perform rolls
     int roll = 0;
-    int value = 0;
     for (int i = 0; i < nbOfDice; ++i)
     {
-        value = this->dice->numGenerator();
-        std::cout << "Roll: " << value << std::endl;
-        roll += value;
+        roll += this->dice->numGenerator();
     }
-    std::cout << "Total Roll: " << roll << std::endl;
     return roll;
 }
 
@@ -66,18 +64,4 @@ void Player::fortify()
 {
     // Perform actions to fortify
     std::cout << "Player is fortifying!" << std::endl;
-}
-
-int main()
-{
-    Hand* testHand = new Hand();
-    int arr[] = {1, 2, 3, 4};
-    std::list<int> testList (arr, arr + sizeof(arr) / sizeof(int) );
-    Player* user = new Player(testHand, &testList);
-    
-    user->roll(1);
-    user->roll(2);
-    user->roll(3);
-    
-    return 0;
 }

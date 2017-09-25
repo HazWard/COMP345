@@ -148,18 +148,3 @@ void Hand::display(void){
     cout << "This hand contains " << inf << " infantry cards, " << cav << " cavalry cards, and "
     << art << " artillery cards." << endl;
 }
-
-/*
-int main(){
-    Deck *d = new Deck(9);
-    d->display();
-    Hand *h = new Hand();
-    h->draw(d->draw());
-    h->display();
-    h->draw(d->draw());
-    h->draw(d->draw());
-    h->display();
-    cout << (h->exchange(INFANTRY) == 1 ? "True" : "False") << " " << (h->exchange(INFANTRY) == 1 ? "True" : "False") << endl;
-    return 0;
-}
-*/
