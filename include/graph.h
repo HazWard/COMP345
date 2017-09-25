@@ -1,10 +1,9 @@
 #pragma once
 
-#include "stdafx.h"
-#include "Node.h"
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include "../include/node.h"
 
 class Graph
 {

@@ -1,7 +1,6 @@
-#include "stdafx.h"
-#include "Node.h"
 #include <iostream>
 #include <string>
+#include "../include/node.h"
 
 using namespace std;
 

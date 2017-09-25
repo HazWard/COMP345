@@ -1,6 +1,5 @@
-#include "stdafx.h"
-#include "Graph.h"
 #include <iostream>
+#include "../include/graph.h"
 
 using namespace std;
 

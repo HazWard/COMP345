@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include "dice.h"
+#include "../include/dice.h"
 using namespace std;
 
 Dice::Dice() : numTracker(6){} // contructor

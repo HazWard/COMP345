@@ -3,9 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include "Graph.h"
-#include "Country.h"
-#include "Node.h"
+#include "../include/graph.h"
+#include "../include/country.h"
+#include "../include/node.h"
 
 #include <vector>
 
