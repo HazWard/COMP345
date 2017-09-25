@@ -5,6 +5,8 @@
    Instructor: Dr. Joey Paquet
 */
 
+#pragma once
+
 #include <vector>
 using namespace std;
 
