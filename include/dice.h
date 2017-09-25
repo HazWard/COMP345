@@ -8,15 +8,13 @@
 #include <vector>
 using namespace std;
 
-#pragma once
-
 class Dice
 {
-	private:
-		vector<int> numTracker;
-	public:
-		Dice();
-		int numGenerator();
-		vector<int> howManyDice(int howManyDice);
-		vector<int> getNumTracker();
+private:
+	vector<int> numTracker;
+public:
+	Dice();
+	int numGenerator();
+	vector<int> howManyDice(int howManyDice);
+	vector<int> getNumTracker();
 };

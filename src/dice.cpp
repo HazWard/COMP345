@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
-#include "../include/dice.h"
+#include "dice.h"
 using namespace std;
 
 Dice::Dice() : numTracker(6){} // contructor
@@ -42,7 +42,6 @@ vector<int> Dice::howManyDice(int howManyDice)
 	return diceVec; // returns the pointer to the vector (container)
 }
 
-/*
 int main()
 {	
 	Dice* dice1 = new Dice(); // create dice object 1
@@ -91,6 +90,6 @@ int main()
 		cout << "Number of " << i + 1 << " in dice #2: " << diceVec2[i] << endl;
 	}
 
+	system("pause");
 	return 0;
 }
-*/
