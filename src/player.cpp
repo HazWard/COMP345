@@ -24,7 +24,7 @@ Player::Player(Hand* playerHand, std::list<int>* playerCountries)
         this->countries = playerCountries;
 
         // Create the dice rolling facility for the Player
-        this->dice = new Dice();      
+        this->dice = new Dice();
     }
 }
 

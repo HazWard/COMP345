@@ -149,6 +149,7 @@ void Hand::display(void){
     << art << " artillery cards." << endl;
 }
 
+/*
 int main(){
     Deck *d = new Deck(9);
     d->display();
@@ -161,3 +162,4 @@ int main(){
     cout << (h->exchange(INFANTRY) == 1 ? "True" : "False") << " " << (h->exchange(INFANTRY) == 1 ? "True" : "False") << endl;
     return 0;
 }
+*/
