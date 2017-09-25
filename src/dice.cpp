@@ -42,7 +42,7 @@ vector<int> Dice::howManyDice(int howManyDice)
 	return diceVec; // returns the pointer to the vector (container)
 }
 
-int main()
+/* int main()
 {	
 	Dice* dice1 = new Dice(); // create dice object 1
 	Dice* dice2 = new Dice(); // create dice object 2
@@ -92,4 +92,4 @@ int main()
 
 	system("pause");
 	return 0;
-}
+} */

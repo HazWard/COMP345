@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <stdio.h>
 #include <iostream>
 #include <string>
@@ -11,7 +10,7 @@
 
 using namespace std;
 
-int main()
+/* int main()
 {
 	const int NUM_PROV = 13;
 	Node provinces[NUM_PROV];
@@ -32,13 +31,13 @@ int main()
 	Graph g(NUM_PROV, provinces);
 	Node adjListQC[] = { provinces[1], provinces[4], provinces[12] };
 	g.getVectorOfNodes()[0].setAdjList(adjListQC);
-		/*
-	g.addEdge(provinces[0], provinces[1]);
-	g.addEdge(provinces[0], provinces[3]);
-	g.addEdge(provinces[1], provinces[4]);*/
+	
+	// g.addEdge(provinces[0], provinces[1]);
+	// g.addEdge(provinces[0], provinces[3]);
+	// g.addEdge(provinces[1], provinces[4]);
 	cout << g.getVectorOfNodes()[0].getAdjList();
 
 	cout << g;
 
 	return 0;
-}
+} */
