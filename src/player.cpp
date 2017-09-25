@@ -9,19 +9,22 @@
 #include <list>
 #include "../include/player.h"
 #include "../include/cards.h"
+#include "../include/dice.h"
 
 Player::Player(Hand* playerHand, std::list<int>* playerCountries)
 {
-
-    if (countries.size() < 1)
+    if (playerCountries->size() < 1)
     {
         std::cout << "Invalid arguments for Player contructor." << std::endl;
         // TODO: Find a way to get rid of an invalid object
     }
     else
     {
-        hand = playerHand;
-        countries = playerCountries;
+        this->hand = playerHand;
+        this->countries = playerCountries;
+
+        // Create the dice rolling facility for the Player
+        this->dice = new Dice();      
     }
 }
 
@@ -32,10 +35,19 @@ Player::~Player(void)
     countries = NULL;
 }
 
-int Player::diceFactory(int nbOfDice)
+int Player::roll(int nbOfDice)
 {
-    // Perform a roll
-    return 0;
+    // Perform rolls
+    int roll = 0;
+    int value = 0;
+    for (int i = 0; i < nbOfDice; ++i)
+    {
+        value = this->dice->numGenerator();
+        std::cout << "Roll: " << value << std::endl;
+        roll += value;
+    }
+    std::cout << "Total Roll: " << roll << std::endl;
+    return roll;
 }
 
 void Player::reinforce()
@@ -58,5 +70,14 @@ void Player::fortify()
 
 int main()
 {
+    Hand* testHand = new Hand();
+    int arr[] = {1, 2, 3, 4};
+    std::list<int> testList (arr, arr + sizeof(arr) / sizeof(int) );
+    Player* user = new Player(testHand, &testList);
+    
+    user->roll(1);
+    user->roll(2);
+    user->roll(3);
+    
     return 0;
 }

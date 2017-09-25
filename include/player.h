@@ -7,6 +7,7 @@
 
 #include <list>
 #include "../include/cards.h"
+#include "../include/dice.h"
 
 #pragma once
 
@@ -19,10 +20,11 @@ class Player
     public:
         Player(Hand*, std::list<int>*);
         ~Player(void);
-        int diceFactory(int);
+        int roll(int);
         void reinforce(void);
         void attack(void);
         void fortify(void);
         Hand* hand;
+        Dice* dice;
         std::list<int>* countries; // TODO: Change to array of Country
 };

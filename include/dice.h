@@ -1,13 +1,14 @@
+#include <vector>
+using namespace std;
 
-
+#pragma once
 
 class Dice
 {
-private:
-	int rollNum;
-	int numTracker[6];
-	int numOfDice;
-public:
-	Dice();
-
+	private:
+		int numTracker[6];
+	public:
+		int numGenerator();
+		vector<int> howManyDice(int howManyDice);
+		int* getNumTracker();
 };

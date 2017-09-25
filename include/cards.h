@@ -1,3 +1,5 @@
+#pragma once
+
 class Card {
     /**
         Card class is implemented as a node in a linked list. Implementation is barebones, with
