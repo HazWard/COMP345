@@ -1,3 +1,10 @@
+/* Assignment #1 Part: Dice
+   Written By: Hagop Awakian
+   Student ID: 27747632
+   For COMP345 Section D
+   Instructor: Dr. Joey Paquet
+*/
+
 #include <vector>
 using namespace std;
 
@@ -5,9 +12,10 @@ using namespace std;
 class Dice
 {
 private:
-	int numTracker[6];
+	vector<int> numTracker;
 public:
+	Dice();
 	int numGenerator();
-	vector<int> Dice::howManyDice(int howManyDice);
-	int* getNumTracker();
+	vector<int> howManyDice(int howManyDice);
+	vector<int> getNumTracker();
 };
