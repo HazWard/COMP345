@@ -8,6 +8,11 @@ class Card {
     // Use following line if you want to access private members with << operator 
     // friend std::ostream& operator<<(std::ostream&, const Card&);
     public:
+        // Constants used to define card types, used in lieu of an enum
+        static const int INFANTRY = 0;
+        static const int CAVALRY = 1;
+        static const int ARTILLERY = 2;
+        
         int type;
         Card(int t, Card *nextCard);
         Card *next;
