@@ -6,9 +6,12 @@ using namespace std;
 #include "../include/cards.h"
 
 //Constants used to define card types, used in lieu of an enum
-const int INFANTRY = 0;
-const int CAVALRY = 1;
-const int ARTILLERY = 2;
+static const int INFANTRY = 0;
+static const int CAVALRY = 1;
+static const int ARTILLERY = 2;
+
+//Default constructor
+Card::Card() : type(3), next(NULL) {}
 
 Card::Card(int t, Card *nextCard){
     //Constructor for Card class
@@ -60,7 +63,10 @@ Deck::Deck(int numberOfCountries){
     }
 }
 
-Deck::~Deck(void){
+//Default constructor
+Deck::Deck() : numberOfCards(0), top(NULL) {}
+
+Deck::~Deck(){
     /**
         Destructor for the Deck class, iterates through the linked list and destroys every node.
     */
@@ -73,7 +79,7 @@ Deck::~Deck(void){
     temp = NULL;
 }
 
-Card* Deck::draw(void){
+Card* Deck::draw(){
     /**
         Draw method removes the first node from the linked list and returns the pointer to that node.
         Used in conjuction with the draw method of the Hand class, with the return value of this method
@@ -87,17 +93,31 @@ Card* Deck::draw(void){
     return NULL;
 }
 
-void Deck::display(void){
+void Deck::display(){
     /**
         Used for debugging. Iterates through the linked list and prints each card.
      */
     int counter = 1;
+    int infCounter = 0;
+    int cavCounter = 0;
+    int artCounter = 0;
+
     Card *temp = top;
     while(temp != NULL){
         cout << "Card number: " << counter << " Type: " << *temp << endl;
+        switch(temp->type) {
+            case INFANTRY : infCounter++; break;
+            case CAVALRY : cavCounter++; break;
+            case ARTILLERY : artCounter++; break;
+            default : break;
+        }
         temp = temp->next;
         counter++;
     }
+
+    cout << "This deck contains " << infCounter << " infantry cards, " << cavCounter << " cavalry cards, and "
+    << artCounter << " artillery cards." << endl;
+
     //Setting temp pointer to NULL to avoid weird stuff
     temp = NULL;
 }

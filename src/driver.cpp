@@ -15,20 +15,20 @@ using namespace std;
 // Class Runners
 void cardsRunner()
 {
-	//Constants used to define card types, used in lieu of an enum
-	const int INFANTRY = 0;
-	const int CAVALRY = 1;
-	const int ARTILLERY = 2;
-
-    Deck *d = new Deck(9);
-    d->display();
+	cout << "--> Creating a deck of size 30 <--" << endl;
+	Deck *d = new Deck(30);
+	cout << "--> Displaying the deck <--" << endl;
+	d->display();
+	
+	cout << "--> Creating a Hand object and drawing the top 5 cards from the deck <--" << endl;
     Hand *h = new Hand();
     h->draw(d->draw());
-    h->display();
     h->draw(d->draw());
-    h->draw(d->draw());
+	h->draw(d->draw());
+	h->draw(d->draw());
+	h->draw(d->draw());
+	cout << "--> Displaying the hand <--" << endl;
     h->display();
-    cout << (h->exchange(INFANTRY) == 1 ? "True" : "False") << " " << (h->exchange(INFANTRY) == 1 ? "True" : "False") << endl;
 }
 
 void diceRunner()
@@ -106,7 +106,7 @@ void mapRunner()
 	// g.addEdge(provinces[0], provinces[1]);
 	// g.addEdge(provinces[0], provinces[3]);
 	// g.addEdge(provinces[1], provinces[4]);
-	cout << g.getVectorOfNodes()[0].getAdjList();
+	//cout << g.getVectorOfNodes()[0].getAdjList();
 
 	cout << g;
 }
@@ -144,7 +144,6 @@ int main()
 	mapRunner();
 	cout << endl;
 	
-	/*
 	cout << "=============== PART 3 (DICE)- Driver ===============" << endl;
 	diceRunner();
 	cout << endl;
@@ -156,6 +155,6 @@ int main()
 	cout << "=============== PART 5 (CARDS)- Driver ===============" << endl;
 	cardsRunner();
 	cout << endl;
-	*/
+	
 	return 0;
 }
