@@ -15,15 +15,20 @@ using namespace std;
 // Class Runners
 void cardsRunner()
 {
-    Deck *d = new Deck(9);
-    d->display();
+	cout << "--> Creating a deck of size 30 <--" << endl;
+	Deck *d = new Deck(30);
+	cout << "--> Displaying the deck <--" << endl;
+	d->display();
+	
+	cout << "--> Creating a Hand object and drawing the top 5 cards from the deck <--" << endl;
     Hand *h = new Hand();
     h->draw(d->draw());
-    h->display();
     h->draw(d->draw());
-    h->draw(d->draw());
+	h->draw(d->draw());
+	h->draw(d->draw());
+	h->draw(d->draw());
+	cout << "--> Displaying the hand <--" << endl;
     h->display();
-    cout << (h->exchange(Card::INFANTRY) == 1 ? "True" : "False") << " " << (h->exchange(Card::INFANTRY) == 1 ? "True" : "False") << endl;
 }
 
 void diceRunner()
@@ -93,14 +98,14 @@ void mapRunner()
     provinces[11] = Node(Country("Nunavut", 1, 1, 1));
     provinces[12] = Node(Country("Newfoundland and Labrador", 1, 1, 1));
 
-    Graph g(NUM_PROV, provinces);
-    Node adjListQC[] = { provinces[1], provinces[4], provinces[12] };
-    g.getVectorOfNodes()[0].setAdjList(adjListQC);
-    
-    // g.addEdge(provinces[0], provinces[1]);
-    // g.addEdge(provinces[0], provinces[3]);
-    // g.addEdge(provinces[1], provinces[4]);
-    cout << g.getVectorOfNodes()[0].getAdjList();
+	Graph g(NUM_PROV, provinces);
+	Node adjListQC[] = { provinces[1], provinces[4], provinces[12] };
+	g.getVectorOfNodes()[0].setAdjList(adjListQC);
+	
+	// g.addEdge(provinces[0], provinces[1]);
+	// g.addEdge(provinces[0], provinces[3]);
+	// g.addEdge(provinces[1], provinces[4]);
+	//cout << g.getVectorOfNodes()[0].getAdjList();
 
     cout << g;
 }

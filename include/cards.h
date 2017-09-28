@@ -14,9 +14,9 @@ class Card {
         static const int ARTILLERY = 2;
         
         int type;
+        Card();
         Card(int t, Card *nextCard);
         Card *next;
-        void display(void);
 };
 
 class Deck{
@@ -31,9 +31,10 @@ class Deck{
         Card *top;
     public:
         Deck(int numberOfCountries);
-        ~Deck(void);
-        Card* draw(void);
-        void display(void);
+        Deck();
+        ~Deck();
+        Card* draw();
+        void display();
 };
 
 class Hand{
