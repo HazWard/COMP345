@@ -5,7 +5,7 @@
     Description: Header file for Risk player
 */
 
-#include <list>
+#include <vector>
 #include "../include/cards.h"
 #include "../include/dice.h"
 
@@ -14,17 +14,17 @@
 class Player
 {
     /*
-    Player class implements the different methods to interact with the game
-    as well as hold a Hand and a list of countries the player owns.
+        Player class implements the different methods to interact with the
+        game as well as hold a Hand and a list of countries the player owns.
     */
     public:
-        Player(Hand*, std::list<int>*);
-        ~Player(void);
-        int roll(int);
-        void reinforce(void);
-        void attack(void);
-        void fortify(void);
+        Player(Hand* playerHad, std::vector<Node*> playerCountries);
+        ~Player();
+        int roll(int nbOfDice);
+        void reinforce();
+        void attack();
+        void fortify();
         Hand* hand;
         Dice* dice;
-        std::list<int>* countries; // TODO: Change to array of Country
+        std::vector<Country*> countries;
 };

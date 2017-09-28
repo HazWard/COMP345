@@ -11,21 +11,20 @@
 #include "../include/cards.h"
 #include "../include/dice.h"
 
-Player::Player(Hand* playerHand, std::list<int>* playerCountries)
+Player::Player(Hand* playerHand, std::vector<Node*> playerCountries)
 {
-    if (playerCountries->size() < 1)
-    {
-        std::cout << "Invalid arguments for Player contructor." << std::endl;
-        // TODO: Find a way to get rid of an invalid object
-    }
-    else
-    {
-        this->hand = playerHand;
-        this->countries = playerCountries;
+    this->hand = playerHand;
 
-        // Create the dice rolling facility for the Player
-        this->dice = new Dice();
+    this->countries = std::vector<Node*>();
+
+    // Build the countries vector
+    for (int i = 0; i < playerCountries.size(); ++i)
+    {
+        this->countries.push_back(playerCountries[i].getCountry());
     }
+    
+    // Create the dice rolling facility for the Player
+    this->dice = new Dice();
 }
 
 Player::~Player(void)
