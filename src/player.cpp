@@ -4,28 +4,27 @@
     Date of creation: September 14, 2017
     Description: Class representing a Risk Player
 */
-
 #include <iostream>
 #include <list>
-#include "../include/player.h"
-#include "../include/cards.h"
-#include "../include/dice.h"
+#include "player.h"
+#include "cards.h"
+#include "dice.h"
+#include "map.h"
 
-Player::Player(Hand* playerHand, std::list<int>* playerCountries)
+Player::Player(Hand& playerHand, std::vector<Node*>& playerCountries)
 {
-    if (playerCountries->size() < 1)
-    {
-        std::cout << "Invalid arguments for Player contructor." << std::endl;
-        // TODO: Find a way to get rid of an invalid object
-    }
-    else
-    {
-        this->hand = playerHand;
-        this->countries = playerCountries;
+    this->hand = &playerHand;
 
-        // Create the dice rolling facility for the Player
-        this->dice = new Dice();
+    this->countries = std::vector<Country>();
+
+    // Build the countries vector
+    for (std::size_t i = 0; i < playerCountries.size(); ++i)
+    {
+        this->countries.push_back(playerCountries[i]->getCountry());
     }
+    
+    // Create the dice rolling facility for the Player
+    this->dice = new Dice();
 }
 
 Player::~Player(void)
@@ -34,7 +33,6 @@ Player::~Player(void)
     delete dice;
     hand = NULL;
     dice = NULL;
-    countries = NULL;
 }
 
 int Player::roll(int nbOfDice)

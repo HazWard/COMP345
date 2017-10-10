@@ -10,6 +10,10 @@
 *.sln.docstates
 .vscode/
 
+# CMake
+cmake-build-debug/
+
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
