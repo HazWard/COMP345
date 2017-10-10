@@ -6,9 +6,8 @@
 */
 
 #include <vector>
-#include "cards.h"
-#include "dice.h"
-#include "map.h"
+#include "../include/cards.h"
+#include "../include/dice.h"
 
 #pragma once
 
@@ -25,7 +24,13 @@ class Player
         void reinforce();
         void attack();
         void fortify();
+        Player(Hand* playerHad, std::vector<Node*> playerCountries);
+        ~Player();
+        int roll(int nbOfDice);
+        void reinforce();
+        void attack();
+        void fortify();
         Hand* hand;
         Dice* dice;
-        std::vector<Country> countries;
+        std::vector<Country*> countries;
 };

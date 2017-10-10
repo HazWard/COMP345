@@ -11,16 +11,16 @@
 #include "dice.h"
 #include "map.h"
 
-Player::Player(Hand& playerHand, std::vector<Node*>& playerCountries)
+Player::Player(Hand* playerHand, std::vector<Node*> playerCountries)
 {
-    this->hand = &playerHand;
+    this->hand = playerHand;
 
-    this->countries = std::vector<Country>();
+    this->countries = std::vector<Node*>();
 
     // Build the countries vector
-    for (std::size_t i = 0; i < playerCountries.size(); ++i)
+    for (int i = 0; i < playerCountries.size(); ++i)
     {
-        this->countries.push_back(playerCountries[i]->getCountry());
+        this->countries.push_back(playerCountries[i].getCountry());
     }
     
     // Create the dice rolling facility for the Player
