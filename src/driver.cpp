@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "map.h"
-#include "player.h"
-#include "dice.h"
-#include "cards.h"
+#include "../include/map.h"
+#include "../include/player.h"
+#include "../include/dice.h"
+#include "../include/cards.h"
 
 int main() 
 {

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "map.h"
+#include "../include/map.h"
 
 using namespace std;
 

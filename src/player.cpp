@@ -6,10 +6,10 @@
 */
 #include <iostream>
 #include <list>
-#include "player.h"
-#include "cards.h"
-#include "dice.h"
-#include "map.h"
+#include "../include/player.h"
+#include "../include/cards.h"
+#include "../include/dice.h"
+#include "../include/map.h"
 
 Player::Player(Hand* playerHand, std::vector<Node*> playerCountries)
 {

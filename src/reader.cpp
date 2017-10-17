@@ -3,8 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "reader.h"
-#include "map.h"
+#include "../include/reader.h"
+#include "../include/map.h"
 using namespace std;
 
 template<typename Out> //Needed for the split function
