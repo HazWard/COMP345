@@ -1,0 +1,129 @@
+[Map]
+author=_MIKE CRUSH_
+image=_49_ City Nights.bmp
+wrap=yes
+scroll=horizontal
+warn=no
+
+[Continents]
+FIRST on LEFT=2
+SECOND=0
+THIRD=0
+FOURTH=1
+FIFTH=0
+
+[Territories]
+Territory00,117,44,FIRST on LEFT,Territory10,Territory09,Territory11,Territory01
+Territory01,117,101,FIRST on LEFT,Territory00,Territory12,Territory13,Territory14,Territory02
+Territory02,117,158,FIRST on LEFT,Territory01,Territory15,Territory16,Territory17,Territory03,Territory35,Territory95
+Territory03,117,215,FIRST on LEFT,Territory02,Territory18,Territory19,Territory20,Territory04
+Territory04,117,272,FIRST on LEFT,Territory03,Territory21,Territory22,Territory23,Territory05,Territory37
+Territory05,115,329,FIRST on LEFT,Territory04,Territory24,Territory25,Territory26,Territory06
+Territory06,117,386,FIRST on LEFT,Territory05,Territory27,Territory28,Territory29,Territory07,Territory98
+Territory07,115,443,FIRST on LEFT,Territory06,Territory30,Territory31,Territory32,Territory08,Territory39
+Territory08,118,503,FIRST on LEFT,Territory07,Territory33,Territory34
+Territory09,75,66,FIRST on LEFT,Territory00
+Territory10,117,66,FIRST on LEFT,Territory00
+Territory11,159,68,FIRST on LEFT,Territory00
+Territory12,73,125,FIRST on LEFT,Territory01
+Territory13,117,125,FIRST on LEFT,Territory01
+Territory14,159,123,FIRST on LEFT,Territory01
+Territory15,75,183,FIRST on LEFT,Territory02
+Territory16,117,180,FIRST on LEFT,Territory02
+Territory17,160,180,FIRST on LEFT,Territory02
+Territory18,75,237,FIRST on LEFT,Territory03
+Territory19,118,237,FIRST on LEFT,Territory03
+Territory20,160,237,FIRST on LEFT,Territory03
+Territory21,75,294,FIRST on LEFT,Territory04
+Territory22,117,294,FIRST on LEFT,Territory04
+Territory23,159,294,FIRST on LEFT,Territory04
+Territory24,76,353,FIRST on LEFT,Territory05
+Territory25,117,351,FIRST on LEFT,Territory05
+Territory26,160,353,FIRST on LEFT,Territory05
+Territory27,75,408,FIRST on LEFT,Territory06
+Territory28,118,408,FIRST on LEFT,Territory06
+Territory29,159,407,FIRST on LEFT,Territory06
+Territory30,75,467,FIRST on LEFT,Territory07
+Territory31,117,467,FIRST on LEFT,Territory07
+Territory32,159,465,FIRST on LEFT,Territory07
+Territory33,99,531,FIRST on LEFT,Territory08,Territory34
+Territory34,139,528,FIRST on LEFT,Territory08,Territory33
+Territory35,295,161,SECOND,Territory44,Territory45,Territory46,Territory36,Territory02
+Territory36,295,224,SECOND,Territory35,Territory47,Territory48,Territory49,Territory37,Territory61
+Territory37,295,294,SECOND,Territory36,Territory50,Territory51,Territory52,Territory38,Territory04
+Territory38,297,365,SECOND,Territory37,Territory53,Territory54,Territory55,Territory39
+Territory39,297,438,SECOND,Territory38,Territory56,Territory57,Territory58,Territory40,Territory07,Territory63
+Territory40,297,504,SECOND,Territory39,Territory41,Territory42,Territory43
+Territory41,255,531,SECOND,Territory40,Territory42
+Territory42,298,528,SECOND,Territory40,Territory41,Territory43
+Territory43,334,528,SECOND,Territory40,Territory42
+Territory44,255,183,SECOND,Territory35
+Territory45,298,183,SECOND,Territory35
+Territory46,339,183,SECOND,Territory35
+Territory47,253,252,SECOND,Territory36
+Territory48,297,251,SECOND,Territory36
+Territory49,339,251,SECOND,Territory36
+Territory50,256,320,SECOND,Territory37
+Territory51,297,321,SECOND,Territory37
+Territory52,340,320,SECOND,Territory37
+Territory53,255,390,SECOND,Territory38
+Territory54,298,390,SECOND,Territory38
+Territory55,340,390,SECOND,Territory38
+Territory56,255,465,SECOND,Territory39
+Territory57,297,465,SECOND,Territory39
+Territory58,339,462,SECOND,Territory39
+Territory59,484,51,THIRD,Territory60
+Territory60,486,84,THIRD,Territory59,Territory65,Territory66,Territory67,Territory61
+Territory61,486,191,THIRD,Territory60,Territory68,Territory69,Territory70,Territory62,Territory36
+Territory62,489,296,THIRD,Territory61,Territory71,Territory72,Territory73,Territory63,Territory79
+Territory63,487,404,THIRD,Territory62,Territory74,Territory75,Territory76,Territory64,Territory39,Territory81
+Territory64,486,503,THIRD,Territory63,Territory77,Territory78
+Territory65,445,117,THIRD,Territory60
+Territory66,487,116,THIRD,Territory60
+Territory67,529,117,THIRD,Territory60
+Territory68,445,225,THIRD,Territory61
+Territory69,489,224,THIRD,Territory61
+Territory70,531,222,THIRD,Territory61
+Territory71,445,330,THIRD,Territory62
+Territory72,487,327,THIRD,Territory62
+Territory73,532,329,THIRD,Territory62
+Territory74,444,434,THIRD,Territory63
+Territory75,490,435,THIRD,Territory63
+Territory76,531,435,THIRD,Territory63
+Territory77,466,528,THIRD,Territory64,Territory78
+Territory78,505,527,THIRD,Territory64,Territory77
+Territory79,661,282,FOURTH,Territory83,Territory84,Territory85,Territory80,Territory62
+Territory80,661,351,FOURTH,Territory79,Territory86,Territory87,Territory88,Territory81,Territory97
+Territory81,663,422,FOURTH,Territory80,Territory89,Territory90,Territory91,Territory82,Territory63
+Territory82,664,498,FOURTH,Territory81,Territory92,Territory93,Territory99
+Territory83,621,309,FOURTH,Territory79
+Territory84,666,311,FOURTH,Territory79
+Territory85,702,306,FOURTH,Territory79
+Territory86,619,377,FOURTH,Territory80
+Territory87,664,377,FOURTH,Territory80
+Territory88,705,375,FOURTH,Territory80
+Territory89,619,447,FOURTH,Territory81
+Territory90,663,447,FOURTH,Territory81
+Territory91,706,446,FOURTH,Territory81
+Territory92,642,528,FOURTH,Territory82,Territory93
+Territory93,685,527,FOURTH,Territory82,Territory92
+Territory94,820,108,FIFTH,Territory95
+Territory95,822,144,FIFTH,Territory94,Territory100,Territory101,Territory102,Territory96,Territory02
+Territory96,820,234,FIFTH,Territory95,Territory103,Territory104,Territory105,Territory97
+Territory97,822,326,FIFTH,Territory96,Territory106,Territory107,Territory108,Territory98,Territory80
+Territory98,823,416,FIFTH,Territory97,Territory109,Territory110,Territory111,Territory99,Territory06
+Territory99,820,501,FIFTH,Territory98,Territory112,Territory113,Territory82
+Territory100,781,176,FIFTH,Territory95
+Territory101,823,176,FIFTH,Territory95
+Territory102,867,177,FIFTH,Territory95
+Territory103,781,267,FIFTH,Territory96
+Territory104,822,267,FIFTH,Territory96
+Territory105,865,267,FIFTH,Territory96
+Territory106,781,357,FIFTH,Territory97
+Territory107,825,357,FIFTH,Territory97
+Territory108,867,356,FIFTH,Territory97
+Territory109,780,447,FIFTH,Territory98
+Territory110,822,447,FIFTH,Territory98
+Territory111,864,447,FIFTH,Territory98
+Territory112,792,528,FIFTH,Territory99
+Territory113,846,527,FIFTH,Territory99

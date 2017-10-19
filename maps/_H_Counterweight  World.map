@@ -1,0 +1,118 @@
+[Map]
+image=_H_Counterweight World.bmp
+wrap=yes
+scroll=none
+author=_H_
+
+
+
+[Continents]
+Ankh-Morpork=7
+Lancre=5
+The Hub=5
+Ephebe=5
+Quirm=4
+Klatch=4
+Omnia=4
+Sto Helit=2
+
+
+
+
+[Territories]
+
+a1,383,114,Ankh-Morpork,a2,a3,a10,e5,e6,e9
+a2,390,184,Ankh-Morpork,a1,a3,a5,a6,a7,e9
+a3,455,145,Ankh-Morpork,a1,a2,a4
+a4,517,145,Ankh-Morpork,a3,a7,b1,c1,c2
+a5,292,248,Ankh-Morpork,a2,a6,a7,a8,e8,e9,h2,g2
+a6,366,239,Ankh-Morpork,a2,a5,a7
+a7,426,248,Ankh-Morpork,a2,a4,a5,a6,a8,a9,c2,c4
+a8,313,297,Ankh-Morpork,a5,a7,a9,g2,g3
+a9,381,337,Ankh-Morpork,a7,a8,g3,d1,c4
+a10,443,59,Ankh-Morpork,a1,a11,a12
+a11,474,44,Ankh-Morpork,a10,a12
+a12,498,67,Ankh-Morpork,a10,a11,b1
+
+b1,600,105,Lancre,b2,b3,a4,a12
+b2,615,153,Lancre,b1,b3,b4,b5,c1
+b3,661,153,Lancre,b1,b2,b5,b6
+b4,620,213,Lancre,b2,b5,c1,c3,c7
+b5,675,227,Lancre,b2,b3,b4,b7,b9,b10,c7,f1,f2
+b6,734,96,Lancre,b3,b7,b8
+b7,731,151,Lancre,b5,b6,b8,b10
+b8,796,147,Lancre,b6,b7,b10
+b9,723,228,Lancre,b5,b10,f2,f3,f4
+b10,755,195,Lancre,b5,b7,b8,b9,f4
+
+
+c1,568,186,The Hub,c2,c3,a4,b2,b4
+c2,521,231,The Hub,c1,c3,c4,c5,c6,a4,a7
+c3,585,231,The Hub,c1,c2,c6,c7,b4
+c4,439,315,The Hub,c2,c5,c10,a7,a9,d1
+c5,500,312,The Hub,c2,c4,c6,c8,c9
+c6,573,270,The Hub,c2,c3,c5,c7,c9
+c7,626,270,The Hub,c3,c6,c9,b4,b5,f1,f2
+c8,549,332,The Hub,c5,c9
+c9,620,332,The Hub,c5,c6,c7,c8,f2,f5
+c10,479,407,The Hub,c4,d1,d3,d4,d5
+
+d1,391,410,Ephebe,d2,d3,a9,c4,c10,g3,g5
+d2,408,469,Ephebe,d1,d3,g5,g12
+d3,454,452,Ephebe,d1,d2,d4,c10
+d4,531,474,Ephebe,d3,d5,d7,c10
+d5,574,425,Ephebe,d4,d6,d7,c10
+d6,652,420,Ephebe,d5,d7,d8,f5
+d7,633,484,Ephebe,d4,d5,d6
+d8,715,441,Ephebe,d6
+
+e1,84,171,Quirm,e2
+e2,116,89,Quirm,e1,e3,e7
+e3,169,89,Quirm,e2,e4,e7
+e4,212,104,Quirm,e3,e5,e7,e8
+e5,262,103,Quirm,e4,e6,e8,a1
+e6,295,129,Quirm,e5,e8,e9,a1
+e7,140,154,Quirm,e2,e3,e4,e8,e10,h1
+e8,273,175,Quirm,e4,e5,e6,e7,e9,e10,a5
+e9,326,175,Quirm,e6,e8,a1,a2,a5
+e10,192,195,Quirm,e7,e8
+
+
+f1,677,284,Klatch,f2,b5,c7
+f2,711,309,Klatch,f1,f3,f5,c7,c9,b5,b9
+f3,757,306,Klatch,f2,f4,f5,f6,f7,f8,b9
+f4,780,251,Klatch,f3,f6,b9,b10
+f5,715,356,Klatch,f2,f3,f8,c9,d6
+f6,825,287,Klatch,f3,f4,f7
+f7,812,323,Klatch,f3,f6,f8
+f8,773,396,Klatch,f3,f5,f7
+
+
+g1,196,359,Omnia,g2,g4,g8
+g2,265,371,Omnia,g1,g3,g4,g5,a5,a8
+g3,340,372,Omnia,g2,g5,a8,a9,d1
+g4,199,412,Omnia,g1,g2,g5,g6
+g5,306,401,Omnia,g2,g3,g4,d1,d2
+g6,210,471,Omnia,g4,g10,g11
+g7,45,441,Omnia,g8,g9,h4
+g8,85,451,Omnia,g1,g7,g9,g10
+g9,73,497,Omnia,g7,g8,g10
+g10,129,516,Omnia,g8,g9,g6
+g11,280,513,Omnia,g6,g12
+g12,318,509,Omnia,g11,d2
+
+h1,101,261,Sto Helit,h2,h3,e7
+h2,138,265,Sto Helit,h1,h3,h4,a5
+h3,94,290,Sto Helit,h1,h2,h4
+h4,88,324,Sto Helit,h2,h3,g7
+
+
+
+
+
+
+
+
+
+
+

@@ -12,6 +12,8 @@
 
 using namespace std;
 
+const string MAPS_FOLDER = "../maps/";
+
 template<typename Out> //Needed for the split function
 void split(const std::string &s, char delim, Out result) {
 	/*
@@ -113,7 +115,8 @@ Parser::Parser(string fileName) {
 			if (lineData[3] == rit->first)
 			{
 				Graph* graph_current_cont = &(rit->second);
-				graph_current_cont->addNode(Node(Country(lineData[0], lineData[3], 0)));
+				Node temp = Node(Country(lineData[0], lineData[3], 0));
+				graph_current_cont->addNode(temp);
 			}
 		}
 	}
@@ -201,10 +204,11 @@ bool Parser::mapIsValid()
 }
 
 int main() {
+
 	/*We are going to try to open multiple files, and one of them is invalid (the 4th one), the others are valid maps so they should work properly.*/
 	try
 	{
-		Parser parse1("World.map");
+		Parser parse1(MAPS_FOLDER + "World.map");
 		/*
 		Graph g1 = *(parse1.getGraph());
 		map<string, Graph>* continents = parse1.getContinents();
@@ -232,7 +236,7 @@ int main() {
 	}
 	try
 	{
-		Parser parse2("_49_ City Nights.map");
+		Parser parse2(MAPS_FOLDER + "_49_ City Nights.map");
 		Graph g2 = *(parse2.getGraph());
 		map<string, Graph>* continents2 = parse2.getContinents();
 		cout << "Is parse2 a valid map ? : ";
@@ -248,7 +252,7 @@ int main() {
 
 	try
 	{
-		Parser parse3("_H_Counterweight  World.map");
+		Parser parse3(MAPS_FOLDER + "_H_Counterweight  World.map");
 		Graph g3 = *(parse3.getGraph());
 		map<string, Graph>* continents3 = parse3.getContinents();
 		cout << "Is parse3 a valid map ? : ";
@@ -263,7 +267,7 @@ int main() {
 	}
 	try
 	{
-		Parser parse4("invalidMap.txt");
+		Parser parse4(MAPS_FOLDER + "invalidMap.txt");
 		cout << "Is parse4 a valid map ? : ";
 		/*ERROR?
 		if (parse4.mapIsValid())
@@ -277,7 +281,7 @@ int main() {
 	}
 	try
 	{
-		Parser parse5("Bubble Plane.map");
+		Parser parse5(MAPS_FOLDER + "Bubble Plane.map");
 		Graph g5 = *(parse5.getGraph());
 		map<string, Graph>* continents5 = parse5.getContinents();
 		cout << "Is parse5 a valid map ? : ";
