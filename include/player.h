@@ -8,6 +8,7 @@
 #include <vector>
 #include "../include/cards.h"
 #include "../include/dice.h"
+#include "../include/map.h"
 
 #pragma once
 
@@ -18,13 +19,7 @@ class Player
         game as well as hold a Hand and a list of countries the player owns.
     */
     public:
-        Player(Hand& playerHand, std::vector<Node*>& playerCountries);
-        ~Player();
-        int roll(int nbOfDice);
-        void reinforce();
-        void attack();
-        void fortify();
-        Player(Hand* playerHad, std::vector<Node*> playerCountries);
+        Player(Hand* playerHand, std::vector<Node*>* playerCountries);
         ~Player();
         int roll(int nbOfDice);
         void reinforce();
@@ -32,5 +27,5 @@ class Player
         void fortify();
         Hand* hand;
         Dice* dice;
-        std::vector<Country*> countries;
+        std::vector<Node*> countries;
 };
