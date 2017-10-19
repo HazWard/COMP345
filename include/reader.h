@@ -15,6 +15,7 @@ private:
 	vector<Node>* nodes;
 	Graph* graph;
 	map<string, Graph>* continents;
+	bool error;
 public:
 	Parser(string fileName);
 	Graph* getGraph();
@@ -22,4 +23,5 @@ public:
 	bool graphIsConnected();
 	bool continentsAreConnected();
 	bool mapIsValid();
+	void displayContinents();
 };

@@ -203,7 +203,8 @@ bool Graph::isGraphConnected()
 	sense that any given node can reach all other nodes in the Graph. Uses visitAdjacentNodes.
 	*/
 	bool graphIsConnected = true;
-
+    if(vectorOfNodes.empty())
+        return false;
 	vector<Node*> initialAdjListNode = vectorOfNodes[0].getAdjList();
 	visitAdjacentNodes(initialAdjListNode);
 

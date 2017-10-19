@@ -9,6 +9,7 @@
 #include <map>
 #include "../include/reader.h"
 #include "../include/map.h"
+#include "../include/exception.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ vector<string> Opener::readLines() {
 
 	if (!input) {
 		cout << "File " << fileName << " could not be opened." << endl;
-		throw new std::exception;
+		return std::vector<string>();
 	}
 
 	vector<string> lines;
@@ -70,103 +71,110 @@ Parser::Parser(string fileName) {
 	nodes = new vector<Node>;
 	continents = new map<string,Graph>;
 
-	vector<string> lines = mapFile.readLines();
+    vector<string> lines = mapFile.readLines();
 
-	int territoryStart = -1;
-	int continentStart = -1;
+	if(lines.empty()) {
+		error = true;
+	} else {
+		error = false;
+	}
+	if (!error) {
+		int territoryStart = -1;
+		int continentStart = -1;
 
-	for (int i = 0; i < lines.size(); i++)
-	{
-		if (lines[i].find("[Continents]") != std::string::npos)
+		for (int i = 0; i < lines.size(); i++)
 		{
-			continentStart = (i + 1);
-			break;
-		}
-	}
-	//If we didn't find [Continents] within any lines, then the file is invalid
-	if (continentStart == -1)
-	{
-		cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
-	}
-	for (int i = continentStart; i < lines.size(); i++)
-	{
-		if (lines[i].find("[Territories]") != std::string::npos)
-		{
-			territoryStart = (i + 1);
-			break;
-		}
-		vector<string> lineData = split(lines[i], '='); //splitting current line on '='
-		continents->insert(pair<string, Graph>(lineData[0], Graph(0)));
-	}
-	//If we didn't find [Territories] within any lines, then the file is invalid
-	if (territoryStart == -1)
-	{
-		cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
-	}
-
-	for (int i = territoryStart; i < lines.size(); i++)
-	{
-		vector<string> lineData = split(lines[i], ','); //splitting current line on ','
-		nodes->push_back(Node(Country(lineData[0], lineData[3], 0)));
-
-		map<string, Graph>::reverse_iterator rit;
-		for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
-		{
-			if (lineData[3] == rit->first)
+			if (lines[i].find("[Continents]") != std::string::npos)
 			{
-				Graph* graph_current_cont = &(rit->second);
-				Node temp = Node(Country(lineData[0], lineData[3], 0));
-				graph_current_cont->addNode(temp);
-			}
-		}
-	}
-
-	graph = new Graph(nodes->size(), *nodes);
-
-	for (int i = territoryStart; i < lines.size(); i++) {
-		Node* currentNode = new Node;
-		vector<string> lineData = split(lines[i], ','); //splitting current line on ','
-
-		for (int k = 0; k < nodes->size(); k++) {
-			if ((*nodes)[k].getCountry().getName() == lineData[0]) {
-				currentNode = &(*nodes)[k];
+				continentStart = (i + 1);
 				break;
 			}
 		}
-		if (currentNode->getCountry().getName() != "")
+		//If we didn't find [Continents] within any lines, then the file is invalid
+		if (continentStart == -1)
 		{
-			Graph* currentContinent = NULL;
-			string currentContinentName = "";
+			cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
+		}
+		for (int i = continentStart; i < lines.size(); i++)
+		{
+			if (lines[i].find("[Territories]") != std::string::npos)
+			{
+				territoryStart = (i + 1);
+				break;
+			}
+			vector<string> lineData = split(lines[i], '='); //splitting current line on '='
+			continents->insert(pair<string, Graph>(lineData[0], Graph(0)));
+		}
+		//If we didn't find [Territories] within any lines, then the file is invalid
+		if (territoryStart == -1)
+		{
+			cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
+		}
+
+		for (int i = territoryStart; i < lines.size(); i++)
+		{
+			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
+			nodes->push_back(Node(Country(lineData[0], lineData[3], 0)));
+
 			map<string, Graph>::reverse_iterator rit;
 			for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
 			{
-				if (currentNode->getCountry().getContinent() == rit->first)
+				if (lineData[3] == rit->first)
 				{
-					currentContinent = &(rit->second);
-					currentContinentName = rit->first;
+					Graph* graph_current_cont = &(rit->second);
+					Node temp = Node(Country(lineData[0], lineData[3], 0));
+					graph_current_cont->addNode(temp);
 				}
 			}
+		}
 
-			bool currentContinentIsValid = currentContinent != NULL && currentContinentName != "";
-			for (int j = 4; j < lineData.size(); j++) 
+		graph = new Graph(nodes->size(), *nodes);
+
+		for (int i = territoryStart; i < lines.size(); i++) {
+			Node* currentNode = new Node;
+			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
+
+			for (int k = 0; k < nodes->size(); k++) {
+				if ((*nodes)[k].getCountry().getName() == lineData[0]) {
+					currentNode = &(*nodes)[k];
+					break;
+				}
+			}
+			if (currentNode->getCountry().getName() != "")
 			{
-				for (int k = 0; k < nodes->size(); k++) 
+				Graph* currentContinent = NULL;
+				string currentContinentName = "";
+				map<string, Graph>::reverse_iterator rit;
+				for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
 				{
-					if ((*nodes)[k].getCountry().getName() == lineData[j]) 
+					if (currentNode->getCountry().getContinent() == rit->first)
 					{
-						Node* add = &((*nodes)[k]);
-						graph->addEdge(*currentNode, *add);
+						currentContinent = &(rit->second);
+						currentContinentName = rit->first;
 					}
 				}
-				if (currentContinentIsValid)
+
+				bool currentContinentIsValid = currentContinent != NULL && currentContinentName != "";
+				for (int j = 4; j < lineData.size(); j++)
 				{
-					vector<Node>* nodesInCurrentContinent = currentContinent->getVectorOfNodes();
-					for (int k = 0; k < nodesInCurrentContinent->size(); k++)
+					for (int k = 0; k < nodes->size(); k++)
 					{
-						if ((*nodesInCurrentContinent)[k].getCountry().getName() == lineData[j])
+						if ((*nodes)[k].getCountry().getName() == lineData[j])
 						{
-							Node* add = &((*nodesInCurrentContinent)[k]);
-							currentContinent->addEdge(*currentNode, *add);
+							Node* add = &((*nodes)[k]);
+							graph->addEdge(*currentNode, *add);
+						}
+					}
+					if (currentContinentIsValid)
+					{
+						vector<Node>* nodesInCurrentContinent = currentContinent->getVectorOfNodes();
+						for (int k = 0; k < nodesInCurrentContinent->size(); k++)
+						{
+							if ((*nodesInCurrentContinent)[k].getCountry().getName() == lineData[j])
+							{
+								Node* add = &((*nodesInCurrentContinent)[k]);
+								currentContinent->addEdge(*currentNode, *add);
+							}
 						}
 					}
 				}
@@ -180,9 +188,7 @@ map<string, Graph>* Parser::getContinents() { return continents; }
 
 bool Parser::graphIsConnected()
 {
-	if (graph->isGraphConnected())
-		return true;
-	else return false;
+	return graph->isGraphConnected();
 }
 bool Parser::continentsAreConnected()
 {
@@ -198,103 +204,71 @@ bool Parser::continentsAreConnected()
 }
 bool Parser::mapIsValid()
 {
-	if (graphIsConnected() && continentsAreConnected())
-		return true;
-	else return false;
+	return !error && graphIsConnected() && continentsAreConnected();
+}
+
+void Parser::displayContinents()
+{
+	map<string, Graph>::reverse_iterator rit;
+	for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+	{
+		cout << rit->first << endl;
+		cout << rit->second;
+	}
 }
 
 int main() {
 
-	/*We are going to try to open multiple files, and one of them is invalid (the 4th one), the others are valid maps so they should work properly.*/
-	try
-	{
-		Parser parse1(MAPS_FOLDER + "World.map");
-		/*
-		Graph g1 = *(parse1.getGraph());
-		map<string, Graph>* continents = parse1.getContinents();
+	Parser parse1(MAPS_FOLDER + "World.map");
 
-		map<string, Graph>::reverse_iterator rit;
-		for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
-		{
-			cout << rit->first << endl;
-			cout << rit->second;
-		}
+	cout << "Is parse1 a valid map ? : ";
+	if (parse1.mapIsValid())
+		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
+	else
+		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
 
-		//We print the full content of the first map
-		cout << g1;
-		*/
+	Parser parse2(MAPS_FOLDER + "_49_ City Nights.map");
+	Graph g2 = *(parse2.getGraph());
+	map<string, Graph>* continents2 = parse2.getContinents();
+	cout << "Is parse2 a valid map ? : ";
+	if (parse2.mapIsValid())
+		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
+	else
+		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
 
-		cout << "Is parse1 a valid map ? : ";
-		if (parse1.mapIsValid())
-			cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-		else
-			cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-	}
-	catch (const std::exception& e)
-	{
-		cout << "The file World.map is not a valid .map file. We cannot create a Parser object." << endl;
-	}
-	try
-	{
-		Parser parse2(MAPS_FOLDER + "_49_ City Nights.map");
-		Graph g2 = *(parse2.getGraph());
-		map<string, Graph>* continents2 = parse2.getContinents();
-		cout << "Is parse2 a valid map ? : ";
-		if (parse2.mapIsValid())
-			cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-		else
-			cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-	}
-	catch (const std::exception& e)
-	{
-		cout << "The file _49_ City Nights.map is not a valid .map file. We cannot create a Parser object." << endl;
-	}
+	Parser parse3(MAPS_FOLDER + "_H_Counterweight  World.map");
+	Graph g3 = *(parse3.getGraph());
+	map<string, Graph>* continents3 = parse3.getContinents();
+	cout << "Is parse3 a valid map ? : ";
+	if (parse3.mapIsValid())
+		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
+	else
+		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
 
-	try
-	{
-		Parser parse3(MAPS_FOLDER + "_H_Counterweight  World.map");
-		Graph g3 = *(parse3.getGraph());
-		map<string, Graph>* continents3 = parse3.getContinents();
-		cout << "Is parse3 a valid map ? : ";
-		if (parse3.mapIsValid())
-			cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-		else
-			cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-	}
-	catch (const std::exception& e)
-	{
-		cout << "_H_Counterweight  World.map is not a valid .map file. We cannot create a Parser object." << endl;
-	}
-	try
-	{
-		Parser parse4(MAPS_FOLDER + "invalidMap.txt");
-		cout << "Is parse4 a valid map ? : ";
-		/*ERROR?
-		if (parse4.mapIsValid())
-			cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-		else
-			cout << "No, the graph and/or some of the continents are not strongly connected.\n";*/
-	}
-	catch (const std::exception& e)
-	{
-		cout << "The file invalidMap.txt is not a valid .map file. We cannot create a Parser object." << endl;
-	}
-	try
-	{
-		Parser parse5(MAPS_FOLDER + "Bubble Plane.map");
-		Graph g5 = *(parse5.getGraph());
-		map<string, Graph>* continents5 = parse5.getContinents();
-		cout << "Is parse5 a valid map ? : ";
-		cout << parse5.continentsAreConnected() << parse5.graphIsConnected();
-		if (parse5.mapIsValid())
-			cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-		else
-			cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-	}
-	catch (const std::exception& e)
-	{
-		cout << "Bubble Plane.map is not a valid .map file. We cannot create a Parser object." << endl;
-	}
+	Parser parse4(MAPS_FOLDER + "invalidMap.txt");
+	cout << "Is parse4 a valid map ? : ";
+
+	if (parse4.mapIsValid())
+		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
+	else
+		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
+
+	Parser parse5(MAPS_FOLDER + "Bubble Plane.map");
+	Graph g5 = *(parse5.getGraph());
+	map<string, Graph>* continents5 = parse5.getContinents();
+	cout << "Is parse5 a valid map ? : ";
+	cout << parse5.continentsAreConnected() << parse5.graphIsConnected();
+	if (parse5.mapIsValid())
+		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
+	else
+		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
+
+	Parser parse6(MAPS_FOLDER + "invalidMap2.java");
+	cout << "Is parse6 a valid map ? : ";
+	if (parse6.mapIsValid())
+		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
+	else
+		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
 	
 	return 0;
 }
