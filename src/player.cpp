@@ -5,28 +5,23 @@
     Description: Class representing a Risk Player
 */
 #include <iostream>
-#include <list>
+#include <vector>
 #include "../include/player.h"
 #include "../include/cards.h"
 #include "../include/dice.h"
 #include "../include/map.h"
 
+// Constructors
+Player::Player() : hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
+
 Player::Player(Hand* playerHand, std::vector<Node*>* playerCountries)
 {
-    this->hand = playerHand;
-
-    this->countries = std::vector<Node*>();
-
-    // Build the countries vector
-    for (int i = 0; i < playerCountries->size(); ++i)
-    {
-        this->countries.push_back((*playerCountries)[i]);
-    }
-    
+    this->setHand(playerHand);
+    this->setCountries(playerCountries);
     // Create the dice rolling facility for the Player
-    this->dice = new Dice();
+    this->setDice(new Dice());
 }
-
+// Destructor
 Player::~Player(void)
 {
     delete hand;
@@ -34,6 +29,37 @@ Player::~Player(void)
     hand = NULL;
     dice = NULL;
 }
+
+// Setters and Getters
+void Player::setHand(Hand *targetHand)
+{
+    this->hand = targetHand;
+}
+
+Hand* Player::getHand()
+{
+    return this->hand;
+}
+
+void Player::setDice(Dice* targetDice)
+{
+    this->dice = targetDice;
+}
+
+void Player::setCountries(std::vector<Node *> *targetCountries)
+{
+    // Build the countries vector
+    for (int i = 0; i < targetCountries->size(); ++i)
+    {
+        this->countries.push_back((*targetCountries)[i]);
+    }
+}
+
+std::vector<Node*> Player::getCountries()
+{
+    return this->countries;
+}
+
 
 int Player::roll(int nbOfDice)
 {
