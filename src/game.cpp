@@ -7,7 +7,7 @@ using namespace std;
 void readFile()
 {
     DIR *directory;
-    directory = opendir ("../map/");
+    directory = opendir ("C:\\Users\\Hagop\\Desktop\\Fall 2017\\COMP 345\\Assignments\\Submission 1\\COMP345\\maps");
     struct dirent *ent;
     if (directory != NULL)
     {
@@ -32,6 +32,6 @@ int main()
     Player** players = new Player*[nbrPlayers];
     for(int i = 0; i < nbrPlayers; i++)
     {
-        players[i];
+        //players[i](Player);
     }
 }
