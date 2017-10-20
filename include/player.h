@@ -19,12 +19,19 @@ class Player
         game as well as hold a Hand and a list of countries the player owns.
     */
     public:
+        Player();
         Player(Hand* playerHand, std::vector<Node*>* playerCountries);
         ~Player();
         int roll(int nbOfDice);
         void reinforce();
         void attack();
         void fortify();
+        void setHand(Hand* targetHand);
+        Hand* getHand();
+        void setDice(Dice* targetDice);
+        void setCountries(std::vector<Node*>* targetCountries);
+        std::vector<Node*> getCountries();
+    private:
         Hand* hand;
         Dice* dice;
         std::vector<Node*> countries;
