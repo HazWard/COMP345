@@ -103,7 +103,7 @@ Parser::Parser(string fileName) {
 				break;
 			}
 			vector<string> lineData = split(lines[i], '='); //splitting current line on '='
-			continents->insert(pair<string, Graph>(lineData[0], Graph(0)));
+			continents->insert(std::pair<string, Graph>(lineData[0], Graph(0)));
 		}
 		//If we didn't find [Territories] within any lines, then the file is invalid
 		if (territoryStart == -1)
@@ -216,7 +216,7 @@ void Parser::displayContinents()
 		cout << rit->second;
 	}
 }
-
+/*
 int main() {
 
 	Parser parse1(MAPS_FOLDER + "World.map");
@@ -271,4 +271,4 @@ int main() {
 		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
 	
 	return 0;
-}
+}*/

@@ -1,9 +1,10 @@
+#include "../include/cards.h"
+
 #include <iostream>
-#include <string>
 #include <random>
 using namespace std;
 
-#include "../include/cards.h"
+
 
 //Constants used to define card types, used in lieu of an enum
 static const int INFANTRY = 0;
