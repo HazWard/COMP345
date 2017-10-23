@@ -11,11 +11,16 @@
 #include "../include/dice.h"
 #include "../include/map.h"
 
-// Constructors
-Player::Player() : hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
 
-Player::Player(Hand* playerHand, std::vector<Node*>* playerCountries)
+// Constants
+int MIN_NUMBER_OF_ARMIES = 3;
+
+// Constructors
+Player::Player() : name(""), hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
+
+Player::Player(std::string playerName, Hand* playerHand, std::vector<Node*>* playerCountries)
 {
+    this->setName(playerName);
     this->setHand(playerHand);
     this->setCountries(playerCountries);
     // Create the dice rolling facility for the Player
@@ -31,19 +36,24 @@ Player::~Player(void)
 }
 
 // Setters and Getters
-void Player::setHand(Hand *targetHand)
+void Player::setName(std::string targetName)
 {
-    this->hand = targetHand;
+    this->name = targetName;
 }
 
-Hand* Player::getHand()
+std::string Player::getName()
 {
-    return this->hand;
+    return this->name;
 }
 
 void Player::setDice(Dice* targetDice)
 {
     this->dice = targetDice;
+}
+
+Hand* Player::getHand()
+{
+    return this->hand;
 }
 
 void Player::setCountries(std::vector<Node *> *targetCountries)
@@ -80,7 +90,16 @@ int Player::roll(int nbOfDice)
 void Player::reinforce()
 {
     // Perform actions to reinforce
-    std::cout << "Player is reinforcing troops!" << std::endl;
+    std::cout << "is reinforcing troops!" << std::endl;
+    int countryBonus = this->countries.size() / MIN_NUMBER_OF_ARMIES;
+    if (countryBonus >= 3)
+    {
+        // TODO: Check if a whole continent is owned
+    }
+    else
+    {
+        std::cout << "Not enough armies to reinforce troops." << std::endl;
+    }
 }
 
 void Player::attack()
