@@ -18,6 +18,7 @@ private:
 	map<string, Graph>* continents;
 	bool error;
 public:
+	Parser();
 	Parser(string fileName);
 	Graph* getGraph();
 	map<string, Graph>* getContinents();

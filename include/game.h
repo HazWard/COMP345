@@ -6,14 +6,13 @@ class Game
 {
 public:
     Game();
-    Game(string, int, vector<Player*>, Graph);
-    void setMap(Graph newMap);
+    void setMap(Graph& newMap);
     void setNbrPlayers(int nbrP);
-    void setArrayPlayers(vector<Player*>);
+    void setArrayPlayers(vector<Player*>&);
 private:
     string mapName;
     int nbrPlayers;
     vector<Player*> arrayPlayers;
-    Graph map;
+    Graph mapCountries;
 };
 

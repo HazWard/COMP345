@@ -1,35 +1,38 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
+#include<list>
+#include <Windows.h>
+/*
 #include<string.h>
 #include<fstream>
 #include<dirent.h>
 #include <vector>
-#include <map>
-#include<list>
-#include <Windows.h>
+#include <map>*/
 
 using namespace std;
 
 const string MAPS_FOLDER = "../maps/";
 
-Game::Game(): mapName(""), nbrPlayers(0), arrayPlayers(vector<Player*>()), map()
-{ }
-Game::Game(string mapName, int np, vector<Player*> pl, Graph m): mapName(mapName), nbrPlayers(np),
-                                                                 arrayPlayers(pl), map(m)
+/*
+Game::Game(): mapName(""), nbrPlayers(0), arrayPlayers(vector<Player*>()), mapCountries()
 { }
 
-void Game::setMap(Graph newMap)
+Game::Game(string mapName, int np, vector<Player*> pl, Graph m): mapName(mapName), nbrPlayers(np),
+                                                                 arrayPlayers(pl), mapCountries(m)
+{ }*/
+
+void Game::setMap(Graph& newMap)
 {
-    map = newMap;
+    mapCountries = newMap;
 }
 void Game::setNbrPlayers(int nbrP)
 {
     nbrPlayers = nbrP;
 }
-void Game::setArrayPlayers(vector<Player*> newArrayPl)
+void Game::setArrayPlayers(vector<Player*>& newArrayPl)
 {
-
+    arrayPlayers = newArrayPl;
 }
 
 //Function to read all files from a given folder taken from:
@@ -40,11 +43,11 @@ static list<string> getNameOfFiles(const char *path)
     struct dirent *entry;
     DIR *directory = opendir(path);
     //If we cannot open the directory, we simply return an empty list of names
-    if (directory == NULL) 
+    if (directory == nullptr)
     {
         return list<string>();
     }
-    while ((entry = readdir(directory)) != NULL) 
+    while ((entry = readdir(directory)) != nullptr)
     {
         string currentFileName = entry->d_name;
         if(currentFileName != "." && currentFileName != "..") {
@@ -56,7 +59,6 @@ static list<string> getNameOfFiles(const char *path)
 }
 static Graph* getMap(string* mapName, list<string> listOfMapFiles)
 {
-    Game currentGame;
     cout << "Here is the list of available map files. Choose a map by entering the number associating with the one you want." << endl;
     int i = 0;
     int indexMapChosen = -1;
@@ -68,7 +70,8 @@ static Graph* getMap(string* mapName, list<string> listOfMapFiles)
     }
     cout << endl;
     bool validIndexMap = false;
-    while(!validIndexMap)
+    Parser* parse1;
+    do
     {
         cout << "Map chosen: ";
         cin >> indexMapChosen;
@@ -86,50 +89,62 @@ static Graph* getMap(string* mapName, list<string> listOfMapFiles)
             *mapName = *it;
             cout << "You chose the map " << *mapName << endl;
             cout << "We will check if that map is a valid one." << endl;
-            Parser parse1(MAPS_FOLDER + *mapName);
+            parse1 = new Parser(MAPS_FOLDER + *mapName);
             cout << "Is parse1 a valid map ? : ";
-            if (parse1.mapIsValid()) {
+            if (parse1->mapIsValid()) {
                 cout << "Yes, both the entire map as a whole and each continent are connected.\n";
                 validIndexMap = true;
-                return parse1.getGraph();
             }
             else {
                 cout << "No, the graph and/or some of the continents are not strongly connected.\n";
                 validIndexMap = false;
             }
         }
-    }
+    } while(!validIndexMap);
+    Graph *mapC = parse1->getGraph();
+    delete parse1;
+    return mapC;
 }
 static int getNbrPlayers()
 {
     int nbrPlayers;
-    while(nbrPlayers < 0 || nbrPlayers > 7) {
+    do {
         cout << "How many players are playing the game? (2-6 players)";
         cin >> nbrPlayers;
         if(nbrPlayers < 0 || nbrPlayers > 7)
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
-    }
+    } while(nbrPlayers < 0 || nbrPlayers > 7);
 }
 static vector<Player*>* getPlayers(int np)
 {
-    vector<Player*>* pl;
+    vector<Player*>* pl = new vector<Player*>;
     pl->reserve(np);
     for(int i = 0; i < np; i++)
     {
         pl->push_back(new Player());
     }
+    return pl;
 }
-static Game beingGame(list<string> listOfMapFiles)
-{
-    string mapName;
-    Graph mapOfTheGame = *getMap(&mapName, listOfMapFiles);
-    int nbrPlayers = getNbrPlayers();
-    vector<Player*> players = *(getPlayers(nbrPlayers));
-    return Game(mapName, nbrPlayers, players, mapOfTheGame);
-}
-
-int main()
+Game::Game()
 {
     list<string> mapFiles = getNameOfFiles("..\\maps");
-    Game riskGame = beingGame(mapFiles);
+    this->mapCountries = *getMap(&this->mapName, mapFiles);
+    this->nbrPlayers = getNbrPlayers();
+    this->arrayPlayers = *(getPlayers(nbrPlayers));
+    if(nbrPlayers != arrayPlayers.size())
+    {
+        cout << "The number of players (" << nbrPlayers << " and "
+             << "the number of players creater (" + arrayPlayers.size()
+             << "is not equivalent. We will exit the program." << endl;
+        exit (EXIT_FAILURE);
+    }
+}
+
+//Main for Part 1
+int main()
+{
+    /*The constructor verifies that the map loaded is valid.
+    Invalid maps are rejected without the program crashing.
+    Also, we check that the right number of players is created inside the constructor as well.*/
+    Game riskGame;
 }

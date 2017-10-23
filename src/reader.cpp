@@ -64,6 +64,8 @@ vector<string> Opener::readLines() {
 	return lines;
 }
 
+Parser::Parser(){}
+
 //Constructor for the Parser, which will instantiate pointers to the map(graph) and a list of all the continents within it
 Parser::Parser(string fileName) {
 	Opener mapFile(fileName);
