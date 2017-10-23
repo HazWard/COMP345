@@ -75,11 +75,7 @@ Parser::Parser(string fileName) {
 
     vector<string> lines = mapFile.readLines();
 
-	if(lines.empty()) {
-		error = true;
-	} else {
-		error = false;
-	}
+	error = lines.empty() ? true : false;
 	if (!error) {
 		int territoryStart = -1;
 		int continentStart = -1;
@@ -192,6 +188,7 @@ bool Parser::graphIsConnected()
 {
 	return graph->isGraphConnected();
 }
+
 bool Parser::continentsAreConnected()
 {
 	map<string, Graph>::reverse_iterator rit;

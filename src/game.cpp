@@ -1,7 +1,7 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
-#include<list>
+#include <list>
 #include <Windows.h>
 #include <random>
 #include <algorithm>

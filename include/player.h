@@ -32,6 +32,7 @@ class Player
         void addCountry(Node* newCountry);
         void setCountries(std::vector<Node*>* targetCountries);
         std::vector<Node*> getCountries();
+        static bool attack(Player* attacker, Player* defender, Country* attackingCountry, Country* defendingCountry);
     private:
         Hand* hand;
         Dice* dice;
