@@ -14,5 +14,6 @@ private:
     int nbrPlayers;
     vector<Player*> arrayPlayers;
     Graph mapCountries;
+    Deck mainDeck;
 };
 

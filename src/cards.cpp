@@ -67,6 +67,8 @@ Deck::Deck(int numberOfCountries){
 //Default constructor
 Deck::Deck() : numberOfCards(0), top(NULL) {}
 
+int Deck::getNumberOfCards() { return numberOfCards; }
+
 Deck::~Deck(){
     /**
         Destructor for the Deck class, iterates through the linked list and destroys every node.

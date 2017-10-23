@@ -35,6 +35,7 @@ class Deck{
         ~Deck();
         Card* draw();
         void display();
+        int getNumberOfCards();
 };
 
 class Hand{

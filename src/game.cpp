@@ -131,6 +131,7 @@ Game::Game()
     this->mapCountries = *getMap(&this->mapName, mapFiles);
     this->nbrPlayers = getNbrPlayers();
     this->arrayPlayers = *(getPlayers(nbrPlayers));
+    this->mainDeck = Deck(mapCountries.getNbrCountries());
     if(nbrPlayers != arrayPlayers.size())
     {
         cout << "The number of players (" << nbrPlayers << " and "
@@ -138,13 +139,20 @@ Game::Game()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
+    if(mainDeck.getNumberOfCards() != mapCountries.getNbrCountries())
+    {
+        cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
+             << "the number of countries in the map (" + mapCountries.getNbrCountries()
+             << "is not equivalent. We will exit the program." << endl;
+        exit (EXIT_FAILURE);
+    }
 }
 
 //Main for Part 1
-int main()
-{
+//int main()
+//{
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
     Also, we check that the right number of players is created inside the constructor as well.*/
-    Game riskGame;
-}
+//  Game riskGame;
+//}

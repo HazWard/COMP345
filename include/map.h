@@ -59,6 +59,7 @@ public:
 	void addNode(Node &n);
 	void addEdge(Node& n1, Node& n2);
 	vector<Node>* getVectorOfNodes();
+	int getNbrCountries();
 	bool isGraphConnected();
 	friend std::ostream& operator <<(std::ostream& stream, Graph& g);
 };

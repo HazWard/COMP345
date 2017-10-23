@@ -178,6 +178,8 @@ void Graph::addEdge(Node& n1, Node& n2)
 //Not used in current implementation
 vector<Node>* Graph::getVectorOfNodes() { return &vectorOfNodes; }
 
+int Graph::getNbrCountries() { return nbrVert; };
+
 std::ostream& operator << (std::ostream& stream, Graph& g)
 {
 	/*
