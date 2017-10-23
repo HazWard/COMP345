@@ -3,7 +3,11 @@
 #include <iostream>
 #include<list>
 #include <Windows.h>
+#include <random>
+#include <algorithm>
+
 /*
+#include <cstdlib>
 #include<string.h>
 #include<fstream>
 #include<dirent.h>
@@ -57,7 +61,7 @@ static list<string> getNameOfFiles(const char *path)
     closedir(directory);
     return listOfMapFiles;
 }
-static Graph* getMap(string* mapName, list<string> listOfMapFiles)
+static Graph* getMapUser(string* mapName, list<string> listOfMapFiles)
 {
     cout << "Here is the list of available map files. Choose a map by entering the number associating with the one you want." << endl;
     int i = 0;
@@ -105,7 +109,7 @@ static Graph* getMap(string* mapName, list<string> listOfMapFiles)
     delete parse1;
     return mapC;
 }
-static int getNbrPlayers()
+static int getNbrPlayersUser()
 {
     int nbrPlayers;
     do {
@@ -115,7 +119,7 @@ static int getNbrPlayers()
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
     } while(nbrPlayers < 0 || nbrPlayers > 7);
 }
-static vector<Player*>* getPlayers(int np)
+static vector<Player*>* getPlayersUser(int np)
 {
     vector<Player*>* pl = new vector<Player*>;
     pl->reserve(np);
@@ -128,9 +132,9 @@ static vector<Player*>* getPlayers(int np)
 Game::Game()
 {
     list<string> mapFiles = getNameOfFiles("..\\maps");
-    this->mapCountries = *getMap(&this->mapName, mapFiles);
-    this->nbrPlayers = getNbrPlayers();
-    this->arrayPlayers = *(getPlayers(nbrPlayers));
+    this->mapCountries = *getMapUser(&this->mapName, mapFiles);
+    this->nbrPlayers = getNbrPlayersUser();
+    this->arrayPlayers = *(getPlayersUser(nbrPlayers));
     this->mainDeck = Deck(mapCountries.getNbrCountries());
     if(nbrPlayers != arrayPlayers.size())
     {
@@ -147,12 +151,87 @@ Game::Game()
         exit (EXIT_FAILURE);
     }
 }
+//ACCESSOR METHODS
+string Game::getMapName() { return mapName; }
 
+int Game::getNbrPlayers() { return nbrPlayers; }
+
+vector<Player*> Game::getArrayPlayers() { return arrayPlayers; }
+
+Graph Game::getMapCountries() { return mapCountries; }
+
+Deck Game::getMainDeck() { return mainDeck; }
+
+void Game::determinePlayerTurn() {
+    vector<Player*> oldPlayerOrder = arrayPlayers;
+    arrayPlayers.clear();
+    vector<int> indicesOrder = vector<int>();
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        bool newIndex = false;
+        while(!newIndex) {
+            random_device rd;
+            srand(rd());
+            int indexPlayer = rand() % (nbrPlayers - 1); //indexPlayer in the range 0 to nbrPlayers-1
+            vector<int>::iterator it;
+            it = find(indicesOrder.begin(), indicesOrder.end(), indexPlayer);
+            if (it != indicesOrder.end()) {
+                indicesOrder.push_back(indexPlayer);
+                newIndex = true;
+            }
+            else newIndex = false;
+        }
+        arrayPlayers.push_back(oldPlayerOrder[newIndex]);
+    }
+}
+/*
+void Game::assignCountriesToPlayers()
+{
+    vector<Node>* listOfNodes = this->mapCountries.getVectorOfNodes();
+    list<Node*> countriesToAssign;
+    for(int i = 0; i < listOfNodes->size(); i++)
+    {
+        countriesToAssign.push_back(&(*listOfNodes)[i]);
+    }
+    for(int nbrCountriesAssigned = 0; nbrCountriesAssigned < countriesToAssign.size(); nbrCountriesAssigned++)
+    {
+        for(int i = 0; i < this->arrayPlayers.size(); i++)
+        {
+            int remainingNbrCountries = countriesToAssign.size();
+            random_device rd;
+            srand(rd());
+            int indexRandCountry = rand() % (remainingNbrCountries - 1); //indexPlayer in the range 0 to nbrPlayers-1
+            this->arrayPlayers[i]->addCountry();
+        }
+    }
+}
+*/
+//Main for Part 2
+int main()
+{
+    /*The constructor verifies that the map loaded is valid.
+    Invalid maps are rejected without the program crashing.
+    Also, we check that the right number of players is created inside the constructor as well.*/
+    Game riskGame;
+    /*
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*> players = riskGame.getArrayPlayers();
+    for(int i = 0; i < players.size(); i++)
+    {
+        cout << *players[i]. << endl;
+    }
+    riskGame.determinePlayerTurn();
+    for(int i = 0; i < players.size(); i++)
+    {
+        cout << *players[i] << endl;
+    }*/
+
+}
 //Main for Part 1
 //int main()
 //{
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
     Also, we check that the right number of players is created inside the constructor as well.*/
-//  Game riskGame;
+//    Game riskGame;
 //}

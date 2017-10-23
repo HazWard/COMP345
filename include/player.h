@@ -29,6 +29,7 @@ class Player
         void setHand(Hand* targetHand);
         Hand* getHand();
         void setDice(Dice* targetDice);
+        void addCountry(Node* newCountry);
         void setCountries(std::vector<Node*>* targetCountries);
         std::vector<Node*> getCountries();
     private:

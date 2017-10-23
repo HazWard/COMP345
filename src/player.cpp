@@ -55,6 +55,11 @@ void Player::setCountries(std::vector<Node *> *targetCountries)
     }
 }
 
+void Player::addCountry(Node* newCountry)
+{
+    this->countries.push_back(newCountry);
+}
+
 std::vector<Node*> Player::getCountries()
 {
     return this->countries;

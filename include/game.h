@@ -9,6 +9,13 @@ public:
     void setMap(Graph& newMap);
     void setNbrPlayers(int nbrP);
     void setArrayPlayers(vector<Player*>&);
+    void determinePlayerTurn();
+    void assignCountriesToPlayers();
+    string getMapName();
+    int getNbrPlayers();
+    vector<Player*> getArrayPlayers();
+    Graph getMapCountries();
+    Deck getMainDeck();
 private:
     string mapName;
     int nbrPlayers;
