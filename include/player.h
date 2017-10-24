@@ -4,13 +4,11 @@
     Date of creation: September 14, 2017
     Description: Header file for Risk player
 */
-
+#pragma once
 #include <list>
 #include "../include/cards.h"
 #include "../include/dice.h"
 #include "../include/map.h"
-
-#pragma once
 
 class Player
 {
@@ -36,6 +34,7 @@ class Player
         void setNodes(std::list<Node*>* targetNodes);
         void setDice(Dice* targetDice);
         void addNode(Node* newNode);
+        bool controlsAllCountriesInMap(Graph& map);
     private:
         string name;
         Hand* hand;

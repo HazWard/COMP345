@@ -1,0 +1,70 @@
+[Map]
+
+image=Hasbro's LOTR Risk.bmp
+
+author=Rob Werhand
+
+warn=yes
+
+wrap=no
+
+scroll=none
+
+[Continents]
+
+Arnor=7
+Rhovanion=5
+Rohan=5
+Mirkwood=4
+Eriador=3
+Rhun=2
+
+[Territories]
+
+North Rhun,790,120,Rhun,Withered Heath,South Rhun,Forodwaith
+Withered Heath,720,160,Rhun,North Rhun,Esgaroth,Forodwaith
+Esgaroth,710,280,Rhun,Withered Heath,North Mirkwood
+South Rhun,790,340,Rhun,North Rhun,Brown Lands
+
+North Mirkwood,640,260,Mirkwood,Esgaroth,Carrock,Eastern Mirkwood
+Carrock,580,250,Mirkwood,North Mirkwood,Anduin Valley,Eastern Angmar,Rhudaur
+Eastern Mirkwood,660,390,Mirkwood,North Mirkwood,Anduin Valley,South Mirkwood,Brown Lands
+Anduin Valley,610,440,Mirkwood,Carrock,Eastern Mirkwood,South Mirkwood,Emyn Muil,Gladden Fields
+South Mirkwood,660,500,Mirkwood,Eastern Mirkwood,Anduin Valley,Brown Lands,Emyn Muil
+
+Rhun Hills,790,640,Rhovanion,Brown Lands
+Brown Lands,700,580,Rhovanion,Rhun Hills,Emyn Muil,Dead Marshes,South Rhun,Eastern Mirkwood,South Mirkwood
+Emyn Muil,640,630,Rhovanion,Brown Lands,Dead Marshes,The Wold,Anduin Valley,South Mirkwood
+Dead Marshes,620,770,Rhovanion,Brown Lands,Emyn Muil
+The Wold,560,660,Rhovanion,Emyn Muil,Lorien,Fangorn,Gap of Rohan
+Lorien,520,550,Rhovanion,The Wold,Gladden Fields,Fangorn
+Gladden Fields,550,450,Rhovanion,Lorien,Moria,Anduin Valley
+Moria,490,460,Rhovanion,Gladden Fields,Eregior
+
+Minhiriath,290,520,Rohan,Dunlan,Enedwaith,South Downs,Forodwaith,Mithlond
+Dunlan,390,540,Rohan,Minhiriath,Eregior,Enedwaith
+Eregior,450,430,Rohan,Dunlan,Moria,Rhudaur
+Enedwaith,370,650,Rohan,Minhiriath,Dunlan,Gap of Rohan
+Fangorn,470,680,Rohan,Gap of Rohan,The Wold,Lorien
+Gap of Rohan,470,780,Rohan,Enedwaith,Fangorn,West Rohan,The Wold
+West Rohan,350,760,Rohan,Gap of Rohan
+
+Forodwaith,550,100,Arnor,Eastern Angmar,Angmar,Borderlands,North Rhun,Withered Heath,Mithlond,Minhiriath
+Eastern Angmar,550,150,Arnor,Forodwaith,Carrock
+Angmar,450,190,Arnor,Forodwaith,Borderlands
+Borderlands,430,250,Arnor,Forodwaith,Angmar,North Downs,Fornost,Weather Hills,Lune Valley,Evendim Hills
+North Downs,370,250,Arnor,Borderlands,Fornost
+Fornost,350,310,Arnor,Borderlands,North Downs,Weather Hills,Old Forest,Buckland
+Weather Hills,420,320,Arnor,Borderlands,Fornost,Rhudaur,Old Forest,South Downs
+Rhudaur,500,290,Arnor,Weather Hills,Carrock,Eregior
+Buckland,330,380,Arnor,Fornost,Old Forest,South Downs,The Shire
+Old Forest,370,370,Arnor,Fornost,Weather Hills,Buckland,South Downs
+South Downs,360,440,Arnor,Weather Hills,Buckland,Old Forest,Minhiriath
+
+Lune Valley,280,180,Eriador,Evendim Hills,Tower Hills,Mithlond,Borderlands
+Evendim Hills,290,230,Eriador,Lune Valley,Tower Hills,Borderlands
+Forlindon,120,250,Eriador,Mithlond
+Mithlond,170,300,Eriador,Lune Valley,Forlindon,Tower Hills,Haarlindon,Forodwaith,Minhiriath
+Tower Hills,260,310,Eriador,Lune Valley,Evendim Hills,Mithlond,The Shire
+The Shire,280,420,Eriador,Tower Hills,Buckland
+Haarlindon,160,470,Eriador,Mithlond
