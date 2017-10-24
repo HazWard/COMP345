@@ -4,22 +4,15 @@
 #include<list>
 #include <random>
 #include <algorithm>
-#include <climits>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
 const string MAPS_FOLDER = "../maps/";
 
-/*
-Game::Game(): mapName(""), nbrPlayers(0), arrayPlayers(vector<Player*>()), mapCountries()
-{ }
-
-Game::Game(string mapName, int np, vector<Player*> pl, Graph m): mapName(mapName), nbrPlayers(np),
-                                                                 arrayPlayers(pl), mapCountries(m)
-{ }*/
-
-void Game::setMap(Graph &newMap) {
+void Game::setMap(Graph& newMap)
+{
     mapCountries = newMap;
 }
 
@@ -34,7 +27,8 @@ void Game::setArrayPlayers(vector<Player *> &newArrayPl) {
 ////Why are we reading all files? - Emilio
 //Function to read all files from a given folder taken from:
 //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-static list<string> getNameOfFiles(const char *path) {
+list<string> Game::getNameOfFiles(const char *path)
+{
     list<string> listOfMapFiles;
     struct dirent *entry;
     DIR *directory = opendir(path);
@@ -51,11 +45,9 @@ static list<string> getNameOfFiles(const char *path) {
     closedir(directory);
     return listOfMapFiles;
 }
-
-static Graph *getMapUser(string *mapName, list<string> listOfMapFiles) {
-    cout
-            << "Here is the list of available map files. Choose a map by entering the number associating with the one you want."
-            << endl;
+void Game::getMapUser(list<string> listOfMapFiles)
+{
+    cout << "Here is the list of available map files. Choose a map by entering the number associating with the one you want." << endl;
     int i = 0;
     int indexMapChosen = -1;
     list<string>::const_iterator iterator;
@@ -77,10 +69,10 @@ static Graph *getMapUser(string *mapName, list<string> listOfMapFiles) {
         } else {
             list<string>::iterator it = listOfMapFiles.begin();
             advance(it, indexMapChosen);
-            *mapName = *it;
-            cout << "You chose the map " << *mapName << endl;
+            mapName = *it;
+            cout << "You chose the map " << mapName << endl;
             cout << "We will check if that map is a valid one." << endl;
-            parse1 = new Parser(MAPS_FOLDER + *mapName);
+            parse1 = new Parser(MAPS_FOLDER + mapName);
             cout << "Is parse1 a valid map ? : ";
             if (parse1->mapIsValid()) {
                 cout << "Yes, both the entire map as a whole and each continent are connected.\n";
@@ -90,27 +82,25 @@ static Graph *getMapUser(string *mapName, list<string> listOfMapFiles) {
                 validIndexMap = false;
             }
         }
-    } while (!validIndexMap);
-    Graph *mapC = parse1->getGraph();
+    } while(!validIndexMap);
+    this->mapCountries = *parse1->getGraph();
+    this->continents = *parse1->getContinents();
     delete parse1;
-    return mapC;
 }
-
-static int getNbrPlayersUser() {
+int Game::getNbrPlayersUser()
+{
     int nbrPlayers;
     do {
         cout << "How many players are playing the game? (2-6 players)";
         cin >> nbrPlayers;
-        if(nbrPlayers < 0 || nbrPlayers > 6)
+        if(nbrPlayers < 2 || nbrPlayers > 6)
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
-    } while(nbrPlayers < 0 || nbrPlayers > 6);
+    } while(nbrPlayers < 2 || nbrPlayers > 6);
 }
-
-static vector<Player *> *getPlayersUser(int np) {
-    vector<Player *> *pl = new vector<Player *>;
+vector<Player*>* Game::getPlayersUser(int np)
+{
+    vector<Player*>* pl = new vector<Player*>;
     pl->reserve(np);
-    for (int i = 0; i < np; i++) {
-        pl->push_back(new Player());
     cin.ignore();
     string namePlayer;
     for(int i = 0; i < np; i++)
@@ -124,7 +114,7 @@ static vector<Player *> *getPlayersUser(int np) {
 
 Game::Game() {
     list<string> mapFiles = getNameOfFiles("..\\maps");
-    this->mapCountries = *getMapUser(&this->mapName, mapFiles);
+	getMapUser(mapFiles);
     this->nbrPlayers = getNbrPlayersUser();
     this->arrayPlayers = *(getPlayersUser(nbrPlayers));
     this->mainDeck = Deck(mapCountries.getNbrCountries());
@@ -136,7 +126,7 @@ Game::Game() {
     }
     if (mainDeck.getNumberOfCards() != mapCountries.getNbrCountries()) {
         cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
-             << "the number of countries in the map (" + mapCountries.getNbrCountries()
+             << "the number of nodes in the map (" + mapCountries.getNbrCountries()
              << "is not equivalent. We will exit the program." << endl;
         exit(EXIT_FAILURE);
     }
@@ -153,9 +143,15 @@ Graph Game::getMapCountries() { return mapCountries; }
 
 Deck Game::getMainDeck() { return mainDeck; }
 
+map<string, Graph>* Game::getContinents() { return &continents; };
+
 void Game::determinePlayerTurn() {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    shuffle (arrayPlayers.begin(), arrayPlayers.end(), std::default_random_engine(seed));
+    /*
     srand ( unsigned ( std::time(0) ) );
     random_shuffle ( arrayPlayers.begin(), arrayPlayers.end() );
+     */
 }
 /*
  * //Old Player Turn:
@@ -185,32 +181,110 @@ for(int j = 0; j < nbrPlayers; j++) {
     cout << arrayPlayers[j]->getName();
 }
  */
+//The following method has been provided by:
+//http://rextester.com/HHTW39678
+//http://www.cplusplus.com/forum/general/207328/
+template <class T > void listShuffle( list<T> &L )
+{
+    mt19937 gen( chrono::system_clock::now().time_since_epoch().count() );
+    vector<T> V( L.begin(), L.end() );
+    shuffle( V.begin(), V.end(), gen );
+    L.assign( V.begin(), V.end() );
+}
 
 void Game::assignCountriesToPlayers()
 {
     vector<Node>* listOfNodes = this->mapCountries.getVectorOfNodes();
-    list<Node*> countriesToAssign;
+    list<Node*> nodesToAssign;
     for(int i = 0; i < listOfNodes->size(); i++)
-    {
-        countriesToAssign.push_back(&(*listOfNodes)[i]);
-    }
-    for(int nbrCountriesAssigned = 0; nbrCountriesAssigned < countriesToAssign.size(); nbrCountriesAssigned++)
-    {
-        for(int i = 0; i < this->arrayPlayers.size(); i++)
-        {
-            int remainingNbrCountries = countriesToAssign.size();
-            random_device rd;
-            srand(rd());
-            int indexRandCountry = rand() % (remainingNbrCountries - 1); //indexPlayer in the range 0 to nbrPlayers-1
+        nodesToAssign.push_back(&(*listOfNodes)[i]);
 
-            list<Node*>::const_iterator iterator;
-            for (iterator = countriesToAssign.begin(); iterator != countriesToAssign.end(); ++iterator)
-            {
-
+    while(!nodesToAssign.empty()) {
+            for (int i = 0; i < this->arrayPlayers.size(); i++) {
+                listShuffle(nodesToAssign);
+                if(nodesToAssign.front() != NULL) {
+                    arrayPlayers[i]->addNode(nodesToAssign.front());
+                    nodesToAssign.pop_front();
+                }
             }
-            this->arrayPlayers[i];
+        }
+}
+
+void Game::placeArmies()
+{
+    int nbrArmiesPerPlayer = 0;
+    switch(nbrPlayers)
+    {
+        case 2: nbrArmiesPerPlayer = 40; break;
+        case 3: nbrArmiesPerPlayer = 35; break;
+        case 4: nbrArmiesPerPlayer = 30; break;
+        case 5: nbrArmiesPerPlayer = 25; break;
+        case 6: nbrArmiesPerPlayer = 20; break;
+    }
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        int nbrArmiesPlayer = nbrArmiesPerPlayer;
+        while(nbrArmiesPlayer > 0) {
+            bool validCountryName = false;
+            Country *c;
+            do {
+                cout << arrayPlayers[i]->getName() << " has " << nbrArmiesPlayer
+                     << " armies to place. Please choose the name of the country you want to place some armies on."
+                     << endl;
+                int k = 1;
+
+                for (auto const &node : arrayPlayers[i]->getNodes()) {
+                    cout << k << ": " << node->getCountry().getName() << endl;
+                    k++;
+                }
+                string chosenCountry;
+                getline(cin, chosenCountry);
+
+                for (auto const &node2 : arrayPlayers[i]->getNodes()) {
+                    string name = node2->getCountry().getName();
+                    if (name == chosenCountry) {
+                        c = node2->getPointerToCountry();
+                        validCountryName = true;
+                        break;
+                    }
+                }
+                if(!validCountryName)
+                    cout << "You did not enter a valid country name from the list. Please make sure to enter it properly." << endl;
+            } while(!validCountryName);
+            int nbrArmiesToPut = 0;
+            cout << "Please enter the number of armies to put on country " << c->getName() << ": ";
+            cin >> nbrArmiesToPut;
+            cin.ignore();
+
+            if(nbrArmiesPlayer >= nbrArmiesToPut && nbrArmiesToPut >= 0) {
+                nbrArmiesPlayer -= nbrArmiesToPut;
+                c->setNbrArmies(c->getNbrArmies() + nbrArmiesToPut);
+            } else cout << "There is not enough armies available to player " << arrayPlayers[i]->getName() << ", we cannot do this." << endl;
+            if(nbrArmiesPlayer == 0) {
+                cout << arrayPlayers[i]->getName()
+                     << " has successfully placed all of their armies. We will go to the next player." << endl;
+            }
         }
     }
+    if(verifyPlayerArmiers(nbrArmiesPerPlayer))
+        cout << endl << "All players have successfully placed their armies.\n";
+    else {
+        cout << "There was an error: Each player has not placed " << nbrArmiesPerPlayer << " armies.\n";
+        exit(EXIT_FAILURE);
+    }
+}
+bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
+{
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        int nbrArmies = 0;
+        for (auto const& node : arrayPlayers[i]->getNodes()) {
+            nbrArmies += node->getCountry().getNbrArmies();
+        }
+        if(nbrArmies != nbrArmiesPerPlayer)
+            return false;
+    }
+    return true;
 }
 
 //Main for Part 2
@@ -228,19 +302,42 @@ int main()
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
 
+    map<string, Graph>* cont = riskGame.getContinents();
+
+    map<string, Graph>::reverse_iterator rit;
+    for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
+    {
+        cout << rit->second;
+    }
     cout << "Player order before we randomize the order:" << endl;
     for(int i = 0; i < players->size(); i++)
     {
-        cout << (*players)[i]->getName() << endl;
+        cout << (*players)[i]->getName() << " ";
     }
+    cout << endl;
 
     riskGame.determinePlayerTurn();
 
     cout << "Player order after we randomize the order:" << endl;
     for(int i = 0; i < players->size(); i++)
     {
-        cout << (*players)[i]->getName() << endl;
+        cout << (*players)[i]->getName() << " ";
     }
+    cout << endl << endl;
+
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    delete players;
+    delete cont;
+
+    return 0;
 }
 //Main for Part 1
 //int main()
