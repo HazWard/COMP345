@@ -2,8 +2,7 @@
 #include "../include/player.h"
 #pragma once
 
-class Game
-{
+class Game {
 public:
     Game();
     void setMap(Graph& newMap);
