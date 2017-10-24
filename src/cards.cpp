@@ -69,10 +69,9 @@ Deck::Deck() : numberOfCards(0), top(NULL) {}
 
 int Deck::getNumberOfCards() { return numberOfCards; }
 
+/*
 Deck::~Deck(){
-    /**
-        Destructor for the Deck class, iterates through the linked list and destroys every node.
-    */
+        //Destructor for the Deck class, iterates through the linked list and destroys every node.
     Card *temp = top;
     while(temp != NULL){
         temp = temp->next;
@@ -80,7 +79,7 @@ Deck::~Deck(){
         top = temp;
     }
     temp = NULL;
-}
+}*/
 
 Card* Deck::draw(){
     /**

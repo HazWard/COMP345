@@ -9,21 +9,16 @@ using namespace std;
 
 bool Country::operator == (Country& c)const
 {
-	/*
-	Overloading the == operator for Country objects, equivalent of .equals() in Java
-	*/
-	if (this->name == c.name)
-		return true;
-	return false;
+	//Overloading the == operator for Country objects, equivalent of .equals() in Java
+	return (this->name == c.name);
 }
 
 bool Country::operator==(Country c)const
 {
-	if (this->name == c.name)
-		return true;
-	return false;
+    //Overloading the == operator for Country objects, equivalent of .equals() in Java
+	return this->name == c.name;
 }
-
+//The << operator is overloaded for Country to be able to print Country objects
 std::ostream& operator<< (std::ostream& stream, Country& c)
 {
 	/*
@@ -38,6 +33,7 @@ std::ostream& operator<< (std::ostream& stream, Country& c)
 //Default constructor, never used but necessary
 Country::Country() : name(""), nbrArmies(0) {}
 
+//Full parameterized constructor
 Country::Country(string n, string cont, int nbrArm) : name(n), continent(cont), nbrArmies(nbrArm) {}
 
 //More lightweight default constructor, actually used for loading map files
@@ -69,6 +65,8 @@ vector<Node*> Node::getAdjList() { return adjList; }
 
 bool Node::isVisited() { return visited; }
 
+Country* Node::getPointerToCountry() { return &country; }
+
 //-- MUTATOR METHODS --
 void Node::setAdjList(vector<Node*> newAdjList)
 {
@@ -82,6 +80,7 @@ void Node::setAdjList(vector<Node*> newAdjList)
 
 void Node::setVisited(bool v) { this->visited = v; }
 
+//Method used to add a pointer to a node to the ajacency list of this node
 void Node::addNode(Node& n)
 {
 	for (size_t i = 0; i < adjList.size(); i++)
@@ -93,13 +92,14 @@ void Node::addNode(Node& n)
 	this->adjList.push_back(&n);
 }
 
+//The << operator is overloaded for Country to be able to print Country objects
 std::ostream& operator << (std::ostream& stream, Node& n)
 {
 	/*
 	Overloading the << operator for Node class, used to print out information about Nodes
 	*/
 	stream << "Info of the node:\n" << n.country;
-	stream << "Adjacent countries: ";
+	stream << "Adjacent nodes: ";
 
 	for (int i = 0; i < n.adjList.size(); i++)
 	{
@@ -111,11 +111,10 @@ std::ostream& operator << (std::ostream& stream, Node& n)
 	return stream;
 }
 
-//Constructor for Graph 
+//Default constructor for Graph
 Graph::Graph() : nbrVert(0) { }
 
-Graph::Graph(int v) : nbrVert(v) { vectorOfNodes.reserve(v); }
-
+//Parameterized constructor for Graph.
 Graph::Graph(int v, vector<Node>& nodes) : nbrVert(v)
 {
 	/*
@@ -133,28 +132,15 @@ Graph::Graph(int v, vector<Node>& nodes) : nbrVert(v)
 	}
 }
 
-Graph::Graph(int v, Node* arrayOfNodes) : nbrVert(v)
-{
-	/*
-	This constructor is passed a pointer to an array of nodes, and a number of nodes we are adding
-	to the graph.
-	CURRENTLY DEPRECATED DUE TO LIMITATIONS OF ARRAYS
-	*/
-	try {
-		for (int i = 0; i < v; i++)
-			vectorOfNodes.push_back(arrayOfNodes[i]);
-	}
-	catch (const std::exception& e) {
-		cout << "The number of nodes in the node vector is not as expected." << endl;
-	}
-}
-
+//Method to add a node to the graph. Used when we use the default constructor for Graph and add nodes to it
 void Graph::addNode(Node& n)
 {
 	vectorOfNodes.push_back(n);
 	nbrVert = vectorOfNodes.size();
 }
 
+//Method to add an edge between two nodes in the graph.
+//It uses the method addNode() of each node that are to be connected.
 void Graph::addEdge(Node& n1, Node& n2)
 {
 	/*
@@ -174,29 +160,32 @@ void Graph::addEdge(Node& n1, Node& n2)
 }
 
 //--ACCESSOR METHODS--
-
-//Not used in current implementation
 vector<Node>* Graph::getVectorOfNodes() { return &vectorOfNodes; }
 
 int Graph::getNbrCountries() { return nbrVert; };
 
+//The << operator is overloaded for Graph to be able to print Graph objects
+//it will print each node and its adjacency list to have a better representation of the Graph
 std::ostream& operator << (std::ostream& stream, Graph& g)
 {
 	/*
 	Overloading << operator to print out Graph objects.
 	*/
-	string output;
-	output.append("Info of this graph:\n");
-	output.append("Number of vertices: " + to_string(g.nbrVert) + "\n");
-	output.append("Array of nodes:\n");
-	std::stringstream buffer;
+	stream << "Info of this graph:\n";
+	stream << "Number of vertices: " << g.nbrVert << endl;
+	stream << "Array of nodes:\n";
 	for (size_t i = 0; i < g.vectorOfNodes.size(); i++)
 	{
-		buffer << g.vectorOfNodes[i] << "\n";
+		stream << g.vectorOfNodes[i] << "\n";
 	}
-	return stream << output << buffer.rdbuf();
+	return stream;
 }
 
+//Method used to check whether or not the Graph is a connected Graph.
+//If the recursive helper method visitAdjacentNodes() fails to mark all the nodes as visited,
+//then some nodes are not accessible from the initial node, meaning the Graph is not strongly connected and we return false.
+//A map has to be strongly connected so this method has to return true.
+//Else, the map is invalid.
 bool Graph::isGraphConnected()
 {
 	/*
@@ -229,6 +218,7 @@ bool Graph::isGraphConnected()
 	return graphIsConnected;
 }
 
+//Recursive helper method used to visit all the nodes accessible from the initial node and mark them as visited.
 void Graph::visitAdjacentNodes(vector<Node*> adjListNode)
 {
 	/*
