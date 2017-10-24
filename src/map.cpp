@@ -12,16 +12,12 @@ bool Country::operator == (Country& c)const
 	/*
 	Overloading the == operator for Country objects, equivalent of .equals() in Java
 	*/
-	if (this->name == c.name)
-		return true;
-	return false;
+	return (this->name == c.name);
 }
 
 bool Country::operator==(Country c)const
 {
-	if (this->name == c.name)
-		return true;
-	return false;
+	return this->name == c.name;
 }
 
 std::ostream& operator<< (std::ostream& stream, Country& c)
@@ -69,6 +65,8 @@ vector<Node*> Node::getAdjList() { return adjList; }
 
 bool Node::isVisited() { return visited; }
 
+Country* Node::getPointerToCountry() { return &country; }
+
 //-- MUTATOR METHODS --
 void Node::setAdjList(vector<Node*> newAdjList)
 {
@@ -99,7 +97,7 @@ std::ostream& operator << (std::ostream& stream, Node& n)
 	Overloading the << operator for Node class, used to print out information about Nodes
 	*/
 	stream << "Info of the node:\n" << n.country;
-	stream << "Adjacent countries: ";
+	stream << "Adjacent nodes: ";
 
 	for (int i = 0; i < n.adjList.size(); i++)
 	{

@@ -36,6 +36,7 @@ public:
 	Node(Country c, vector<Node*> adjList);
 	Country getCountry();
 	vector<Node*> getAdjList();
+    Country* getPointerToCountry();
 	bool isVisited();
 	void addNode(Node& n);
 	void setAdjList(vector<Node*> newAdjList);
