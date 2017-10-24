@@ -20,12 +20,15 @@ class Player
     */
     public:
         Player();
-        Player(Hand* playerHand, std::vector<Node*>* playerCountries);
+        Player(string n);
+        Player(string n, Hand* playerHand, std::vector<Node*>* playerCountries);
         ~Player();
         int roll(int nbOfDice);
         void reinforce();
         void attack();
         void fortify();
+        string getName();
+        void setName(string n);
         void setHand(Hand* targetHand);
         Hand* getHand();
         void setDice(Dice* targetDice);
@@ -33,6 +36,7 @@ class Player
         void setCountries(std::vector<Node*>* targetCountries);
         std::vector<Node*> getCountries();
     private:
+        string name;
         Hand* hand;
         Dice* dice;
         std::vector<Node*> countries;

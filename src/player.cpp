@@ -12,10 +12,13 @@
 #include "../include/map.h"
 
 // Constructors
-Player::Player() : hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
+Player::Player() : name(""), hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
 
-Player::Player(Hand* playerHand, std::vector<Node*>* playerCountries)
+Player::Player(string n) : name(n), hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
+
+Player::Player(string n, Hand* playerHand, std::vector<Node*>* playerCountries)
 {
+    this->setName(n);
     this->setHand(playerHand);
     this->setCountries(playerCountries);
     // Create the dice rolling facility for the Player
@@ -31,6 +34,12 @@ Player::~Player(void)
 }
 
 // Setters and Getters
+void Player::setName(string n)
+{
+    this->name = n;
+}
+string Player::getName() { return name; }
+
 void Player::setHand(Hand *targetHand)
 {
     this->hand = targetHand;

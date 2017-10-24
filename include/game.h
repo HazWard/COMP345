@@ -13,7 +13,7 @@ public:
     void assignCountriesToPlayers();
     string getMapName();
     int getNbrPlayers();
-    vector<Player*> getArrayPlayers();
+    vector<Player*>* getArrayPlayers();
     Graph getMapCountries();
     Deck getMainDeck();
 private:

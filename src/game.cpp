@@ -2,17 +2,10 @@
 #include <dirent.h>
 #include <iostream>
 #include<list>
-#include <Windows.h>
 #include <random>
 #include <algorithm>
-
-/*
-#include <cstdlib>
-#include<string.h>
-#include<fstream>
-#include<dirent.h>
-#include <vector>
-#include <map>*/
+#include <climits>
+#include <ctime>
 
 using namespace std;
 
@@ -115,17 +108,21 @@ static int getNbrPlayersUser()
     do {
         cout << "How many players are playing the game? (2-6 players)";
         cin >> nbrPlayers;
-        if(nbrPlayers < 0 || nbrPlayers > 7)
+        if(nbrPlayers < 0 || nbrPlayers > 6)
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
-    } while(nbrPlayers < 0 || nbrPlayers > 7);
+    } while(nbrPlayers < 0 || nbrPlayers > 6);
 }
 static vector<Player*>* getPlayersUser(int np)
 {
     vector<Player*>* pl = new vector<Player*>;
     pl->reserve(np);
+    cin.ignore();
+    string namePlayer;
     for(int i = 0; i < np; i++)
     {
-        pl->push_back(new Player());
+        cout << "Enter the name of player " << (i+1) << ": ";
+        getline(cin, namePlayer);
+        pl->push_back(new Player(namePlayer));
     }
     return pl;
 }
@@ -156,35 +153,45 @@ string Game::getMapName() { return mapName; }
 
 int Game::getNbrPlayers() { return nbrPlayers; }
 
-vector<Player*> Game::getArrayPlayers() { return arrayPlayers; }
+vector<Player*>* Game::getArrayPlayers() { return &arrayPlayers; }
 
 Graph Game::getMapCountries() { return mapCountries; }
 
 Deck Game::getMainDeck() { return mainDeck; }
 
 void Game::determinePlayerTurn() {
-    vector<Player*> oldPlayerOrder = arrayPlayers;
-    arrayPlayers.clear();
-    vector<int> indicesOrder = vector<int>();
-    for(int i = 0; i < nbrPlayers; i++)
-    {
-        bool newIndex = false;
-        while(!newIndex) {
-            random_device rd;
-            srand(rd());
-            int indexPlayer = rand() % (nbrPlayers - 1); //indexPlayer in the range 0 to nbrPlayers-1
-            vector<int>::iterator it;
-            it = find(indicesOrder.begin(), indicesOrder.end(), indexPlayer);
-            if (it != indicesOrder.end()) {
-                indicesOrder.push_back(indexPlayer);
-                newIndex = true;
-            }
-            else newIndex = false;
-        }
-        arrayPlayers.push_back(oldPlayerOrder[newIndex]);
-    }
+    srand ( unsigned ( std::time(0) ) );
+    random_shuffle ( arrayPlayers.begin(), arrayPlayers.end() );
 }
 /*
+ * //Old Player Turn:
+vector<Player*> oldPlayerOrder = arrayPlayers;
+arrayPlayers.clear();
+vector<int> indicesOrder = vector<int>();
+
+random_device rd;
+srand(rd());
+bool newIndex;
+for(int i = 0; i < nbrPlayers; i++) {
+    do {
+        newIndex = true;
+        int indexPlayer = rand() % (nbrPlayers); //indexPlayer in the range 0 to nbrPlayers-1
+        for (int j = 0; j < indicesOrder.size(); j++) {
+            if (indexPlayer == indicesOrder[j]) {
+                newIndex = false;
+                break;
+            }
+        }
+        if (newIndex)
+            indicesOrder.push_back(indexPlayer);
+    } while (indicesOrder.size() != nbrPlayers);
+}
+for(int j = 0; j < nbrPlayers; j++) {
+    arrayPlayers.push_back(oldPlayerOrder[indicesOrder[j]]);
+    cout << arrayPlayers[j]->getName();
+}
+ */
+
 void Game::assignCountriesToPlayers()
 {
     vector<Node>* listOfNodes = this->mapCountries.getVectorOfNodes();
@@ -201,31 +208,45 @@ void Game::assignCountriesToPlayers()
             random_device rd;
             srand(rd());
             int indexRandCountry = rand() % (remainingNbrCountries - 1); //indexPlayer in the range 0 to nbrPlayers-1
-            this->arrayPlayers[i]->addCountry();
+
+            list<Node*>::const_iterator iterator;
+            for (iterator = countriesToAssign.begin(); iterator != countriesToAssign.end(); ++iterator)
+            {
+
+            }
+            this->arrayPlayers[i];
         }
     }
 }
-*/
+
 //Main for Part 2
 int main()
 {
+    /*
+    random_device rd;
+    srand(rd());
+    int indexPlayer = rand()%6 + 1;
+    cout << indexPlayer << endl;*/
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
     Also, we check that the right number of players is created inside the constructor as well.*/
     Game riskGame;
-    /*
     //Determine player order and print them to check that the order changed (randomly)
-    vector<Player*> players = riskGame.getArrayPlayers();
-    for(int i = 0; i < players.size(); i++)
-    {
-        cout << *players[i]. << endl;
-    }
-    riskGame.determinePlayerTurn();
-    for(int i = 0; i < players.size(); i++)
-    {
-        cout << *players[i] << endl;
-    }*/
+    vector<Player*>* players = riskGame.getArrayPlayers();
 
+    cout << "Player order before we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << endl;
+    }
+
+    riskGame.determinePlayerTurn();
+
+    cout << "Player order after we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << endl;
+    }
 }
 //Main for Part 1
 //int main()
