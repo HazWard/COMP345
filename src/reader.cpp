@@ -10,74 +10,69 @@ using namespace std;
 
 const string MAPS_FOLDER = "../maps/";
 
-template<typename Out> //Needed for the split function
+template<typename Out>
+//Needed for the split function
 void split(const std::string &s, char delim, Out result) {
-	/*
-	This function helps us split lines from map files, seperating by any given delimiter.
-	*/
-	std::stringstream ss;
-	ss.str(s);
-	std::string item;
-	while (std::getline(ss, item, delim)) {
-		*(result++) = item;
-	}
+    /*
+    This function helps us split lines from map files, seperating by any given delimiter.
+    */
+    std::stringstream ss;
+    ss.str(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
 }
 
 vector<string> split(const string &s, char delim) {
-	/*
-	Called by the Graph creator, returns a line of the map where things are seperated
-	by the delimiter chosen.
-	*/
-	vector<string> elems;
-	split(s, delim, back_inserter(elems));
-	return elems;
+    /*
+    Called by the Graph creator, returns a line of the map where things are seperated
+    by the delimiter chosen.
+    */
+    vector<string> elems;
+    split(s, delim, back_inserter(elems));
+    return elems;
 }
 
 //Constructor for the Opener class
-Opener::Opener(string file) : fileName(file) { }
+Opener::Opener(string file) : fileName(file) {}
 
 vector<string> Opener::readLines() {
-	ifstream input;
-	input.open(fileName.c_str());
+    ifstream input;
+    input.open(fileName.c_str());
 
-	if (!input) {
-		cout << "File " << fileName << " could not be opened." << endl;
-		return std::vector<string>();
-	}
+    if (!input) {
+        cout << "File " << fileName << " could not be opened." << endl;
+        return std::vector<string>();
+    }
 
-	vector<string> lines;
-	string line;
+    vector<string> lines;
+    string line;
 
-	while (getline(input, line)) {
-		if (line.empty()) {
-			continue;
-		}
-		//cout << line;
-		lines.push_back(line);
-	}
+    while (getline(input, line)) {
+        if (line.empty()) {
+            continue;
+        }
+        //cout << line;
+        lines.push_back(line);
+    }
 
-	return lines;
+    return lines;
 }
 
-Parser::Parser(){}
+Parser::Parser() {}
 
 //Constructor for the Parser, which will instantiate pointers to the map(graph) and a list of all the continents within it
 Parser::Parser(string fileName) {
-	Opener mapFile(fileName);
+    Opener mapFile(fileName);
 
-	nodes = new vector<Node>;
-	continents = new map<string,Graph>;
+    nodes = new vector<Node>;
+    continents = new map<string, Graph>;
 
+    //Getting the list of lines from the map file
     vector<string> lines = mapFile.readLines();
 
-	if(lines.empty()) {
-		error = true;
-	} else {
-		error = false;
-	}
-	if (!error) {
-		int territoryStart = -1;
-		int continentStart = -1;
+    error = lines.empty() ? true : false;
 
 		for (int i = 0; i < lines.size(); i++)
 		{
@@ -108,76 +103,87 @@ Parser::Parser(string fileName) {
 			cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
 		}
 
-		for (int i = territoryStart; i < lines.size(); i++)
-		{
-			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
-			nodes->push_back(Node(Country(lineData[0], lineData[3], 0)));
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines[i].find("[Continents]") != std::string::npos) {
+                continentStart = (i + 1);
+                break;
+            }
+        }
+        //If we didn't find [Continents] within any lines, then the file is invalid
+        if (continentStart == -1) {
+            cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
+        }
+        for (int i = continentStart; i < lines.size(); i++) {
+            if (lines[i].find("[Territories]") != std::string::npos) {
+                territoryStart = (i + 1);
+                break;
+            }
+            vector<string> lineData = split(lines[i], '='); //splitting current line on '='
+            continents->insert(std::pair<string, Graph>(lineData[0], Graph(0)));
+        }
+        //If we didn't find [Territories] within any lines, then the file is invalid
+        if (territoryStart == -1) {
+            cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
+        }
 
-			map<string, Graph>::reverse_iterator rit;
-			for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
-			{
-				if (lineData[3] == rit->first)
-				{
-					Graph* graph_current_cont = &(rit->second);
-					Node temp = Node(Country(lineData[0], lineData[3], 0));
-					graph_current_cont->addNode(temp);
-				}
-			}
-		}
+        for (int i = territoryStart; i < lines.size(); i++) {
+            vector<string> lineData = split(lines[i], ','); //splitting current line on ','
+            nodes->push_back(Node(Country(lineData[0], lineData[3], 0)));
 
-		graph = new Graph(nodes->size(), *nodes);
+            map<string, Graph>::reverse_iterator rit;
+            for (rit = continents->rbegin(); rit != continents->rend(); ++rit) {
+                if (lineData[3] == rit->first) {
+                    Graph *graph_current_cont = &(rit->second);
+                    Node temp = Node(Country(lineData[0], lineData[3], 0));
+                    graph_current_cont->addNode(temp);
+                }
+            }
+        }
 
-		for (int i = territoryStart; i < lines.size(); i++) {
-			Node* currentNode = new Node;
-			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
+        graph = new Graph(nodes->size(), *nodes);
 
-			for (int k = 0; k < nodes->size(); k++) {
-				if ((*nodes)[k].getCountry().getName() == lineData[0]) {
-					currentNode = &(*nodes)[k];
-					break;
-				}
-			}
-			if (currentNode->getCountry().getName() != "")
-			{
-				Graph* currentContinent = NULL;
-				string currentContinentName = "";
-				map<string, Graph>::reverse_iterator rit;
-				for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
-				{
-					if (currentNode->getCountry().getContinent() == rit->first)
-					{
-						currentContinent = &(rit->second);
-						currentContinentName = rit->first;
-					}
-				}
+        for (int i = territoryStart; i < lines.size(); i++) {
+            Node *currentNode = new Node;
+            vector<string> lineData = split(lines[i], ','); //splitting current line on ','
 
-				bool currentContinentIsValid = currentContinent != NULL && currentContinentName != "";
-				for (int j = 4; j < lineData.size(); j++)
-				{
-					for (int k = 0; k < nodes->size(); k++)
-					{
-						if ((*nodes)[k].getCountry().getName() == lineData[j])
-						{
-							Node* add = &((*nodes)[k]);
-							graph->addEdge(*currentNode, *add);
-						}
-					}
-					if (currentContinentIsValid)
-					{
-						vector<Node>* nodesInCurrentContinent = currentContinent->getVectorOfNodes();
-						for (int k = 0; k < nodesInCurrentContinent->size(); k++)
-						{
-							if ((*nodesInCurrentContinent)[k].getCountry().getName() == lineData[j])
-							{
-								Node* add = &((*nodesInCurrentContinent)[k]);
-								currentContinent->addEdge(*currentNode, *add);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+            for (int k = 0; k < nodes->size(); k++) {
+                if ((*nodes)[k].getCountry().getName() == lineData[0]) {
+                    currentNode = &(*nodes)[k];
+                    break;
+                }
+            }
+            if (currentNode->getCountry().getName() != "") {
+                Graph *currentContinent = NULL;
+                string currentContinentName = "";
+                map<string, Graph>::reverse_iterator rit;
+                for (rit = continents->rbegin(); rit != continents->rend(); ++rit) {
+                    if (currentNode->getCountry().getContinent() == rit->first) {
+                        currentContinent = &(rit->second);
+                        currentContinentName = rit->first;
+                    }
+                }
+
+                bool currentContinentIsValid = currentContinent != NULL && currentContinentName != "";
+                for (int j = 4; j < lineData.size(); j++) {
+                    for (int k = 0; k < nodes->size(); k++) {
+                        if ((*nodes)[k].getCountry().getName() == lineData[j]) {
+                            Node *add = &((*nodes)[k]);
+                            graph->addEdge(*currentNode, *add);
+                        }
+                    }
+                    if (currentContinentIsValid) {
+                        vector<Node> *nodesInCurrentContinent = currentContinent->getVectorOfNodes();
+                        for (int k = 0; k < nodesInCurrentContinent->size(); k++) {
+                            if ((*nodesInCurrentContinent)[k].getCountry().getName() == lineData[j]) {
+                                Node *add = &((*nodesInCurrentContinent)[k]);
+                                currentContinent->addEdge(*currentNode, *add);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 /*
 //Destructor for the Parser class
