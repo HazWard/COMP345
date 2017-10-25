@@ -47,35 +47,33 @@ string Country::getContinent() { return continent; }
 int Country::getNbrArmies() { return nbrArmies; }
 
 //-- MUTATOR METHODS --
-void Country::setNbrArmies(int na) { nbrArmies = na;  }
+void Country::setNbrArmies(int na) { nbrArmies = na; }
 
 //Default constructor for Node class
-Node::Node() : country(), adjList(vector<Node*>()), visited(false) {}
+Node::Node() : country(), adjList(vector<Node *>()), visited(false) {}
 
 //Partial parameterized Constructor
-Node::Node(Country c) : country(c), adjList(vector<Node*>()), visited(false) {}
+Node::Node(Country c) : country(c), adjList(vector<Node *>()), visited(false) {}
 
 //Full parametrized Constructor, not used in current implementation
-Node::Node(Country c, vector<Node*> al) : country(c), adjList(al), visited(false) {}
+Node::Node(Country c, vector<Node *> al) : country(c), adjList(al), visited(false) {}
 
 //-- ACCESSOR METHODS --
 Country Node::getCountry() { return country; }
 
-vector<Node*> Node::getAdjList() { return adjList; }
+vector<Node *> Node::getAdjList() { return adjList; }
 
 bool Node::isVisited() { return visited; }
 
-Country* Node::getPointerToCountry() { return &country; }
+Country *Node::getPointerToCountry() { return &country; }
 
 //-- MUTATOR METHODS --
-void Node::setAdjList(vector<Node*> newAdjList)
-{
-	if (!adjList.empty())
-		adjList.clear();
-	for (size_t i = 0; i < newAdjList.size(); i++)
-	{
-		adjList.push_back(newAdjList[i]);
-	}
+void Node::setAdjList(vector<Node *> newAdjList) {
+    if (!adjList.empty())
+        adjList.clear();
+    for (size_t i = 0; i < newAdjList.size(); i++) {
+        adjList.push_back(newAdjList[i]);
+    }
 }
 
 void Node::setVisited(bool v) { this->visited = v; }
@@ -101,14 +99,13 @@ std::ostream& operator << (std::ostream& stream, Node& n)
 	stream << "Info of the node:\n" << n.country;
 	stream << "Adjacent nodes: ";
 
-	for (int i = 0; i < n.adjList.size(); i++)
-	{
-		stream << n.adjList[i]->getCountry().getName();
-		if (i < n.adjList.size() - 1)
-			stream << " -> ";
-	}
-	stream << "\n";
-	return stream;
+    for (int i = 0; i < n.adjList.size(); i++) {
+        stream << n.adjList[i]->getCountry().getName();
+        if (i < n.adjList.size() - 1)
+            stream << " -> ";
+    }
+    stream << "\n";
+    return stream;
 }
 
 //Default constructor for Graph
@@ -195,27 +192,24 @@ bool Graph::isGraphConnected()
 	bool graphIsConnected = true;
     if(vectorOfNodes.empty())
         return false;
-	vector<Node*> initialAdjListNode = vectorOfNodes[0].getAdjList();
-	visitAdjacentNodes(initialAdjListNode);
+    vector<Node *> initialAdjListNode = vectorOfNodes[0].getAdjList();
+    visitAdjacentNodes(initialAdjListNode);
 
-	if (initialAdjListNode.empty())
-		return false;
+    if (initialAdjListNode.empty())
+        return false;
 
-	for (size_t i = 0; i < vectorOfNodes.size(); i++)
-	{
-		//If any vector has not been visited, it means it is not connected to at least one node, so the graph is not strongly connected
-		if (!vectorOfNodes[i].isVisited())
-		{
-			graphIsConnected = false;
-			break;
-		}
-	}
-	//Reinitialize the visited member of each node in our graph
-	for (size_t i = 0; i < vectorOfNodes.size(); i++)
-	{
-		vectorOfNodes[i].setVisited(false);
-	}
-	return graphIsConnected;
+    for (size_t i = 0; i < vectorOfNodes.size(); i++) {
+        //If any vector has not been visited, it means it is not connected to at least one node, so the graph is not strongly connected
+        if (!vectorOfNodes[i].isVisited()) {
+            graphIsConnected = false;
+            break;
+        }
+    }
+    //Reinitialize the visited member of each node in our graph
+    for (size_t i = 0; i < vectorOfNodes.size(); i++) {
+        vectorOfNodes[i].setVisited(false);
+    }
+    return graphIsConnected;
 }
 
 //Recursive helper method used to visit all the nodes accessible from the initial node and mark them as visited.

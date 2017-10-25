@@ -73,8 +73,7 @@ void Game::setArrayPlayers(vector<Player *> &newArrayPl) {
 ////Why are we reading all files? - Emilio
 //Function to read all files from a given folder taken from:
 //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-list<string> Game::getNameOfFiles(const char *path)
-{
+list<string> Game::getNameOfFiles(const char *path) {
     list<string> listOfMapFiles;
     struct dirent *entry;
     DIR *directory = opendir(path);
@@ -140,7 +139,7 @@ void Game::getMapUser(list<string> listOfMapFiles)
                 validIndexMap = false;
             }
         }
-    } while(!validIndexMap);
+    } while (!validIndexMap);
     this->mapCountries = *parse1->getGraph();
     this->continents = *parse1->getContinents();
     delete parse1;
@@ -152,7 +151,7 @@ int Game::getNbrPlayersUser()
     do {
         cout << "How many players are playing the game? (2-6 players)";
         cin >> nbrPlayers;
-        if(nbrPlayers < 2 || nbrPlayers > 6)
+        if (nbrPlayers < 2 || nbrPlayers > 6)
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
     } while(nbrPlayers < 2
             || nbrPlayers > 6);
@@ -164,9 +163,8 @@ vector<Player*>* Game::getPlayersUser(int np)
     pl->reserve(np);
     cin.ignore();
     string namePlayer;
-    for(int i = 0; i < np; i++)
-    {
-        cout << "Enter the name of player " << (i+1) << ": ";
+    for (int i = 0; i < np; i++) {
+        cout << "Enter the name of player " << (i + 1) << ": ";
         getline(cin, namePlayer);
         pl->push_back(new Player(namePlayer));
     }
@@ -176,7 +174,7 @@ vector<Player*>* Game::getPlayersUser(int np)
 //Method used to
 void Game::determinePlayerTurn() {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    shuffle (arrayPlayers.begin(), arrayPlayers.end(), std::default_random_engine(seed));
+    shuffle(arrayPlayers.begin(), arrayPlayers.end(), std::default_random_engine(seed));
     /*
     srand ( unsigned ( std::time(0) ) );
     random_shuffle ( arrayPlayers.begin(), arrayPlayers.end() );
@@ -216,6 +214,7 @@ void Game::assignCountriesToPlayers()
                 }
             }
         }
+    }
 }
 //The 2 following functions are used in the method placeArmies.
 //They are used to allow more flexibility when reading user input
@@ -243,13 +242,22 @@ void Game::placeArmies()
 {
     //the number of armies each player has to place varies depending on the number of players
     int nbrArmiesPerPlayer = 0;
-    switch(nbrPlayers)
-    {
-        case 2: nbrArmiesPerPlayer = 40; break;
-        case 3: nbrArmiesPerPlayer = 35; break;
-        case 4: nbrArmiesPerPlayer = 30; break;
-        case 5: nbrArmiesPerPlayer = 25; break;
-        case 6: nbrArmiesPerPlayer = 20; break;
+    switch (nbrPlayers) {
+        case 2:
+            nbrArmiesPerPlayer = 40;
+            break;
+        case 3:
+            nbrArmiesPerPlayer = 35;
+            break;
+        case 4:
+            nbrArmiesPerPlayer = 30;
+            break;
+        case 5:
+            nbrArmiesPerPlayer = 25;
+            break;
+        case 6:
+            nbrArmiesPerPlayer = 20;
+            break;
     }
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     for(int i = 0; i < nbrPlayers; i++)
@@ -284,25 +292,29 @@ void Game::placeArmies()
                         break;
                     }
                 }
-                if(!validCountryName)
-                    cout << "You did not enter a valid country name from the list. Please make sure to enter it properly." << endl;
-            } while(!validCountryName);
+                if (!validCountryName)
+                    cout
+                            << "You did not enter a valid country name from the list. Please make sure to enter it properly."
+                            << endl;
+            } while (!validCountryName);
             int nbrArmiesToPut = 0;
             cout << "Please enter the number of armies to put on country " << c->getName() << ": ";
             cin >> nbrArmiesToPut;
             cin.ignore();
 
-            if(nbrArmiesPlayer >= nbrArmiesToPut && nbrArmiesToPut >= 0) {
+            if (nbrArmiesPlayer >= nbrArmiesToPut && nbrArmiesToPut >= 0) {
                 nbrArmiesPlayer -= nbrArmiesToPut;
                 c->setNbrArmies(c->getNbrArmies() + nbrArmiesToPut);
-            } else cout << "There is not enough armies available to player " << arrayPlayers[i]->getName() << ", we cannot do this." << endl;
-            if(nbrArmiesPlayer == 0) {
+            } else
+                cout << "There is not enough armies available to player " << arrayPlayers[i]->getName()
+                     << ", we cannot do this." << endl;
+            if (nbrArmiesPlayer == 0) {
                 cout << arrayPlayers[i]->getName()
                      << " has successfully placed all of their armies. We will go to the next player." << endl;
             }
         }
     }
-    if(verifyPlayerArmiers(nbrArmiesPerPlayer))
+    if (verifyPlayerArmiers(nbrArmiesPerPlayer))
         cout << endl << "All players have successfully placed their armies.\n";
     else {
         cout << "There was an error: Each player has not placed " << nbrArmiesPerPlayer << " armies.\n";
@@ -315,18 +327,17 @@ bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
     for(int i = 0; i < nbrPlayers; i++)
     {
         int nbrArmies = 0;
-        for (auto const& node : arrayPlayers[i]->getNodes()) {
+        for (auto const &node : arrayPlayers[i]->getNodes()) {
             nbrArmies += node->getCountry().getNbrArmies();
         }
-        if(nbrArmies != nbrArmiesPerPlayer)
+        if (nbrArmies != nbrArmiesPerPlayer)
             return false;
     }
     return true;
 }
 
 //Main for Part 2
-int main()
-{
+int main() {
     /*
     random_device rd;
     srand(rd());
@@ -337,9 +348,9 @@ int main()
     Also, we check that the right number of players is created inside the constructor as well.*/
     Game riskGame;
     //Determine player order and print them to check that the order changed (randomly)
-    vector<Player*>* players = riskGame.getArrayPlayers();
+    vector<Player *> *players = riskGame.getArrayPlayers();
 
-    map<string, Graph>* cont = riskGame.getContinents();
+    map<string, Graph> *cont = riskGame.getContinents();
 
     map<string, Graph>::reverse_iterator rit;
     for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
@@ -348,8 +359,7 @@ int main()
         cout << rit->second;
     }
     cout << "Player order before we randomize the order:" << endl;
-    for(int i = 0; i < players->size(); i++)
-    {
+    for (int i = 0; i < players->size(); i++) {
         cout << (*players)[i]->getName() << " ";
     }
     cout << endl;
@@ -357,17 +367,15 @@ int main()
     riskGame.determinePlayerTurn();
 
     cout << "Player order after we randomize the order:" << endl;
-    for(int i = 0; i < players->size(); i++)
-    {
+    for (int i = 0; i < players->size(); i++) {
         cout << (*players)[i]->getName() << " ";
     }
     cout << endl << endl;
 
     riskGame.assignCountriesToPlayers();
 
-    vector<Player*> play = *(riskGame.getArrayPlayers());
-    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
-    {
+    vector<Player *> play = *(riskGame.getArrayPlayers());
+    for (int i = 0; i < riskGame.getNbrPlayers(); i++) {
         play[i]->printNodes();
     }
     riskGame.placeArmies();
