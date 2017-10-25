@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../include/map.h"
 #include <map>
 
@@ -13,17 +12,24 @@ public:
 
 class Parser {
 private:
+	//Private members of Parser
 	vector<Node>* nodes;
 	Graph* graph;
 	map<string, Graph>* continents;
 	bool error;
-public:
-	Parser();
-	Parser(string fileName);
-	Graph* getGraph();
-	map<string, Graph>* getContinents();
+	//Helper methods
 	bool graphIsConnected();
 	bool continentsAreConnected();
+public:
+	//Constructors
+	Parser();
+	Parser(string fileName);
+	//Destructors
+	//~Parser();
+	//Accessor methods
+	Graph* getGraph();
+	map<string, Graph>* getContinents();
+	//Public methods
 	bool mapIsValid();
 	void displayContinents();
 };

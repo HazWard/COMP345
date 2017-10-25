@@ -1,0 +1,83 @@
+[Map]
+author=Rob Werhand
+image=Hasbro's LOTR Trilogy.bmp
+wrap=yes
+scroll=none
+warn=yes
+
+[Continents]
+Eriador=3
+Arnor=7
+Rhun=2
+Mirkwood=4
+Rhovanion=2
+Mordor=2
+Haradwaith=2
+Gondor=7
+Rohan=4
+
+[Territories]
+Forlindon,311,157,Eriador,Mithlond
+Mithlond,363,194,Eriador,Forlindon,Lune Valley,Haarlindon,Tower Hills,Minhiriath,Forodwaith
+Haarlindon,344,307,Eriador,Mithlond
+Lune Valley,425,112,Eriador,Mithlond,Borderlands,Evendim Hills,Tower Hills
+Evendim Hills,447,144,Eriador,Lune Valley,Borderlands,Tower Hills
+Tower Hills,420,201,Eriador,Mithlond,Lune Valley,Evendim Hills,The Shire
+The Shire,438,259,Eriador,Tower Hills,Buckland
+Forodwaith,650,29,Arnor,Borderlands,Angmar,Eatern Angmar,Withered Heath,North Rhun,Mithlond
+Eatern Angmar,643,76,Arnor,Carrock,Forodwaith
+Angmar,563,107,Arnor,Borderlands,Forodwaith
+Borderlands,504,111,Arnor,Lune Valley,Evendim Hills,North Downs,Weather Hills,Fornost,Angmar,Forodwaith
+North Downs,507,153,Arnor,Borderlands,Fornost
+Fornost,493,200,Arnor,Borderlands,North Downs,Weather Hills,Old Forest,Buckland
+Weather Hills,541,215,Arnor,Borderlands,Fornost,Rhudaur,South Downs,Old Forest
+Buckland,472,248,Arnor,The Shire,Fornost,Old Forest,South Downs
+Old Forest,510,246,Arnor,Fornost,Weather Hills,Buckland,South Downs
+Rhudaur,604,192,Arnor,Weather Hills,Carrock,Eregior
+South Downs,508,289,Arnor,Weather Hills,Buckland,Old Forest,Minhiriath
+North Rhun,828,59,Rhun,Forodwaith,Withered Heath,South Rhun
+Withered Heath,775,79,Rhun,Forodwaith,North Rhun,Esgaroth
+South Rhun,821,215,Rhun,North Rhun,Brown Lands
+Esgaroth,763,172,Rhun,Withered Heath,North Mirkwood
+Carrock,666,156,Mirkwood,Eatern Angmar,Rhudaur,North Mirkwood,Anduin Valley
+North Mirkwood,714,153,Mirkwood,Esgaroth,Carrock,Eastern Mirkwood
+Anduin Valley,690,295,Mirkwood,Carrock,Eastern Mirkwood,South Mirkwood,Emyn Muil,Gladden Fields
+Eastern Mirkwood,732,253,Mirkwood,North Mirkwood,South Mirkwood,Anduin Valley,Brown Lands
+South Mirkwood,732,345,Mirkwood,Eastern Mirkwood,Brown Lands,Anduin Valley,Emyn Muil
+Rhun Hills,824,438,Rhovanion,Brown Lands
+Brown Lands,766,448,Rhovanion,South Rhun,Eastern Mirkwood,South Mirkwood,Rhun Hills,Dead Marshes,Emyn Muil
+Emyn Muil,710,444,Rhovanion,South Mirkwood,Anduin Valley,Brown Lands,The Wold,Dead Marshes
+Dead Marshes,693,545,Rhovanion,Brown Lands,Udun Vale,Ithilien,Emyn Muil
+The Wold,657,456,Rhovanion,Emyn Muil,Fangorn,Gap of Rohan,Lorien
+Lorien,628,375,Rhovanion,The Wold,Gladden Fields,Fangorn
+Gladden Fields,649,298,Rhovanion,Anduin Valley,Lorien,Moria
+Moria,603,308,Rhovanion,Gladden Fields,Eregior
+Udun Vale,726,608,Mordor,Dead Marshes,Mount Doom
+Mount Doom,751,639,Mordor,Udun Vale,Gorgoroth,Barad-dur
+Barad-dur,810,625,Mordor,Mount Doom,Gorgoroth
+Gorgoroth,803,671,Mordor,Mount Doom,Barad-dur,Minas Morgul,Nurn
+Nurn,752,732,Mordor,Gorgoroth
+Minas Morgul,722,679,Mordor,Gorgoroth,Ithilien
+Khand,822,793,Haradwaith,Near Harad
+Near Harad,761,827,Haradwaith,Khand,Harad
+Harad,688,829,Haradwaith,Near Harad,Deep Harad,Harondor
+Deep Harad,615,853,Haradwaith,Harad,Umbar
+Umbar,607,810,Haradwaith,Deep Harad,Belfalas,Minhiriath
+Harondor,652,763,Haradwaith,Harad,South Ithilien
+South Ithilien,669,719,Gondor,Harondor,Ithilien
+Ithilien,663,651,Gondor,Dead Marshes,Minas Morgul,South Ithilien,Minas Tirith
+Minas Tirith,622,624,Gondor,Ithilien,Gap of Rohan,Lebennin
+Lebennin,612,680,Gondor,Minas Tirith,Belfalas,Lamedon
+Belfalas,560,696,Gondor,Lebennin,Lamedon,Umbar,Minhiriath
+Lamedon,546,650,Gondor,Lebennin,Belfalas,Vale of Erech
+Vale of Erech,505,637,Gondor,Lamedon,Anfalas
+Anfalas,457,677,Gondor,Vale of Erech,Andrast,Druwaith Laur
+Andrast,415,686,Gondor,Anfalas
+Druwaith Laur,429,620,Gondor,Anfalas,West Rohan
+West Rohan,496,531,Rohan,Druwaith Laur,Gap of Rohan
+Gap of Rohan,595,544,Rohan,The Wold,Minas Tirith,West Rohan,Fangorn,Enedwaith
+Fangorn,597,468,Rohan,The Wold,Lorien,Gap of Rohan
+Enedwaith,504,452,Rohan,Gap of Rohan,Dunland,Minhiriath
+Minhiriath,447,354,Rohan,South Downs,Dunland,Enedwaith,Umbar,Belfalas,Mithlond
+Dunland,531,366,Rohan,Enedwaith,Minhiriath,Eregior
+Eregior,566,294,Rohan,Rhudaur,Moria,Dunland

@@ -6,10 +6,8 @@
 */
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "../include/player.h"
-#include "../include/cards.h"
-#include "../include/dice.h"
-#include "../include/map.h"
 
 // Constructors
 Player::Player() : name(""), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
@@ -98,6 +96,19 @@ void Player::fortify()
 {
     // Perform actions to fortify
     std::cout << "Player is fortifying!" << std::endl;
+}
+
+bool Player::controlsAllCountriesInMap(Graph& map)
+{
+    for(int i = 0; i < map.getNbrCountries(); i++)
+    {
+        Node* n = &(*map.getVectorOfNodes())[i];
+        if(std::find(nodes.begin(), nodes.end(), n) != nodes.end())
+            continue;
+        else
+            return false;
+    }
+    return true;
 }
 
 void Player::printNodes()

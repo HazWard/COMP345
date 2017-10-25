@@ -1,7 +1,6 @@
+#pragma once
 #include "../include/reader.h"
 #include "../include/player.h"
-#include<list>
-#pragma once
 
 class Game
 {
@@ -22,6 +21,8 @@ private:
 public:
     //Constructor:
     Game();
+    //Destructor:
+    //~Game();
     //Mutator methods:
     void setMap(Graph& newMap);
     void setNbrPlayers(int nbrP);
@@ -30,7 +31,7 @@ public:
     string getMapName();
     int getNbrPlayers();
     vector<Player*>* getArrayPlayers();
-    Graph getMapCountries();
+    Graph* getMapCountries();
     Deck getMainDeck();
     map<string, Graph>* getContinents();
     //Public methods:

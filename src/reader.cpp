@@ -1,14 +1,9 @@
-
-#include <vector>
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <algorithm>
 #include <iterator>
-#include <map>
 #include "../include/reader.h"
-#include "../include/map.h"
 #include "../include/exception.h"
 
 using namespace std;
@@ -79,9 +74,34 @@ Parser::Parser(string fileName) {
 
     error = lines.empty() ? true : false;
 
-    if (!error) {
-        int territoryStart = -1;
-        int continentStart = -1;
+		for (int i = 0; i < lines.size(); i++)
+		{
+			if (lines[i].find("[Continents]") != std::string::npos)
+			{
+				continentStart = (i + 1);
+				break;
+			}
+		}
+		//If we didn't find [Continents] within any lines, then the file is invalid
+		if (continentStart == -1)
+		{
+			cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
+		}
+		for (int i = continentStart; i < lines.size(); i++)
+		{
+			if (lines[i].find("[Territories]") != std::string::npos)
+			{
+				territoryStart = (i + 1);
+				break;
+			}
+			vector<string> lineData = split(lines[i], '='); //splitting current line on '='
+			continents->insert(std::pair<string, Graph>(lineData[0], Graph()));
+		}
+		//If we didn't find [Territories] within any lines, then the file is invalid
+		if (territoryStart == -1)
+		{
+			cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
+		}
 
         for (int i = 0; i < lines.size(); i++) {
             if (lines[i].find("[Continents]") != std::string::npos) {
@@ -165,38 +185,61 @@ Parser::Parser(string fileName) {
         }
     }
 }
+/*
+//Destructor for the Parser class
+//Makes sure to delete all of the members that are pointers to containers
+Parser::~Parser()
+{
+	delete nodes;
+	delete graph;
+	delete continents;
+}*/
 
-Graph *Parser::getGraph() { return graph; }
+//-- ACCESSOR METHODS --
+Graph* Parser::getGraph() { return graph; }
 
-map<string, Graph> *Parser::getContinents() { return continents; }
+map<string, Graph>* Parser::getContinents() { return continents; }
 
-bool Parser::graphIsConnected() {
-    return graph->isGraphConnected();
+//Both the following methods are helper methods that are useful to determine whether or not the map is valid
+//This method checks if the graph is strongly connected
+bool Parser::graphIsConnected()
+{
+	return graph->isGraphConnected();
+}
+//This method checks if the continents within the graph are all strongly connected
+bool Parser::continentsAreConnected()
+{
+	map<string, Graph>::reverse_iterator rit;
+	for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+	{
+		//If at least one continent is not completely connected, it will return false
+		if (rit->second.isGraphConnected() == false)
+			return false;
+	}
+	//if all tests of connected continents worked, that means that all contients are indeed connected.
+	return true;
+}
+/*The definition of a valid map is a map where all the nodes(countries) are strongly connected
+ and where all the continents within the map are also strongly connected.
+Therefore, the following method returns whether or not the map is valid,
+ while also checking for any errors encountered during parsing.*/
+bool Parser::mapIsValid()
+{
+	return !error && graphIsConnected() && continentsAreConnected();
 }
 
-bool Parser::continentsAreConnected() {
-    map<string, Graph>::reverse_iterator rit;
-    for (rit = continents->rbegin(); rit != continents->rend(); ++rit) {
-        //If at least one continent is not completely connected, it will return false
-        if (rit->second.isGraphConnected() == false)
-            return false;
-    }
-    //if all tests of connected continents worked, that means that all contients are indeed connected.
-    return true;
-}
-
-bool Parser::mapIsValid() {
-    return !error && graphIsConnected() && continentsAreConnected();
-}
-
-void Parser::displayContinents() {
-    map<string, Graph>::reverse_iterator rit;
-    for (rit = continents->rbegin(); rit != continents->rend(); ++rit) {
-        cout << rit->first << endl;
-        cout << rit->second;
-    }
+//Method used to display all of the continents within a given map
+void Parser::displayContinents()
+{
+	map<string, Graph>::reverse_iterator rit;
+	for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+	{
+		cout << rit->first << endl;
+		cout << rit->second;
+	}
 }
 /*
+//Main for part 2 of assignment 1 (not needed for assignment 2)
 int main() {
 
 	Parser parse1(MAPS_FOLDER + "World.map");
