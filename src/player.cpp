@@ -91,6 +91,42 @@ void Player::attack()
 
 void Player::fortify()
 {
-    // Perform actions to fortify
-    std::cout << "Player is fortifying!" << std::endl;
+    string source;
+    string destination;
+    int armNum;
+    bool attempted = false;
+
+    //Check if countries are connected
+    while(/*source and destination are not connected*/) {
+        if(attempted)
+            cout << "Countries entered are not connected try again" << endl;
+        //Ask for source country
+        std::cout << "Please enter the source country" << std::endl;
+        std::cin >> source;
+        //Verify eligibility
+        while (/*Code to check if country is owned by player*/) {
+            std::cout << "Country is not owned please enter a country you own" << std::endl;
+            std::cin >> source;
+        }
+
+        //Ask for destination country
+        std::cout << "Please enter the destination country" << std::endl;
+        std::cin >> destination;
+        //Verify eligibility
+        while (/*Code to check if country is owned by player*/) {
+            std::cout << "Country is not owned please enter a country you own" << std::endl;
+            std::cin >> destination;
+        }
+        attempted=true;
+    }
+
+    //Ask for number of armies to move
+    std::cout << "Please enter number of armies to move" << endl;
+    std::cin >> armNum;
+    while(armNum >= /*source army number*/ || armNum <= 0){
+        std::cout << "invalid number of armies please reenter a valid number" << endl;
+        std::cin >> armNum;
+    }
+
+    source.setNumberOfArmies()
 }
