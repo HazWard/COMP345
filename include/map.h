@@ -1,65 +1,90 @@
 #pragma once
-
-using namespace std;
-
 #include <string>
 #include <vector>
 
+using namespace std;
+
+//This class creates Country objects.
+//A Country is defined as a territory in Risk
+//(could be a country, could be a subset of a continent like North America, a province like Quebec, a territory like Yukon or a state like Virginia)
 class Country
 {
 private:
-	string name;
-	string continent; //the continent the Country belongs to
-	int nbrArmies;
+    string name;
+    string continent; //the continent the Country belongs to
+    int nbrArmies;
 public:
-	Country();
-	Country(string n);
-	Country(string n, string cont, int nbrArm);
-	bool operator==(Country& rhs)const;
-	bool operator==(Country rhs)const;
-	friend std::ostream& operator <<(std::ostream& stream, Country& c);
-	string getName();
-	string getContinent();
-	int getNbrArmies();
-	void setNbrArmies(int na);
-};
+    Country();
 
+    Country(string n);
+
+    Country(string n, string cont, int nbrArm);
+
+    bool operator==(Country &rhs) const;
+
+    bool operator==(Country rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &stream, Country &c);
+
+    string getName();
+
+    string getContinent();
+
+    int getNbrArmies();
+
+    void setNbrArmies(int na);
+};
+//This class creates Node objects, that contain a Country and the list of nodes adjacent to it.
 class Node
 {
 private:
-	Country country;
-	vector<Node*> adjList;
-	bool visited;
+    Country country;
+    vector<Node *> adjList;
+    bool visited;
 public:
-	Node();
-	Node(Country c);
-	Node(Country c, vector<Node*> adjList);
-	Country getCountry();
-	vector<Node*> getAdjList();
-	bool isVisited();
-	void addNode(Node& n);
-	void setAdjList(vector<Node*> newAdjList);
-	void setVisited(bool v);
-	friend std::ostream& operator <<(std::ostream& stream, Node& n);
+    Node();
+
+    Node(Country c);
+
+    Node(Country c, vector<Node *> adjList);
+
+    Country getCountry();
+
+    vector<Node *> getAdjList();
+
+    Country *getPointerToCountry();
+
+    bool isVisited();
+
+    void addNode(Node &n);
+
+    void setAdjList(vector<Node *> newAdjList);
+
+    void setVisited(bool v);
+
+    friend std::ostream &operator<<(std::ostream &stream, Node &n);
 };
 
+//This class creates a graph used as the map of our Risk game
 class Graph
 {
 private:
+	//Private members of the class
 	int nbrVert;
 	vector<Node> vectorOfNodes;
+	//Helper method
 	void visitAdjacentNodes(vector<Node*> adjListNode);
-	//void visitAdjacentNodesContinent(vector<Node*> adjListNode, string continent);
 public:
+	//Constructors
 	Graph();
-	Graph(int v);
 	Graph(int v, vector<Node>& arrayOfNodes);
-	Graph(int v, Node* arrayOfNodes);
-	//void addEdges(Node masterNode, Node listOfNodes[]);
-	void addNode(Node &n);
-	void addEdge(Node& n1, Node& n2);
+	//Accessor methods (no mutator methods since the graph will not change after the initial creation
 	vector<Node>* getVectorOfNodes();
 	int getNbrCountries();
+	//Methods to add
+	void addNode(Node &n);
+	void addEdge(Node& n1, Node& n2);
+
 	bool isGraphConnected();
 	friend std::ostream& operator <<(std::ostream& stream, Graph& g);
 };

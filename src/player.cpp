@@ -6,31 +6,38 @@
 */
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "../include/player.h"
-#include "../include/cards.h"
-#include "../include/dice.h"
-#include "../include/map.h"
 
 // Constructors
-Player::Player() : hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
+Player::Player() : name(""), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
 
-Player::Player(Hand* playerHand, std::vector<Node*>* playerCountries)
+Player::Player(string n) : name(n), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
+
+Player::Player(string n, Hand* playerHand, std::list<Node*>* playerNodes)
 {
+    this->setName(n);
     this->setHand(playerHand);
-    this->setCountries(playerCountries);
+    this->setNodes(playerNodes);
     // Create the dice rolling facility for the Player
     this->setDice(new Dice());
 }
 // Destructor
-Player::~Player(void)
+Player::~Player()
 {
     delete hand;
     delete dice;
-    hand = NULL;
-    dice = NULL;
+    hand = nullptr;
+    dice = nullptr;
 }
 
 // Setters and Getters
+void Player::setName(string n)
+{
+    this->name = n;
+}
+string Player::getName() { return name; }
+
 void Player::setHand(Hand *targetHand)
 {
     this->hand = targetHand;
@@ -46,23 +53,19 @@ void Player::setDice(Dice* targetDice)
     this->dice = targetDice;
 }
 
-void Player::setCountries(std::vector<Node *> *targetCountries)
+void Player::setNodes(std::list<Node*> *targetNodes)
 {
-    // Build the countries vector
-    for (int i = 0; i < targetCountries->size(); ++i)
-    {
-        this->countries.push_back((*targetCountries)[i]);
-    }
+    nodes = *targetNodes;
 }
 
-void Player::addCountry(Node* newCountry)
+void Player::addNode(Node* newNode)
 {
-    this->countries.push_back(newCountry);
+    this->nodes.push_back(newNode);
 }
 
-std::vector<Node*> Player::getCountries()
+std::list<Node*> Player::getNodes()
 {
-    return this->countries;
+    return this->nodes;
 }
 
 
@@ -141,4 +144,30 @@ void Player::fortify()
 bool Player::attack(Player *attacker, Player *defender, Country *attackingCountry, Country *defendingCountry) {
     //TODO: Write the code that will encapsulate the attacking process according to the Risk rules
     return false;
+}
+
+
+bool Player::controlsAllCountriesInMap(Graph& map)
+{
+    for(int i = 0; i < map.getNbrCountries(); i++)
+    {
+        Node* n = &(*map.getVectorOfNodes())[i];
+        if(std::find(nodes.begin(), nodes.end(), n) != nodes.end())
+            continue;
+        else
+            return false;
+    }
+    return true;
+}
+
+void Player::printNodes()
+{
+    list<Node*>::const_iterator iterator;
+    cout << "Countries that belong to " << name << ":" << endl;
+    for (iterator = nodes.begin(); iterator != nodes.end(); ++iterator)
+    {
+        Country c = (*iterator)->getCountry();
+        cout << c.getName() << "; ";
+    }
+    cout << endl << endl;
 }
