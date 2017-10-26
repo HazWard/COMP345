@@ -148,6 +148,11 @@ void Game::getMapUser(list<string> listOfMapFiles)
                 cout << "Yes, both the entire map as a whole and each continent are connected.\n";
                 validIndexMap = true;
             }
+            else if(parser->getGraph()->getNbrCountries() > 80){
+                cout << "No" << endl << "We have detected that the number of countries in this Map is greater than 80." << endl
+                                << "That is not supported in the current version of the game." << endl;
+                validIndexMap = false;
+            }
             else {
                 cout << "No, the graph and/or some of the continents are not strongly connected.\n";
                 validIndexMap = false;
@@ -279,7 +284,8 @@ void Game::placeArmies()
 
         //Places one army to every territory owned by the player
         for(auto const &node : arrayPlayers[i]->getNodes()){
-            node->getCountry().setNbrArmies(1);
+            Country* country = node->getPointerToCountry();
+            country->setNbrArmies(1);
             nbrArmiesPlayer--;
         }
 
@@ -362,12 +368,6 @@ int main()
 
     map<string, Graph>* cont = riskGame.getContinents();
 
-    map<string, Graph>::reverse_iterator rit;
-    for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
-    {
-        cout << "=============================|" << rit->first << "|=============================" << endl;
-        cout << rit->second;
-    }
     cout << "Player order before we randomize the order:" << endl;
     for(int i = 0; i < players->size(); i++)
     {
@@ -388,11 +388,20 @@ int main()
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
 
+    //Displaying all the countries in the graph
+    map<string, Graph>::reverse_iterator rit;
+    for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
+    {
+        cout << "=============================|" << rit->first << "|=============================" << endl;
+        cout << rit->second;
+    }
+
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
         play[i]->printNodes();
     }
     riskGame.placeArmies();
+
 
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
