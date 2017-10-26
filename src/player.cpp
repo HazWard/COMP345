@@ -6,6 +6,7 @@
 */
 #include <iostream>
 #include <algorithm>
+#include <set>
 #include <map>
 #include "../include/player.h"
 
@@ -185,14 +186,16 @@ void Player::attack()
 
 
     //TODO: Step 1, find the countries it can attack
-    std::vector<Node*> canAttack = std::vector<Node*>();
+    std::set<Node*> canAttack = std::set<Node*>();
 
     std::list<Node*>::iterator nodeIterator;
     for(nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++){
         Node *currentNode = *nodeIterator;
+        cout << "Player's Node Object" << endl << *currentNode << endl;
         for(auto const &node : currentNode->getAdjList()){
+            cout << "Node object from adjacency list" << endl << *node << endl;
             if(!containsNode(*node)){
-                canAttack.push_back(node);
+                canAttack.insert(node);
             }
         }
     }
@@ -210,11 +213,12 @@ void Player::attack()
 
 }
 
-bool Player::containsNode(const Node &node){
-    auto iterator = std::find(this->nodes.begin(), this->nodes.end(), node);
-    if(iterator != this->nodes.end())
-    {
-        return true;
+bool Player::containsNode(Node &node){
+    std::list<Node*>::iterator nodeIterator;
+    for(nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++){
+        if(*nodeIterator == &node){
+            return true;
+        }
     }
     return false;
 }

@@ -232,7 +232,7 @@ void Game::assignCountriesToPlayers()
             for (int i = 0; i < this->arrayPlayers.size(); i++) {
                 listShuffle(nodesToAssign);
                 if(nodesToAssign.front() != NULL) {
-                    arrayPlayers[i]->addNode(nodesToAssign.front());
+                    this->arrayPlayers[i]->addNode(nodesToAssign.front());
                     nodesToAssign.pop_front();
                 }
             }
@@ -402,6 +402,15 @@ int main()
     }
     riskGame.placeArmies();
 
+    cout << "TESTING";
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << node << endl;
+    }
+//    for(int i = 0; i < riskGame.getNbrPlayers(); i++){
+//        for(auto node : play[i]->getNodes()){
+//            cout << *node;
+//        }
+//    }
     play[0]->attack();
 
 
