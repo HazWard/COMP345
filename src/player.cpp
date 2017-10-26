@@ -92,7 +92,6 @@ void Player::reinforce(std::map<string, Graph>* map)
     if (this->nodes.size() >= MIN_NUMBER_OF_ARMIES)
     {
         totalNbArmies = this->nodes.size() / MIN_NUMBER_OF_ARMIES;
-        // TODO: Check if a whole continent is owned
         std::list<std::string> continentsOwned =  getsContinentsOwned(map);
 
         for (unsigned int i = 0; i < continentsOwned.size(); i++) {
@@ -105,34 +104,56 @@ void Player::reinforce(std::map<string, Graph>* map)
             totalNbArmies = (this->hand->exchange(Card::ARTILLERY)) ? ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
             totalNbArmies = (this->hand->exchange(Card::CAVALRY)) ? CAVALRY_BONUS + totalNbArmies : totalNbArmies;
         }
-        // TODO: Check if there's a max number of armies we can place
-        std::string answer;
-        int targetNbArmies;
-        std::cout << "On which countries would you like to place your " << totalNbArmies << " armies?" << std::endl;
-        std::list<Node*>::iterator countryIter;
-
-        Node* currentNode;
-        for (countryIter = nodes.begin(); countryIter != nodes.end(); ++countryIter)
-        {
-            currentNode = *countryIter;
-            std::cout << "Put armies on " << currentNode->getCountry().getName() << "? (y/n)";
-            std::cin >> answer;
-            if (answer == "y") {
-                std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << "armies?" << std::endl;
-                std::cout << "How many armies do you want to add? ";
-                std::cin >> targetNbArmies;
-                int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
-                std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
-                currentNode->getCountry().setNbrArmies(total);
-            }
-        }
-        currentNode = nullptr;
+        // Recursive call in the case that not all armies are placed
+        this->placeArmies(totalNbArmies);
 
     }
     else
     {
         std::cout << "Not enough armies to reinforce troops." << std::endl;
     }
+}
+
+/**
+ * Recursive method to place armies on countries.
+ *
+ * If the place places less than the expected number of armies
+ * we go through the list of countries again to place more
+ * @param nbArmies to place on countries
+ */
+void Player::placeArmies(int nbArmies)
+{
+    if (nbArmies == 0)
+    {
+        return;
+    }
+    std::string answer;
+    int targetNbArmies = 0;
+    std::cout << "On which countries would you like to place your " << nbArmies << " armies?" << std::endl;
+    std::list<Node*>::iterator countryIter;
+
+    Node* currentNode;
+    for (countryIter = nodes.begin(); countryIter != nodes.end(); ++countryIter)
+    {
+        currentNode = *countryIter;
+        std::cout << "Put armies on " << currentNode->getCountry().getName() << "? (y/n)";
+        std::cin >> answer;
+        if (answer == "y") {
+            std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << "armies?" << std::endl;
+            while(targetNbArmies <= 0 || targetNbArmies >= nbArmies)
+            {
+                std::cout << "How many armies do you want to add? ";
+                std::cin >> targetNbArmies;
+            }
+            int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
+            nbArmies - targetNbArmies;
+            std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
+            currentNode->getCountry().setNbrArmies(total);
+        }
+        std::cout << "You now have " << nbArmies << " to place." << std::endl;
+    }
+    currentNode = nullptr;
+    placeArmies(nbArmies);
 }
 
 void Player::attack()
