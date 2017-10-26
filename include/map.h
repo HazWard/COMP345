@@ -86,8 +86,6 @@ public:
 	void addEdge(Node& n1, Node& n2);
     bool areConnectedByEdge(Node* n1, Node* n2);
 	bool areConnectedThroughOwned(int source, int destination);
-	vector<Node>* getVectorOfNodes();
-	int getNbrCountries();
 	bool isGraphConnected();
 	friend std::ostream& operator <<(std::ostream& stream, Graph& g);
 };

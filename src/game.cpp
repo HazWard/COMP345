@@ -383,6 +383,11 @@ int main()
         play[i]->printNodes();
     }
     riskGame.placeArmies();
+    //testing fortify
+        for (int i = 0; i < players->size(); i++) {
+            (*players)[i]->fortify(*riskGame.getMapCountries());
+        }
+
 
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;

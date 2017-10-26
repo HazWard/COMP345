@@ -197,9 +197,7 @@ void Player::attack()
 void Player::fortify(Graph& map)
 {
     string sourceStr;
-    int sourceIndex=-1;
     string destinationStr;
-    int destinationIndex=-1;
     int armNum;
     bool validInput = false;
     Node* sourceCtr = nullptr;
@@ -226,16 +224,26 @@ void Player::fortify(Graph& map)
 
     validInput=false;
 
-    //this while loop asks for destination and loops if not owned
+    //this while loop asks for destination and loops if not owned or if not connected to source
     do {
         std::cout << "Please enter the destination country ";
         getline(cin, destinationStr);
 
         list<Node*>::const_iterator destinationCountryIterator;
 
-        for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
+     /*   for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
         {
             if (destinationStr==(*destinationCountryIterator)->getCountry().getName() && map.areConnectedByEdge(*destinationCountryIterator, sourceCtr)) {
+                destCtr = *destinationCountryIterator;
+                validInput=true;
+                break;
+            }
+        }
+        */
+        for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
+        {
+            if (destinationStr==(*destinationCountryIterator)->getCountry().getName())
+            {
                 destCtr = *destinationCountryIterator;
                 validInput=true;
                 break;
@@ -260,6 +268,8 @@ void Player::fortify(Graph& map)
     }
     sourceCtr->getCountry().setNbrArmies(sourceCtr->getCountry().getNbrArmies() - armNum);
     destCtr->getCountry().setNbrArmies(destCtr->getCountry().getNbrArmies() + armNum);
+    std::cout << armNum << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
+    validInput=false;
 
 
 }
