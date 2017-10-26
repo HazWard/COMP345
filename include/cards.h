@@ -32,7 +32,7 @@ class Deck{
     public:
         Deck(int numberOfCountries);
         Deck();
-        ~Deck();
+//        ~Deck();
         Card* draw();
         void display();
         int getNumberOfCards();
@@ -50,4 +50,5 @@ class Hand{
         bool exchange(int t);
         void draw(Card *c);
         void display(void);
+        int getTotalCards();
 };
