@@ -2,6 +2,11 @@
 #include "../include/reader.h"
 #include "../include/player.h"
 
+bool windows = false;
+#ifdef OS_WINDOW1S
+    windows = true;
+#endif
+
 class Game {
 private:
     //private members:

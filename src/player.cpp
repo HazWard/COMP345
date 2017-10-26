@@ -114,18 +114,7 @@ void Player::attack()
 
 
     //TODO: Step 1, find the countries it can attack
-    std::vector<Node*> canAttack;
-    for(int i = 0; i < this->countries.size(); i++){
-        //Getting a list of all countries adjacent to current node
-        std::vector<Node*> adjacentToCurrentNode = this->countries[i]->getAdjList();
-        for(int j = 0; j < adjacentToCurrentNode.size(); j++){
-            if(/*adjacentToCurrentNode[j]->getCountry().getPlayer()*/){
-                //TODO: Find if a country belongs to another player, if so add it to the canAttack list
-
-            }
-
-        }
-    }
+//    1
     //TODO: Step 2, declare attacks
 
     //TODO: Step 3, perform the attacking, possibly using some static function to perform the attacking

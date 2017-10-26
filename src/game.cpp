@@ -2,10 +2,6 @@
 #include <dirent.h>
 #include <iostream>
 #include <random>
-#include <algorithm>
-#include <ctime>
-#include <chrono>
-#include <list>
 
 using namespace std;
 
@@ -17,7 +13,12 @@ const string MAPS_FOLDER = "../maps/";
 //If they are not equal, that means the constructor failed to do its job and we exit the program.
 Game::Game()
 {
-    list<string> mapFiles = getNameOfFiles("..\\maps");
+    list<string> mapFiles;
+
+    //Checking the operating system by using the windows boolean, determines how paths are set
+    if(windows){ mapFiles = getNameOfFiles("..\\maps"); }
+    else { mapFiles = getNameOfFiles("../maps"); }
+
     getMapUser(mapFiles);
     this->nbrPlayers = getNbrPlayersUser();
     this->arrayPlayers = *(getPlayersUser(nbrPlayers));
@@ -160,8 +161,10 @@ int Game::getNbrPlayersUser()
         cin >> nbrPlayers;
         if(nbrPlayers < 2 || nbrPlayers > 6)
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
-    } while(nbrPlayers < 2
-            || nbrPlayers > 6);
+    }
+    while(nbrPlayers < 2 || nbrPlayers > 6);
+
+    return nbrPlayers;
 }
 //Method that asks the user for the names of the players and creates player objects
 vector<Player*>* Game::getPlayersUser(int np)
@@ -367,6 +370,7 @@ int main()
     riskGame.assignCountriesToPlayers();
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
+
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
         play[i]->printNodes();
@@ -398,8 +402,6 @@ int main()
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 	*/
-    delete players;
-    delete cont;
     return 0;
 }
 //Main for Part 1
