@@ -32,7 +32,7 @@ class Deck{
     public:
         Deck(int numberOfCountries);
         Deck();
-        //~Deck();
+//        ~Deck();
         Card* draw();
         void display();
         int getNumberOfCards();

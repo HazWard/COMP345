@@ -3,6 +3,10 @@
 #include <iostream>
 #include<list>
 #include <random>
+#include <algorithm>
+#include <ctime>
+#include <chrono>
+#include <list>
 
 using namespace std;
 
@@ -27,14 +31,14 @@ Game::Game()
     if(nbrPlayers != arrayPlayers.size())
     {
         cout << "The number of players (" << nbrPlayers << " and "
-             << "the number of players created (" + arrayPlayers.size()
+             << "the number of players created (" << arrayPlayers.size()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
     if(mainDeck.getNumberOfCards() != mapCountries.getNbrCountries())
     {
         cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
-             << "the number of nodes in the map (" + mapCountries.getNbrCountries()
+             << "the number of nodes in the map (" << mapCountries.getNbrCountries()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
@@ -118,7 +122,7 @@ void Game::getMapUser(list<string> listOfMapFiles)
     }
     cout << endl;
     bool validIndexMap = false;
-    Parser* parse1;
+    Parser* parser;
     do
     {
         cout << "Map chosen: ";
@@ -137,9 +141,9 @@ void Game::getMapUser(list<string> listOfMapFiles)
             mapName = *it;
             cout << "You chose the map " << mapName << endl;
             cout << "We will check if that map is a valid one." << endl;
-            parse1 = new Parser(MAPS_FOLDER + mapName);
-            cout << "Is parse1 a valid map ? : ";
-            if (parse1->mapIsValid()) {
+            parser = new Parser(MAPS_FOLDER + mapName);
+            cout << "Is parser a valid map ? : ";
+            if (parser->mapIsValid()) {
                 cout << "Yes, both the entire map as a whole and each continent are connected.\n";
                 validIndexMap = true;
             }
@@ -149,9 +153,9 @@ void Game::getMapUser(list<string> listOfMapFiles)
             }
         }
     } while(!validIndexMap);
-    this->mapCountries = *parse1->getGraph();
-    this->continents = *parse1->getContinents();
-    delete parse1;
+    this->mapCountries = *parser->getGraph();
+    this->continents = *parser->getContinents();
+    delete parser;
 }
 //Method that asks the user for the number of players
 int Game::getNbrPlayersUser()
@@ -261,6 +265,8 @@ void Game::placeArmies()
         case 5: nbrArmiesPerPlayer = 25; break;
         case 6: nbrArmiesPerPlayer = 20; break;
     }
+
+    //TODO: Place one army of every country owned before placing reinforcements
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     for(int i = 0; i < nbrPlayers; i++)
     {

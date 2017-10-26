@@ -32,8 +32,6 @@ Player::~Player()
 {
     delete hand;
     delete dice;
-    hand = nullptr;
-    dice = nullptr;
 }
 
 // Setters and Getters
