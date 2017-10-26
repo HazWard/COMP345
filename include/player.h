@@ -45,4 +45,5 @@ class Player
         Hand* hand;
         Dice* dice;
         std::list<Node*> nodes;
+        bool containsNode(const Node &node);
 };

@@ -402,6 +402,8 @@ int main()
     }
     riskGame.placeArmies();
 
+    play[0]->attack();
+
 
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;

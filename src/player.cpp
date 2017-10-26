@@ -185,7 +185,22 @@ void Player::attack()
 
 
     //TODO: Step 1, find the countries it can attack
-//    1
+    std::vector<Node*> canAttack = std::vector<Node*>();
+
+    std::list<Node*>::iterator nodeIterator;
+    for(nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++){
+        Node *currentNode = *nodeIterator;
+        for(auto const &node : currentNode->getAdjList()){
+            if(!containsNode(*node)){
+                canAttack.push_back(node);
+            }
+        }
+    }
+
+    for(auto const &node : canAttack){
+        cout << node->getCountry().getName() << endl;
+    }
+
     //TODO: Step 2, declare attacks
 
     //TODO: Step 3, perform the attacking, possibly using some static function to perform the attacking
@@ -193,6 +208,15 @@ void Player::attack()
     //TODO: Step 4, conclude attacks and test results
 
 
+}
+
+bool Player::containsNode(const Node &node){
+    auto iterator = std::find(this->nodes.begin(), this->nodes.end(), node);
+    if(iterator != this->nodes.end())
+    {
+        return true;
+    }
+    return false;
 }
 
 void Player::fortify(Graph& map)
