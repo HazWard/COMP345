@@ -13,7 +13,11 @@
 
 
 // Constants
-int MIN_NUMBER_OF_ARMIES = 3;
+static const int MIN_NUMBER_OF_ARMIES = 3;
+static const int MIN_NUMBER_OF_CARDS = 5;
+static const int INFANTRY_BONUS = 1;
+static const int CAVALRY_BONUS = 5;
+static const int ARTILLERY_BONUS = 10;
 
 // Constructors
 Player::Player() : name(""), hand(new Hand), countries(std::vector<Node*>()), dice(new Dice) { }
@@ -90,11 +94,33 @@ int Player::roll(int nbOfDice)
 void Player::reinforce()
 {
     // Perform actions to reinforce
-    std::cout << "is reinforcing troops!" << std::endl;
-    int countryBonus = this->countries.size() / MIN_NUMBER_OF_ARMIES;
-    if (countryBonus >= 3)
+    std::cout << this->name << " is reinforcing troops!" << std::endl;
+    int totalNbArmies = 0;
+    if (this->countries.size() >= MIN_NUMBER_OF_ARMIES)
     {
+        totalNbArmies = this->countries.size() / MIN_NUMBER_OF_ARMIES;
         // TODO: Check if a whole continent is owned
+        if(this->hand->getTotalCards() >= MIN_NUMBER_OF_CARDS)
+        {
+            totalNbArmies = (this->hand->exchange(Card::INFANTRY)) ? INFANTRY_BONUS + totalNbArmies : totalNbArmies;
+            totalNbArmies = (this->hand->exchange(Card::ARTILLERY)) ? ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
+            totalNbArmies = (this->hand->exchange(Card::CAVALRY)) ? CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+        }
+        // TODO: Check if there's a max number of armies we can place
+        std::string answer;
+        int targetNbArmies;
+        std::cout << "On which countries would you like to place your " << totalNbArmies << " armies?" << std::endl;
+        for (int i = 0; this->countries.size(); ++i) {
+            std::cout << "Put armies on " << this->countries[i]->getCountry().getName() << "? (y/n)";
+            std::cin >> answer;
+            if (answer == "y") {
+                std::cout << "You already have " << this->countries[i]->getCountry().getNbrArmies() << "armies?" << std::endl;
+                std::cout << "How many armies do you want to add? ";
+                std::cin >> targetNbArmies;
+                Player::assignArmies(i, targetNbArmies);
+            }
+        }
+
     }
     else
     {
@@ -112,4 +138,11 @@ void Player::fortify()
 {
     // Perform actions to fortify
     std::cout << "Player is fortifying!" << std::endl;
+}
+
+void Player::assignArmies(int countryIndex, int nbArmies)
+{
+    int total = nbArmies + countries[countryIndex]->getCountry().getNbrArmies();
+    std::cout << "Setting number of armies on " << countries[countryIndex]->getCountry().getName() << " to " << total << std::endl;
+    this->countries[countryIndex]->getCountry().setNbrArmies(total);
 }

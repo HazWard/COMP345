@@ -34,6 +34,7 @@ class Player
         void addCountry(Node* newCountry);
         void setCountries(std::vector<Node*>* targetCountries);
         std::vector<Node*> getCountries();
+        void assignArmies(int countryIndex, int nbArmies);
     private:
         std::string name;
         Hand* hand;

@@ -2,7 +2,6 @@
 #include <dirent.h>
 #include <iostream>
 #include<list>
-#include <Windows.h>
 #include <random>
 #include <algorithm>
 
