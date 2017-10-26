@@ -87,7 +87,7 @@ int Player::roll(int nbOfDice)
 void Player::reinforce(std::map<string, Graph>* map)
 {
     // Perform actions to reinforce
-    std::cout << this->name << " is reinforcing troops!" << std::endl;
+    std::cout << "== REINFORCEMENT PHASE for " << this->name << " =="<< std::endl;
     unsigned long totalNbArmies = 0;
     if (this->nodes.size() >= MIN_NUMBER_OF_ARMIES)
     {
@@ -129,28 +129,29 @@ void Player::placeArmies(int nbArmies)
     }
     std::string answer;
     int targetNbArmies = 0;
-    std::cout << "On which countries would you like to place your " << nbArmies << " armies?" << std::endl;
     std::list<Node*>::iterator countryIter;
 
     Node* currentNode;
     for (countryIter = nodes.begin(); countryIter != nodes.end(); ++countryIter)
     {
         currentNode = *countryIter;
-        std::cout << "Put armies on " << currentNode->getCountry().getName() << "? (y/n)";
+        std::cout << "You now have " << nbArmies << " to place." << std::endl;
+        std::cout << "=== " << currentNode->getCountry().getName() << ": ";
+        std::cout << currentNode->getCountry().getNbrArmies() << " armie(s) ===" << std::endl;
+        std::cout << "Do you want to add armies? (y/n) ";
         std::cin >> answer;
         if (answer == "y") {
-            std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << "armies?" << std::endl;
-            while(targetNbArmies <= 0 || targetNbArmies >= nbArmies)
+            std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << " armie(s) ?" << std::endl;
+            while(targetNbArmies <= 0 || targetNbArmies > nbArmies)
             {
                 std::cout << "How many armies do you want to add? ";
                 std::cin >> targetNbArmies;
             }
             int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
-            nbArmies - targetNbArmies;
+            nbArmies -= targetNbArmies;
             std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
-            currentNode->getCountry().setNbrArmies(total);
+            currentNode->getPointerToCountry()->setNbrArmies(total);
         }
-        std::cout << "You now have " << nbArmies << " to place." << std::endl;
     }
     currentNode = nullptr;
     placeArmies(nbArmies);
