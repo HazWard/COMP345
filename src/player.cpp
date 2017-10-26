@@ -6,6 +6,7 @@
 */
 #include <iostream>
 #include <algorithm>
+#include <map>
 #include "../include/player.h"
 
 
@@ -83,15 +84,21 @@ int Player::roll(int nbOfDice)
     return roll;
 }
 
-void Player::reinforce()
+void Player::reinforce(std::map<string, Graph>* map)
 {
     // Perform actions to reinforce
     std::cout << this->name << " is reinforcing troops!" << std::endl;
-    int totalNbArmies = 0;
+    unsigned long totalNbArmies = 0;
     if (this->nodes.size() >= MIN_NUMBER_OF_ARMIES)
     {
         totalNbArmies = this->nodes.size() / MIN_NUMBER_OF_ARMIES;
         // TODO: Check if a whole continent is owned
+        std::list<std::string> continentsOwned =  getsContinentsOwned(map);
+
+        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
+            totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
+        }
+
         if(this->hand->getTotalCards() >= MIN_NUMBER_OF_CARDS)
         {
             totalNbArmies = (this->hand->exchange(Card::INFANTRY)) ? INFANTRY_BONUS + totalNbArmies : totalNbArmies;
@@ -191,13 +198,45 @@ bool Player::controlsAllCountriesInMap(Graph& map)
     return true;
 }
 
+list<string> Player::getsContinentsOwned(std::map<string, Graph>* continents) {
+    list<string> continentsOwned;
+    map<string, Graph>::reverse_iterator graphIterator;
+    //We iterate through all the continents and add the ones that the player completely owns
+    for (graphIterator = continents->rbegin(); graphIterator != continents->rend(); ++graphIterator) {
+        bool continentOwned = true;
+        Graph *current_continent = &(graphIterator->second);
+        vector<Node> *nodesInContinent = current_continent->getVectorOfNodes();
+        //we iterate through all the countries in the current continent and check if the player owns them all
+        for (int i = 0; i < nodesInContinent->size(); i++) {
+            bool countryOwned = false;
+            list<Node *>::const_iterator countryIterator;
+            //We iterate through all the countries the player owns and see if he owns the current country from the continent we are checking
+            for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator) {
+                if ((*nodesInContinent)[i].getCountry() == (*countryIterator)->getCountry()) {
+                    countryOwned = true;
+                    break;
+                }
+            }
+            //If the current country does not belong to the player, then the whole continent does not belong to them.
+            if (!countryOwned) {
+                //cout << "allo";
+                continentOwned = false;
+                break;
+            }
+        }
+        if (continentOwned)
+            continentsOwned.push_back(graphIterator->first);
+    }
+    return continentsOwned;
+}
+
 void Player::printNodes()
 {
-    list<Node*>::const_iterator iterator;
+    list<Node*>::const_iterator countryIterator;
     cout << "Countries that belong to " << name << ":" << endl;
-    for (iterator = nodes.begin(); iterator != nodes.end(); ++iterator)
+    for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
     {
-        Country c = (*iterator)->getCountry();
+        Country c = (*countryIterator)->getCountry();
         cout << c.getName() << "; ";
     }
     cout << endl << endl;

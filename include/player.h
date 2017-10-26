@@ -6,6 +6,7 @@
 */
 #pragma once
 #include <list>
+#include <map>
 #include "../include/cards.h"
 #include "../include/dice.h"
 #include "../include/map.h"
@@ -22,7 +23,7 @@ class Player
         Player(string n, Hand* playerHand, std::list<Node*>* playerNodes);
         ~Player();
         int roll(int nbOfDice);
-        void reinforce();
+        void reinforce(std::map<string, Graph>* graph);
         void attack();
         void fortify();
         string getName();
@@ -35,6 +36,7 @@ class Player
         void setDice(Dice* targetDice);
         void addCountry(Node* newCountry);
         void addNode(Node* newNode);
+        list<string> getsContinentsOwned(map<string, Graph>* continents);
     private:
         std::string name;
         static bool attack(Player* attacker, Player* defender, Country* attackingCountry, Country* defendingCountry);
