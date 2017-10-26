@@ -351,8 +351,18 @@ bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
     return true;
 }
 
-//Main for Part 2
-int main()
+//Main for Part 1
+void gameStartDriver()
+{
+    // The constructor verifies that the map loaded is valid.
+    // Invalid maps are rejected without the program crashing.
+    // Also, we check that the right number of players is created inside the constructor as well.
+    Game riskGame;
+}
+
+
+// Main for Part 2
+void startupPhaseDriver()
 {
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
@@ -422,13 +432,82 @@ int main()
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 	*/
-    return 0;
 }
 
-// Driver for reinforce
+//Main for Part 3
+void mainGameLoopDriver()
+{
+    /*The constructor verifies that the map loaded is valid.
+    Invalid maps are rejected without the program crashing.
+    Also, we check that the right number of players is created inside the constructor as well.*/
+    Game riskGame;
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* continents = riskGame.getContinents();
+
+    map<string, Graph>::reverse_iterator rit;
+    for (rit = (*continents).rbegin(); rit != (*continents).rend(); ++rit)
+    {
+        cout << "=============================|" << rit->first << "|=============================" << endl;
+        cout << rit->second;
+    }
+    cout << "Player order before we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << " ";
+    }
+    cout << endl;
+
+    riskGame.determinePlayerTurn();
+
+    cout << "Player order after we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << " ";
+    }
+    cout << endl << endl;
+
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    //Boolean is false until a player wins. this is the breaking condition of the main game loop
+    bool playerWins = false;
+
+    //We keep track of the winning player
+    Player* winningPlayer;
+
+    //Main game loop
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            //Each player gets to reinforce, attack and fortify
+            (*players)[i]->reinforce(continents);
+            (*players)[i]->attack();
+            (*players)[i]->fortify(*riskGame.getMapCountries());
+
+            //After each player's turn, we check if one player owns all the countries in the map
+            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
+                playerWins = true;
+                winningPlayer = (*players)[i];
+                break;
+            }
+        }
+    }
+    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+}
+
+// Main for Part 4
 void reinforceDriver()
 {
-    std::cout << "PART FOR REINFORCE" << std::endl;
     Game riskGame;
     vector<Player*>* players = riskGame.getArrayPlayers();
 
@@ -457,20 +536,19 @@ void reinforceDriver()
     }
 
     // Print state of map to see number of armies
-    for (countryIterator = (*continents).rbegin(); countryIterator != (*continents).rend(); ++countryIterator)
+    for (auto &node : *riskGame.getMapCountries()->getVectorOfNodes())
     {
-        cout << "=============================|" << countryIterator->first << "|=============================" << endl;
-        cout << countryIterator->second;
+        std::cout << node << std::endl;
     }
 }
-//Main for Part 1
-//int main()
-//{
-    /*The constructor verifies that the map loaded is valid.
-    Invalid maps are rejected without the program crashing.
-    Also, we check that the right number of players is created inside the constructor as well.*/
-//    Game riskGame;
-//}
+
+int main()
+{
+    gameStartDriver(); // Driver for Part 1
+    startupPhaseDriver(); // Driver for Part 2
+    mainGameLoopDriver(); // Driver for Part 3
+    reinforceDriver(); // Driver for Part 4
+}
 
 /* //Old Player Turn:
 vector<Player*> oldPlayerOrder = arrayPlayers;

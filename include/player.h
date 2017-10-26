@@ -37,10 +37,10 @@ class Player
         void addCountry(Node* newCountry);
         void addNode(Node* newNode);
         list<string> getsContinentsOwned(map<string, Graph>* continents);
+        bool controlsAllCountriesInMap(Graph& map);
     private:
         std::string name;
         static bool attack(Player* attacker, Player* defender, Country* attackingCountry, Country* defendingCountry);
-        bool controlsAllCountriesInMap(Graph& map);
         void placeArmies(int nbArmies);
         Hand* hand;
         Dice* dice;

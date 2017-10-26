@@ -134,23 +134,26 @@ void Player::placeArmies(int nbArmies)
     Node* currentNode;
     for (countryIter = nodes.begin(); countryIter != nodes.end(); ++countryIter)
     {
-        currentNode = *countryIter;
-        std::cout << "You now have " << nbArmies << " to place." << std::endl;
-        std::cout << "=== " << currentNode->getCountry().getName() << ": ";
-        std::cout << currentNode->getCountry().getNbrArmies() << " armie(s) ===" << std::endl;
-        std::cout << "Do you want to add armies? (y/n) ";
-        std::cin >> answer;
-        if (answer == "y") {
-            std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << " armie(s) ?" << std::endl;
-            while(targetNbArmies <= 0 || targetNbArmies > nbArmies)
-            {
-                std::cout << "How many armies do you want to add? ";
-                std::cin >> targetNbArmies;
+        if (nbArmies > 0)
+        {
+            currentNode = *countryIter;
+            std::cout << "You now have " << nbArmies << " to place." << std::endl;
+            std::cout << "=== " << currentNode->getCountry().getName() << ": ";
+            std::cout << currentNode->getCountry().getNbrArmies() << " armie(s) ===" << std::endl;
+            std::cout << "Do you want to add armies? (y/n) ";
+            std::cin >> answer;
+            if (answer == "y") {
+                std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << " armie(s) ?" << std::endl;
+                while(targetNbArmies <= 0 || targetNbArmies > nbArmies)
+                {
+                    std::cout << "How many armies do you want to add? ";
+                    std::cin >> targetNbArmies;
+                }
+                int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
+                nbArmies -= targetNbArmies;
+                std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
+                currentNode->getPointerToCountry()->setNbrArmies(total);
             }
-            int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
-            nbArmies -= targetNbArmies;
-            std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
-            currentNode->getPointerToCountry()->setNbrArmies(total);
         }
     }
     currentNode = nullptr;
