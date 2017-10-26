@@ -2,6 +2,8 @@
 #include <dirent.h>
 #include <iostream>
 #include <random>
+
+//Imports necessary on Windows G++ compilers
 #include <algorithm>
 #include <ctime>
 #include <chrono>
@@ -265,13 +267,22 @@ void Game::placeArmies()
         case 6: nbrArmiesPerPlayer = 20; break;
     }
 
-    //TODO: Place one army of every country owned before placing reinforcements
+
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     for(int i = 0; i < nbrPlayers; i++)
     {
+
         cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
         int nbrArmiesPlayer = nbrArmiesPerPlayer;
-        //While the player still has armies to place, we loop
+
+        cout << "Placing 1 army per owned Territory...";
+
+        //Places one army to every territory owned by the player
+        for(auto const &node : arrayPlayers[i]->getNodes()){
+            node->getCountry().setNbrArmies(1);
+            nbrArmiesPlayer--;
+        }
+
         while(nbrArmiesPlayer > 0) {
             bool validCountryName = false;
             Country *c;
