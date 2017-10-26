@@ -25,7 +25,7 @@ class Player
         int roll(int nbOfDice);
         void reinforce(std::map<string, Graph>* graph);
         void attack();
-        void fortify();
+        void fortify(Graph& map);
         string getName();
         std::list<Node*> getNodes();
         Hand* getHand();

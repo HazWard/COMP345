@@ -194,10 +194,74 @@ void Player::attack()
 
 }
 
-void Player::fortify()
+void Player::fortify(Graph& map)
 {
-    // Perform actions to fortify
-    std::cout << "Player is fortifying!" << std::endl;
+    string sourceStr;
+    int sourceIndex=-1;
+    string destinationStr;
+    int destinationIndex=-1;
+    int armNum;
+    bool validInput = false;
+    Node* sourceCtr = nullptr;
+    Node* destCtr = nullptr;
+
+    //this while loop asks for source and loops if not owned
+    do {
+        std::cout << "Please enter the source country ";
+        getline(cin, sourceStr);
+
+        list<Node*>::const_iterator sourceCountryIterator;
+
+        for (sourceCountryIterator = nodes.begin(); sourceCountryIterator != nodes.end(); ++sourceCountryIterator)
+        {
+            if (sourceStr==(*sourceCountryIterator)->getCountry().getName() && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
+                sourceCtr = *sourceCountryIterator;
+                validInput=true;
+                break;
+            }
+        }
+        if(!validInput)
+            std::cout << "Source country is not owned please enter a country you own" << std::endl;
+    }   while(!validInput);
+
+    validInput=false;
+
+    //this while loop asks for destination and loops if not owned
+    do {
+        std::cout << "Please enter the destination country ";
+        getline(cin, destinationStr);
+
+        list<Node*>::const_iterator destinationCountryIterator;
+
+        for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
+        {
+            if (destinationStr==(*destinationCountryIterator)->getCountry().getName() && map.areConnectedByEdge(*destinationCountryIterator, sourceCtr)) {
+                destCtr = *destinationCountryIterator;
+                validInput=true;
+                break;
+            }
+        }
+        if(!validInput)
+            std::cout << "Invalid destination. You entered a country that does not belong to you or is not a neighboring country of the source." << std::endl;
+    }   while(!validInput);
+
+    validInput=false;
+
+    while(armNum >= sourceCtr->getCountry().getNbrArmies() || armNum <= 0){
+
+        if(validInput)
+            std::cout << "invalid number of armies please reenter a valid number" << endl;
+        else
+            std::cout << "Please enter number of armies to move" << endl;
+
+        std::cin >> armNum;
+
+        validInput=true;
+    }
+    sourceCtr->getCountry().setNbrArmies(sourceCtr->getCountry().getNbrArmies() - armNum);
+    destCtr->getCountry().setNbrArmies(destCtr->getCountry().getNbrArmies() + armNum);
+
+
 }
 
 bool Player::attack(Player *attacker, Player *defender, Country *attackingCountry, Country *defendingCountry) {
