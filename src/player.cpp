@@ -266,9 +266,12 @@ void Player::fortify(Graph& map)
 
         validInput=true;
     }
-    sourceCtr->getCountry().setNbrArmies(sourceCtr->getCountry().getNbrArmies() - armNum);
-    destCtr->getCountry().setNbrArmies(destCtr->getCountry().getNbrArmies() + armNum);
+    sourceCtr->getPointerToCountry()->setNbrArmies(sourceCtr->getPointerToCountry()->getNbrArmies() - armNum);
+    destCtr->getPointerToCountry()->setNbrArmies(destCtr->getPointerToCountry()->getNbrArmies() + armNum);
     std::cout << armNum << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
+    std::cout << sourceCtr->getPointerToCountry()->getNbrArmies()<< endl;
+    std::cout << destCtr->getPointerToCountry()->getNbrArmies()<< endl;
+
     validInput=false;
 
 
