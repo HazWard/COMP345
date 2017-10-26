@@ -1,6 +1,7 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
+#include<list>
 #include <random>
 
 //Imports necessary on Windows G++ compilers
@@ -284,8 +285,7 @@ void Game::placeArmies()
 
         //Places one army to every territory owned by the player
         for(auto const &node : arrayPlayers[i]->getNodes()){
-            Country* country = node->getPointerToCountry();
-            country->setNbrArmies(1);
+            node->getPointerToCountry()->setNbrArmies(1);
             nbrArmiesPlayer--;
         }
 
@@ -429,6 +429,45 @@ int main()
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 	*/
     return 0;
+}
+
+// Driver for reinforce
+void reinforceDriver()
+{
+    std::cout << "PART FOR REINFORCE" << std::endl;
+    Game riskGame;
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* continents = riskGame.getContinents();
+    map<string, Graph>::reverse_iterator countryIterator;
+
+    riskGame.determinePlayerTurn();
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    bool playerWins = false;
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            (*players)[i]->reinforce(continents);
+        }
+        playerWins = true; // Force quit for Demo
+    }
+
+    // Print state of map to see number of armies
+    for (countryIterator = (*continents).rbegin(); countryIterator != (*continents).rend(); ++countryIterator)
+    {
+        cout << "=============================|" << countryIterator->first << "|=============================" << endl;
+        cout << countryIterator->second;
+    }
 }
 //Main for Part 1
 //int main()

@@ -169,3 +169,8 @@ void Hand::display(void){
     cout << "This hand contains " << inf << " infantry cards, " << cav << " cavalry cards, and "
     << art << " artillery cards." << endl;
 }
+
+int Hand::getTotalCards()
+{
+    return inf + art + cav;
+}

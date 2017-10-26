@@ -241,3 +241,11 @@ void Graph::visitAdjacentNodes(vector<Node*> adjListNode)
 		}
 	}
 }
+
+bool Graph::areConnectedByEdge(Node* n1, Node* n2) {
+    for (int i = 0; i < n1->getAdjList().size(); i++) {
+        if (n1->getAdjList()[i] == n2)
+            return true;
+    }
+    return false;
+}
