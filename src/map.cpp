@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <set>
 #include "../include/map.h"
 
 
@@ -256,4 +257,23 @@ void Graph::visitAdjacentNodes(vector<Node*> adjListNode)
 			}
 		}
 	}
+}
+
+bool Graph::areConnectedThroughOwned(Graph g, int source, int destination)
+{
+
+
+    if (source == destination)
+    {
+        return true;
+    }
+    else // If current vertex is not destination
+    {
+        // Recur for all the vertices adjacent to current vertex
+        list<int>::iterator i;
+        for (i = vectorOfNodes[source].begin(); i != vectorOfNodes[source].end(); ++i)
+            if (!visited[*i])
+                areConnectedThroughOwned(*i, destination);
+    }
+
 }

@@ -91,42 +91,72 @@ void Player::attack()
 
 void Player::fortify()
 {
-    string source;
-    string destination;
+    string sourceStr;
+    int sourceIndex=-1;
+    string destinationStr;
+    int destinationIndex=-1;
     int armNum;
     bool attempted = false;
 
-    //Check if countries are connected
-    while(/*source and destination are not connected*/) {
-        if(attempted)
-            cout << "Countries entered are not connected try again" << endl;
-        //Ask for source country
-        std::cout << "Please enter the source country" << std::endl;
-        std::cin >> source;
-        //Verify eligibility
-        while (/*Code to check if country is owned by player*/) {
-            std::cout << "Country is not owned please enter a country you own" << std::endl;
-            std::cin >> source;
-        }
+    //this while loop asks for source and loops if not owned
+    while (sourceIndex<0) {
 
-        //Ask for destination country
-        std::cout << "Please enter the destination country" << std::endl;
-        std::cin >> destination;
-        //Verify eligibility
-        while (/*Code to check if country is owned by player*/) {
+        if(attempted)
             std::cout << "Country is not owned please enter a country you own" << std::endl;
-            std::cin >> destination;
+        else
+            std::cout << "Please enter the source country" << std::endl;
+
+        std::cin >> sourceStr;
+
+        //Check if owned and get index
+        for(int i =0 ; i< this->countries.size() ; i++) {
+                if (sourceStr==countries[i]->getCountry().getName())
+                    sourceIndex=i;
         }
         attempted=true;
     }
 
-    //Ask for number of armies to move
-    std::cout << "Please enter number of armies to move" << endl;
-    std::cin >> armNum;
-    while(armNum >= /*source army number*/ || armNum <= 0){
-        std::cout << "invalid number of armies please reenter a valid number" << endl;
+    attempted=false;
+
+    //this while loop asks for destination and loops if not owned or if not connected to source through owned countries
+    while (destinationIndex<0 || false) {//when not connected through owned countries is implemented change condition
+
+        if(false)//when not connected through owned countries is implemented change condition
+            std::cout << "Destination is not connected to source please enter a country connected to source" << std::endl;
+        if(attempted)
+            std::cout << "Country is not owned please enter a country you own" << std::endl;
+        else
+            std::cout << "Please enter the destination country" << std::endl;
+
+        std::cin >> destinationStr;
+
+        //Check if owned and get index
+        for(int i =0 ; i< this->countries.size() ; i++) {
+                if (destinationStr==countries[i]->getCountry().getName())
+                        destinationIndex=i;
+            }
+
+
+
+            attempted=true;
+        }
+
+    attempted=false;
+
+    while(armNum >= this->countries[sourceIndex]->getCountry().getNbrArmies() || armNum <= 0){
+
+        if(attempted)
+            std::cout << "invalid number of armies please reenter a valid number" << endl;
+        else
+            std::cout << "Please enter number of armies to move" << endl;
+
         std::cin >> armNum;
+
+        attempted=true;
     }
 
-    source.setNumberOfArmies()
+    //Setting new number of armies in source and destination
+    this->countries[sourceIndex]->getCountry().setNbrArmies(this->countries[sourceIndex]->getCountry().getNbrArmies()-armNum);
+    this->countries[destinationIndex]->getCountry().setNbrArmies(this->countries[sourceIndex]->getCountry().getNbrArmies()+armNum);
+    std::cout << armNum+" armies have benn moved from "+sourceStr+" to "+destinationStr << std::endl;
 }

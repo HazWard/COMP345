@@ -4,6 +4,7 @@ using namespace std;
 
 #include <string>
 #include <vector>
+#include <set>
 
 class Country
 {
@@ -58,6 +59,7 @@ public:
 	//void addEdges(Node masterNode, Node listOfNodes[]);
 	void addNode(Node &n);
 	void addEdge(Node& n1, Node& n2);
+	bool areConnectedThroughOwned(int source, int destination);
 	vector<Node>* getVectorOfNodes();
 	int getNbrCountries();
 	bool isGraphConnected();
