@@ -226,8 +226,19 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
             cout << this->getName() << ", you won!" << endl;
 
             //Trying to add the conquered country to the winner's list and removing from the loser's list
-            defendingPlayer->getNodes().remove(&(*iterator->second));
-            this->nodes.push_back(&(*iterator->second));
+
+            std::list<Node*>::iterator it;
+            for(it = defendingPlayer->nodes.begin(); it != defendingPlayer->nodes.end(); it++) {
+                Node *thisNode = *nodeIterator;
+                if(thisNode->getPointerToCountry()->getName() == (*iterator).second->getPointerToCountry()->getName()){
+                    nodeIterator = defendingPlayer->getNodes().erase(nodeIterator);
+                    break;
+                }
+            }
+
+            Node* n = (*iterator).second;
+//            defendingPlayer->getNodes().remove(n);
+            this->nodes.push_back(n);
 
             //Sending one army from the victorious country to the conquered country
             iterator->first->getPointerToCountry()->setNbrArmies(iterator->first->getPointerToCountry()->getNbrArmies() - 1);
