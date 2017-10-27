@@ -550,7 +550,38 @@ void reinforceDriver()
 // Main for Part 5
 void attackDriver()
 {
-    // TODO: Add implementation
+    Game riskGame;
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* continents = riskGame.getContinents();
+    map<string, Graph>::reverse_iterator countryIterator;
+
+    riskGame.determinePlayerTurn();
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    bool playerWins = false;
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            (*players)[i]->attack(*riskGame.getMapCountries(), *riskGame.getArrayPlayers());
+        }
+        playerWins = true; // Force quit for Demo
+    }
+
+    // Print state of map to see number of armies
+    for (auto &node : *riskGame.getMapCountries()->getVectorOfNodes())
+    {
+        std::cout << node << std::endl;
+    }
 }
 
 // Main for Part 6

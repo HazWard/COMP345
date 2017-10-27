@@ -160,7 +160,7 @@ void Player::placeArmies(int nbArmies)
     placeArmies(nbArmies);
 }
 
-void Player::attack()
+void Player::attack(Graph& map, std::vector<Player*> &players)
 {
     /*
     Provide a group of C++ classes that implement the attack phase following the official rules of the game of Risk. In
