@@ -327,6 +327,13 @@ bool Player::containsNode(Node &node){
 void Player::fortify(Graph& map)
 {
     cout << "========== Fortification ==========" << endl;
+    std::string option;
+    cout << this->getName() << ", Would you like to fortify? (y/n)";
+    cin >> option;
+    if(option == "n"){
+        return;
+    }
+
     string sourceStr;
     string destinationStr;
     int armNum;
