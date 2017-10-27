@@ -547,15 +547,6 @@ void reinforceDriver()
     }
 }
 
-int main()
-{
-    gameStartDriver(); // Driver for Part 1
-    startupPhaseDriver(); // Driver for Part 2
-    mainGameLoopDriver(); // Driver for Part 3
-    reinforceDriver(); // Driver for Part 4
-    fortifyDriver(); // Driver for Part 6
-}
-
 // Main for Part 6
 void fortifyDriver()
 {
@@ -610,7 +601,7 @@ void fortifyDriver()
     Player* winningPlayer;
 
     //Main game loop
-	/*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
+    /*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
     while(!playerWins)
     {
         for(int i = 0; i < players->size(); i++)
@@ -628,7 +619,40 @@ void fortifyDriver()
         }
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
-	*/
+    */
+}
+
+int main()
+{
+    int part = 0;
+    while(part >= 0)
+    {
+        std::cout << "Please choose a part to run: ";
+        std::cin >> part;
+        switch(part) {
+            case 1 : std::cout << "== PART 1 == ";
+                gameStartDriver(); // Driver for Part 1
+                break;
+            case 2 : std::cout << "== PART 2 == ";
+                startupPhaseDriver(); // Driver for Part 2
+                break;
+            case 3 : std::cout << "== PART 3 == ";
+                mainGameLoopDriver(); // Driver for Part 3
+                break;
+            case 4 : std::cout << "== PART 4 == ";
+                reinforceDriver(); // Driver for Part 4
+                break;
+            case 5 : std::cout << "== PART 5 == ";
+                reinforceDriver(); // Driver for Part 5
+                break;
+            case 6 : std::cout << "== PART 6 == ";
+                fortifyDriver(); // Driver for Part 6
+                break;
+            default:
+                part = -1;
+                break;
+        }
+    }
 }
 
 /* //Old Player Turn:
