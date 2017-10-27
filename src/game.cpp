@@ -547,6 +547,12 @@ void reinforceDriver()
     }
 }
 
+// Main for Part 5
+void attackDriver()
+{
+    // TODO: Add implementation
+}
+
 // Main for Part 6
 void fortifyDriver()
 {
@@ -643,7 +649,7 @@ int main()
                 reinforceDriver(); // Driver for Part 4
                 break;
             case 5 : std::cout << "== PART 5 == ";
-                reinforceDriver(); // Driver for Part 5
+                attackDriver(); // Driver for Part 5
                 break;
             case 6 : std::cout << "== PART 6 == ";
                 fortifyDriver(); // Driver for Part 6
