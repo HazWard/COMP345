@@ -411,7 +411,7 @@ int main()
 //            cout << *node;
 //        }
 //    }
-    play[0]->attack();
+    play[0]->attack(*riskGame.getMapCountries(), play);
 
 
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
