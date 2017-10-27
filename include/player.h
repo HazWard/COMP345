@@ -40,9 +40,13 @@ class Player
         bool controlsAllCountriesInMap(Graph& map);
     private:
         std::string name;
-        static bool attack(Player* attacker, Player* defender, Country* attackingCountry, Country* defendingCountry);
+        static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
+        bool controlsAllCountriesInMap(Graph& map);
         void placeArmies(int nbArmies);
         Hand* hand;
         Dice* dice;
         std::list<Node*> nodes;
+        bool containsNode(Node &node);
+
+    void removeNode(Node *n);
 };

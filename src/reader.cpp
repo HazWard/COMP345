@@ -109,6 +109,7 @@ Parser::Parser(string fileName) {
 			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
 			nodes->push_back(Node(Country(lineData[0], lineData[3], 0)));
 
+            //Adding this territory to the continents
 			map<string, Graph>::reverse_iterator rit;
 			for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
 			{
@@ -124,10 +125,11 @@ Parser::Parser(string fileName) {
 		graph = new Graph(nodes->size(), *nodes);
 
 		for (int i = territoryStart; i < lines.size(); i++) {
-			Node* currentNode = new Node;
+			Node* currentNode = new Node();
 			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
 
 			for (int k = 0; k < nodes->size(); k++) {
+                //I don't know what this is doing, whoever wrote this please explain what is going on - Emilio
 				if ((*nodes)[k].getCountry().getName() == lineData[0]) {
 					currentNode = &(*nodes)[k];
 					break;
@@ -154,8 +156,8 @@ Parser::Parser(string fileName) {
 					{
 						if ((*nodes)[k].getCountry().getName() == lineData[j])
 						{
-							Node* add = &((*nodes)[k]);
-							graph->addEdge(*currentNode, *add);
+							Node *add = &(*nodes)[k];
+							graph->addEdge(currentNode, add);
 						}
 					}
 					if (currentContinentIsValid)
@@ -166,7 +168,7 @@ Parser::Parser(string fileName) {
 							if ((*nodesInCurrentContinent)[k].getCountry().getName() == lineData[j])
 							{
 								Node* add = &((*nodesInCurrentContinent)[k]);
-								currentContinent->addEdge(*currentNode, *add);
+								currentContinent->addEdge(currentNode, add);
 							}
 						}
 					}
