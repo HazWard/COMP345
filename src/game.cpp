@@ -281,7 +281,7 @@ void Game::placeArmies()
         cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
         int nbrArmiesPlayer = nbrArmiesPerPlayer;
 
-        cout << "Placing 1 army per owned Territory...";
+        cout << "Placing 1 army per owned Territory..." << endl;
 
         //Places one army to every territory owned by the player
         for(auto const &node : arrayPlayers[i]->getNodes()){
@@ -513,7 +513,7 @@ void mainGameLoopDriver()
         {
             //Each player gets to reinforce, attack and fortify
             (*players)[i]->reinforce(continents);
-            (*players)[i]->attack();
+            (*players)[i]->attack(*riskGame.getMapCountries(), play);
             (*players)[i]->fortify(*riskGame.getMapCountries());
 
             //After each player's turn, we check if one player owns all the countries in the map

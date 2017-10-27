@@ -41,7 +41,6 @@ class Player
     private:
         std::string name;
         static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
-        bool controlsAllCountriesInMap(Graph& map);
         void placeArmies(int nbArmies);
         Hand* hand;
         Dice* dice;

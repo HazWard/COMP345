@@ -326,6 +326,7 @@ bool Player::containsNode(Node &node){
 
 void Player::fortify(Graph& map)
 {
+    cout << "========== Fortification ==========" << endl;
     string sourceStr;
     string destinationStr;
     int armNum;
@@ -333,43 +334,51 @@ void Player::fortify(Graph& map)
     Node* sourceCtr = nullptr;
     Node* destCtr = nullptr;
 
+    cout << this->getName() << ", here are the countries you own: " << endl;
+    for(auto const &node : this->nodes){
+        cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
+    }
+
     //this while loop asks for source and loops if not owned
     do {
-        std::cout << "Please enter the source country ";
+        std::cout << "Please enter the source country: ";
         getline(cin, sourceStr);
 
         list<Node*>::const_iterator sourceCountryIterator;
-
         for (sourceCountryIterator = nodes.begin(); sourceCountryIterator != nodes.end(); ++sourceCountryIterator)
         {
-            if (sourceStr==(*sourceCountryIterator)->getCountry().getName() && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
+            if (sourceStr == (*sourceCountryIterator)->getCountry().getName() && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
                 sourceCtr = *sourceCountryIterator;
                 validInput=true;
                 break;
             }
         }
         if(!validInput)
-            std::cout << "Source country is not owned please enter a country you own" << std::endl;
+            std::cout << "Invalid entry. You must own the country and it must have more than 1 armies." << std::endl;
     }   while(!validInput);
 
     validInput=false;
 
     //this while loop asks for destination and loops if not owned or if not connected to source
     do {
-        std::cout << "Please enter the destination country ";
+        cout << "Here are the valid destinations for this country." << endl;
+        std::set<Node*> destinations = std::set<Node*>();
+        for(auto const &node : this->nodes){
+            for(auto const &node2 : sourceCtr->getAdjList()){
+                if(node->getPointerToCountry()->getName() == node2->getPointerToCountry()->getName()){
+                    destinations.insert(node);
+                }
+            }
+        }
+        for(auto const &node : destinations){
+            cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
+        }
+
+
+        std::cout << "Please enter the destination country: ";
         getline(cin, destinationStr);
 
         list<Node*>::const_iterator destinationCountryIterator;
-
-     /*   for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
-        {
-            if (destinationStr==(*destinationCountryIterator)->getCountry().getName() && map.areConnectedByEdge(*destinationCountryIterator, sourceCtr)) {
-                destCtr = *destinationCountryIterator;
-                validInput=true;
-                break;
-            }
-        }
-        */
         for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
         {
             if (destinationStr==(*destinationCountryIterator)->getCountry().getName())
