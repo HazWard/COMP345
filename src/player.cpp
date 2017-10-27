@@ -6,6 +6,7 @@
 */
 #include <iostream>
 #include <algorithm>
+#include <set>
 #include <map>
 #include "../include/player.h"
 
@@ -87,7 +88,7 @@ int Player::roll(int nbOfDice)
 void Player::reinforce(std::map<string, Graph>* map)
 {
     // Perform actions to reinforce
-    std::cout << this->name << " is reinforcing troops!" << std::endl;
+    std::cout << "== REINFORCEMENT PHASE for " << this->name << " =="<< std::endl;
     unsigned long totalNbArmies = 0;
     if (this->nodes.size() >= MIN_NUMBER_OF_ARMIES)
     {
@@ -129,43 +130,129 @@ void Player::placeArmies(int nbArmies)
     }
     std::string answer;
     int targetNbArmies = 0;
-    std::cout << "On which countries would you like to place your " << nbArmies << " armies?" << std::endl;
     std::list<Node*>::iterator countryIter;
 
     Node* currentNode;
     for (countryIter = nodes.begin(); countryIter != nodes.end(); ++countryIter)
     {
-        currentNode = *countryIter;
-        std::cout << "Put armies on " << currentNode->getCountry().getName() << "? (y/n)";
-        std::cin >> answer;
-        if (answer == "y") {
-            std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << "armies?" << std::endl;
-            while(targetNbArmies <= 0 || targetNbArmies >= nbArmies)
-            {
-                std::cout << "How many armies do you want to add? ";
-                std::cin >> targetNbArmies;
+        if (nbArmies > 0)
+        {
+            currentNode = *countryIter;
+            std::cout << "You now have " << nbArmies << " to place." << std::endl;
+            std::cout << "=== " << currentNode->getCountry().getName() << ": ";
+            std::cout << currentNode->getCountry().getNbrArmies() << " armie(s) ===" << std::endl;
+            std::cout << "Do you want to add armies? (y/n) ";
+            std::cin >> answer;
+            if (answer == "y") {
+                std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << " armie(s) ?" << std::endl;
+                while(targetNbArmies <= 0 || targetNbArmies > nbArmies)
+                {
+                    std::cout << "How many armies do you want to add? ";
+                    std::cin >> targetNbArmies;
+                }
+                int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
+                nbArmies -= targetNbArmies;
+                std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
+                currentNode->getPointerToCountry()->setNbrArmies(total);
             }
-            int total = targetNbArmies + currentNode->getCountry().getNbrArmies();
-            nbArmies - targetNbArmies;
-            std::cout << "Setting number of armies on " << currentNode->getCountry().getName() << " to " << total << std::endl;
-            currentNode->getCountry().setNbrArmies(total);
         }
-        std::cout << "You now have " << nbArmies << " to place." << std::endl;
     }
     currentNode = nullptr;
     placeArmies(nbArmies);
 }
 
-void Player::attack()
+void Player::attack(Graph& map, std::vector<Player*> &players)
 {
+    cout << this->getName() << ", do you wish to attack this turn? (y/n)";
+    std::string willAttack;
+    cin >> willAttack;
+    if(willAttack == "n"){
+        return;
+    }
+
+    //TODO: Reevaluate the countries you can attack after every attack
+
+    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
+    std::list<Node *>::iterator nodeIterator;
+    for (nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++) {
+        Node *currentNode = *nodeIterator;
+        if (currentNode->getPointerToCountry()->getNbrArmies() >= 2) {
+            for (auto const &node : currentNode->getAdjList()) {
+                if (!containsNode(*node)) {
+                    Node *toAttack;
+                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
+                        if (map.getVectorOfNodes()->at(i).getPointerToCountry()->getName()
+                            == node->getPointerToCountry()->getName()) {
+                            toAttack = &map.getVectorOfNodes()->at(i);
+                            break;
+                        }
+                    }
+                    canAttack.insert(make_pair(currentNode, toAttack));
+                }
+            }
+        }
+    }
+
+    std::map<Node *, Node *>::iterator iterator;
+    for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
+        cout << this->getName() << ", you can attack " << iterator->second->getPointerToCountry()->getName()
+             << " from your country " << iterator->first->getPointerToCountry()->getName() << "." << endl;
+        cout << "You have " << iterator->first->getPointerToCountry()->getNbrArmies() << " armies and they have " <<
+             iterator->second->getPointerToCountry()->getNbrArmies() << " armies." << endl;
+        cout << "DO YOU WISH TO ATTACK? (y/n)";
+        std::string answer;
+        cin >> answer;
+        if (answer != "y") {
+            continue;
+        }
+        Player *defendingPlayer;
+        //find who the other node belongs to
+        for (int i = 0; i < players.size(); i++) {
+            if (players.at(i)->getName() == this->getName()) { //the player is this player
+                continue;
+            }
+            for (auto const &node : players.at(i)->getNodes()) {
+                if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
+                    defendingPlayer = &(*players.at(i));
+                    break;
+                }
+            }
+        }
+        bool wonBattle = this->attack(*this, *defendingPlayer, *(iterator->first->getPointerToCountry()),
+                                      *(iterator->second->getPointerToCountry()));
+        if (wonBattle) {
+            cout << this->getName() << ", you won!" << endl;
+
+            //Add the conquered country to the winner's list and removing from the loser's list
+            Node *n = (*iterator).second;
+            defendingPlayer->removeNode(n);
+            this->nodes.push_back(n);
+
+            //Sending one army from the victorious country to the conquered country
+            iterator->first->getPointerToCountry()->setNbrArmies(
+                    iterator->first->getPointerToCountry()->getNbrArmies() - 1);
+            iterator->second->getPointerToCountry()->setNbrArmies(1);
+
+            cout << "=============================================" <<
+                "Here are your countries after the battle." << endl;
+            for (auto const &node : this->getNodes()) {
+                cout << *node << endl;
+            }
+            cout << "=============================================" <<
+                 "Here are the defenders countries after the battle." << endl;
+            for (auto const &node : defendingPlayer->getNodes()) {
+                cout << *node << endl;
+            }
+        } else {
+            cout << "You lost this battle! Better luck next time." << endl;
+        }
+    }
+    cout << "That concludes all your attacks, " << this->getName() << "." << endl;
+}
+
+bool Player::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
+    //TODO: Write the code that will encapsulate the attacking process according to the Risk rules
     /*
-    Provide a group of C++ classes that implement the attack phase following the official rules of the game of Risk. In
-    this phase, the player is allowed to declare a series of attacks to try to gain control of additional countries, and
-    eventually control the entire map. The attack phase follows the following loop:
-     The player decides if it will attack or not. If not, the attack phase is over.
-     The player selects one of its countries to attack from, and one of the neighbors of this country to attack
-    (i.e. the attacked country belongs to another player). The attacking country must have at least 2 armies
-    on it.
      The attacker and defender players choose the number of dice to roll for their attack/defense. The attacker
     is allowed 1 to 3 dice, with the maximum number of dice being the number of armies on the attacking
     country, minus one. The defender is allowed 1 to 2 dice, with the maximum number of dice being the
@@ -175,27 +262,71 @@ void Player::attack()
      If the attacked country runs out of armies, it has been defeated. The defending country now belongs to
     the attacking player. The attacker is allowed to move a number of armies from the attacking country to the
     attacked country, in the range [1 to (number of armies on attacking country -1)].
-     The player is allowed to initiate any number of attacks per turn, including 0.
-    You must deliver a driver that demonstrates that 1) only valid attacks can be declared (i.e. valid attacker/attacked
-    country); 2) only valid number of dice can be chosen by the attacker/defender; 3) given known dice values, that
-    the right number of armies are deducted on the attacker/defender; 4) the attacker is allowed to initiate multiple
-    attacks, until it declares that it does not want to attack anymore.
      */
+    int rounds = 1;
+    while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
+        cout << "Round " << rounds << "." << endl;
+        int attackerDice = attackingCountry.getNbrArmies() >= 4 ? 3 : attackingCountry.getNbrArmies() - 1;
+        int defenderDice = defendingCountry.getNbrArmies() >= 2 ? 2 : 1;
 
+        //Getting vectors of dice rolls
+        std::vector<int> attackerDiceRolls = attacker.dice->howManyDice(attackerDice);
+        std::vector<int> defenderDiceRolls = defender.dice->howManyDice(defenderDice);
 
-    //TODO: Step 1, find the countries it can attack
-//    1
-    //TODO: Step 2, declare attacks
+        //Sorting the dice roll vectors in descending order
+        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
 
-    //TODO: Step 3, perform the attacking, possibly using some static function to perform the attacking
+        //iterating through the dice rolls, until run our of descending dice
+        for(int i = 0; i < defenderDiceRolls.size(); i++){
+            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
+            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+                attackingCountry.setNbrArmies(attackingCountry.getNbrArmies() - 1);
+            }
+            else{
+                defendingCountry.setNbrArmies(defendingCountry.getNbrArmies() - 1);
+            }
+            if(defendingCountry.getNbrArmies() == 0){
+                return true;
+            }
+            else if(attackingCountry.getNbrArmies() == 1){
+                return false;
+            }
+        }
+        rounds++;
+    }
+    return false;
+}
 
-    //TODO: Step 4, conclude attacks and test results
+void Player::removeNode(Node* n)
+{
+    list<Node*>::const_iterator countryIterator;
+    for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
+    {
+        if(*countryIterator == n)
+        {
+            nodes.erase(countryIterator++);  // alternatively, i = items.erase(i);
+        }
+    }
+}
 
-
+bool Player::containsNode(Node &node){
+    std::list<Node*>::iterator nodeIterator;
+    for(nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++){
+        //TODO: Uncomment this once and remove other if statement the adjacency list contains pointers not copies
+//        if(*nodeIterator == &node){
+//            return true;
+//        }
+        if((*nodeIterator)->getPointerToCountry()->getName() == node.getPointerToCountry()->getName()){
+            return true;
+        }
+    }
+    return false;
 }
 
 void Player::fortify(Graph& map)
 {
+    cout << "========== Fortification ==========" << endl;
     string choice;
     string sourceStr;
     string destinationStr;
@@ -204,6 +335,11 @@ void Player::fortify(Graph& map)
     Node* sourceCtr = nullptr;
     Node* destCtr = nullptr;
 
+    cout << this->getName() << ", here are the countries you own: " << endl;
+    for(auto const &node : this->nodes){
+        cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
+    }
+
     std::cout << "Do you wish to fortify" << std::endl;
     std::cin >> choice ;
     if (choice.compare("n") != 0)
@@ -211,41 +347,44 @@ void Player::fortify(Graph& map)
 
     //this while loop asks for source and loops if not owned
     do {
-        std::cout << "Please enter the source country ";
+        std::cout << "Please enter the source country: ";
         getline(cin, sourceStr);
 
         list<Node*>::const_iterator sourceCountryIterator;
-
         for (sourceCountryIterator = nodes.begin(); sourceCountryIterator != nodes.end(); ++sourceCountryIterator)
         {
-            if (sourceStr==(*sourceCountryIterator)->getCountry().getName() && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
+            if (sourceStr == (*sourceCountryIterator)->getCountry().getName() && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
                 sourceCtr = *sourceCountryIterator;
                 validInput=true;
                 break;
             }
         }
         if(!validInput)
-            std::cout << "Source country is not owned please enter a country you own" << std::endl;
+            std::cout << "Invalid entry. You must own the country and it must have more than 1 armies." << std::endl;
     }   while(!validInput);
 
     validInput=false;
 
     //this while loop asks for destination and loops if not owned or if not connected to source
     do {
-        std::cout << "Please enter the destination country ";
+        cout << "Here are the valid destinations for this country." << endl;
+        std::set<Node*> destinations = std::set<Node*>();
+        for(auto const &node : this->nodes){
+            for(auto const &node2 : sourceCtr->getAdjList()){
+                if(node->getPointerToCountry()->getName() == node2->getPointerToCountry()->getName()){
+                    destinations.insert(node);
+                }
+            }
+        }
+        for(auto const &node : destinations){
+            cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
+        }
+
+
+        std::cout << "Please enter the destination country: ";
         getline(cin, destinationStr);
 
         list<Node*>::const_iterator destinationCountryIterator;
-
-     /*   for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
-        {
-            if (destinationStr==(*destinationCountryIterator)->getCountry().getName() && map.areConnectedByEdge(*destinationCountryIterator, sourceCtr)) {
-                destCtr = *destinationCountryIterator;
-                validInput=true;
-                break;
-            }
-        }
-        */
         for (destinationCountryIterator = nodes.begin(); destinationCountryIterator != nodes.end(); ++destinationCountryIterator)
         {
             if (destinationStr==(*destinationCountryIterator)->getCountry().getName())
@@ -279,11 +418,6 @@ void Player::fortify(Graph& map)
     validInput=false;
 
 
-}
-
-bool Player::attack(Player *attacker, Player *defender, Country *attackingCountry, Country *defendingCountry) {
-    //TODO: Write the code that will encapsulate the attacking process according to the Risk rules
-    return false;
 }
 
 

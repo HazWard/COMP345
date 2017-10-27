@@ -80,15 +80,15 @@ void Node::setAdjList(vector<Node *> newAdjList) {
 void Node::setVisited(bool v) { this->visited = v; }
 
 //Method used to add a pointer to a node to the ajacency list of this node
-void Node::addNode(Node& n)
+void Node::addNode(Node *n)
 {
 	for (size_t i = 0; i < adjList.size(); i++)
 	{
 		//If the country is already in the adjacency list, we don't add it to avoid duplicates
-		if (adjList[i]->getCountry() == n.getCountry())
+		if (adjList[i]->getCountry() == n->getCountry())
 			return;
 	}
-	this->adjList.push_back(&n);
+	this->adjList.push_back(n);
 }
 
 //The << operator is overloaded for Country to be able to print Country objects
@@ -139,18 +139,18 @@ void Graph::addNode(Node& n)
 
 //Method to add an edge between two nodes in the graph.
 //It uses the method addNode() of each node that are to be connected.
-void Graph::addEdge(Node& n1, Node& n2)
+void Graph::addEdge(Node *n1, Node *n2)
 {
 	/*
 	Creating a new edge by connecting two nodes together.
 	*/
 	for (size_t i = 0; i < vectorOfNodes.size(); i++)
 	{
-		if (vectorOfNodes[i].getCountry() == n1.getCountry())
+		if (vectorOfNodes[i].getPointerToCountry()->getName() == n1->getPointerToCountry()->getName())
 		{
 			vectorOfNodes[i].addNode(n2);
 		}
-		if (vectorOfNodes[i].getCountry() == n2.getCountry())
+		if (vectorOfNodes[i].getPointerToCountry()->getName() == n2->getPointerToCountry()->getName())
 		{
 			vectorOfNodes[i].addNode(n1);
 		}
