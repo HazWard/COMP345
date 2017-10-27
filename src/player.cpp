@@ -196,12 +196,18 @@ void Player::attack()
 
 void Player::fortify(Graph& map)
 {
+    string choice;
     string sourceStr;
     string destinationStr;
     int armNum;
     bool validInput = false;
     Node* sourceCtr = nullptr;
     Node* destCtr = nullptr;
+
+    std::cout << "Do you wish to fortify" << std::endl;
+    std::cin >> choice ;
+    if (choice.compare("n") != 0)
+        return;
 
     //this while loop asks for source and loops if not owned
     do {
