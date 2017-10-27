@@ -160,21 +160,6 @@ void Player::placeArmies(int nbArmies)
 
 void Player::attack(Graph& map, std::vector<Player*> &players)
 {
-    /*
-    Provide a group of C++ classes that implement the attack phase following the official rules of the game of Risk. In
-    this phase, the player is allowed to declare a series of attacks to try to gain control of additional countries, and
-    eventually control the entire map. The attack phase follows the following loop:
-     The player decides if it will attack or not. If not, the attack phase is over.
-     The player selects one of its countries to attack from, and one of the neighbors of this country to attack
-    (i.e. the attacked country belongs to another player). The attacking country must have at least 2 armies
-    on it.
-     The player is allowed to initiate any number of attacks per turn, including 0.
-    You must deliver a driver that demonstrates that 1) only valid attacks can be declared (i.e. valid attacker/attacked
-    country); 2) only valid number of dice can be chosen by the attacker/defender; 3) given known dice values, that
-    the right number of armies are deducted on the attacker/defender; 4) the attacker is allowed to initiate multiple
-    attacks, until it declares that it does not want to attack anymore.
-     */
-
     cout << this->getName() << ", do you wish to attack this turn? (y/n)";
     std::string willAttack;
     cin >> willAttack;
@@ -237,11 +222,28 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
             }
         }
         bool wonBattle = this->attack(*this, *defendingPlayer, *(iterator->first->getPointerToCountry()), *(iterator->second->getPointerToCountry()));
+        if(wonBattle){
+            cout << this->getName() << ", you won!" << endl;
+
+            //Trying to add the conquered country to the winner's list and removing from the loser's list
+            defendingPlayer->getNodes().remove(&(*iterator->second));
+            this->nodes.push_back(&(*iterator->second));
+
+            //Sending one army from the victorious country to the conquered country
+            iterator->first->getPointerToCountry()->setNbrArmies(iterator->first->getPointerToCountry()->getNbrArmies() - 1);
+            iterator->second->getPointerToCountry()->setNbrArmies(1);
+
+            cout << "Here are your countries after the battle." << endl;
+            for(auto const &node : this->getNodes()){
+                cout << *node << endl;
+            }
+            cout << "Here are the defenders countries after the battle." << endl;
+            for(auto const &node : defendingPlayer->getNodes()){
+                cout << *node << endl;
+            }
+
+        }
     }
-    //TODO: Step 3, perform the attacking, possibly using some static function to perform the attacking
-
-    //TODO: Step 4, conclude attacks and test results
-
 
 }
 
@@ -258,11 +260,37 @@ bool Player::attack(Player &attacker, Player &defender, Country &attackingCountr
     the attacking player. The attacker is allowed to move a number of armies from the attacking country to the
     attacked country, in the range [1 to (number of armies on attacking country -1)].
      */
+    int rounds = 1;
     while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
+        cout << "Round " << rounds << "." << endl;
         int attackerDice = attackingCountry.getNbrArmies() >= 4 ? 3 : attackingCountry.getNbrArmies() - 1;
         int defenderDice = defendingCountry.getNbrArmies() >= 2 ? 2 : 1;
 
-        
+        //Getting vectors of dice rolls
+        std::vector<int> attackerDiceRolls = attacker.dice->howManyDice(attackerDice);
+        std::vector<int> defenderDiceRolls = defender.dice->howManyDice(defenderDice);
+
+        //Sorting the dice roll vectors in descending order
+        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+        //iterating through the dice rolls, until run our of descending dice
+        for(int i = 0; i < defenderDiceRolls.size(); i++){
+            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
+            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+                attackingCountry.setNbrArmies(attackingCountry.getNbrArmies() - 1);
+            }
+            else{
+                defendingCountry.setNbrArmies(defendingCountry.getNbrArmies() - 1);
+            }
+            if(defendingCountry.getNbrArmies() == 0){
+                return true;
+            }
+            else if(attackingCountry.getNbrArmies() == 1){
+                return false;
+            }
+        }
+        rounds++;
     }
     return false;
 }
