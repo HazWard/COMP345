@@ -327,7 +327,13 @@ bool Player::containsNode(Node &node){
 void Player::fortify(Graph& map)
 {
     cout << "========== Fortification ==========" << endl;
-    string choice;
+    std::string option;
+    cout << this->getName() << ", Would you like to fortify? (y/n)";
+    cin >> option;
+    if(option == "n"){
+        return;
+    }
+
     string sourceStr;
     string destinationStr;
     int armNum;
@@ -339,11 +345,6 @@ void Player::fortify(Graph& map)
     for(auto const &node : this->nodes){
         cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
     }
-
-    std::cout << "Do you wish to fortify" << std::endl;
-    std::cin >> choice ;
-    if (choice.compare("n") != 0)
-        return;
 
     //this while loop asks for source and loops if not owned
     do {
