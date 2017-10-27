@@ -46,4 +46,6 @@ class Player
         Dice* dice;
         std::list<Node*> nodes;
         bool containsNode(Node &node);
+
+    void removeNode(Node *n);
 };

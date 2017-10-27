@@ -167,22 +167,20 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
         return;
     }
 
-    std::map<Node*,Node*> canAttack = std::map<Node*,Node*>();
+    //TODO: Reevaluate the countries you can attack after every attack
 
-    std::list<Node*>::iterator nodeIterator;
-    for(nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++){
+    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
+    std::list<Node *>::iterator nodeIterator;
+    for (nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++) {
         Node *currentNode = *nodeIterator;
-        cout << "Player's Node Object" << endl << *currentNode << endl;
-        if(currentNode->getPointerToCountry()->getNbrArmies() >= 2) {
+        if (currentNode->getPointerToCountry()->getNbrArmies() >= 2) {
             for (auto const &node : currentNode->getAdjList()) {
-
                 if (!containsNode(*node)) {
                     Node *toAttack;
-                    for(int i = 0; i < map.getVectorOfNodes()->size(); i++){
-                        if(map.getVectorOfNodes()->at(i).getPointerToCountry()->getName()
-                           == node->getPointerToCountry()->getName()){
+                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
+                        if (map.getVectorOfNodes()->at(i).getPointerToCountry()->getName()
+                            == node->getPointerToCountry()->getName()) {
                             toAttack = &map.getVectorOfNodes()->at(i);
-                            cout << *toAttack << endl;
                             break;
                         }
                     }
@@ -192,11 +190,7 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
         }
     }
 
-//    for(auto const &node : canAttack){
-//        cout << node << endl;
-//    }
-
-    std::map<Node*,Node*>::iterator iterator;
+    std::map<Node *, Node *>::iterator iterator;
     for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
         cout << this->getName() << ", you can attack " << iterator->second->getPointerToCountry()->getName()
              << " from your country " << iterator->first->getPointerToCountry()->getName() << "." << endl;
@@ -205,57 +199,52 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
         cout << "DO YOU WISH TO ATTACK? (y/n)";
         std::string answer;
         cin >> answer;
-        if(answer != "y"){
+        if (answer != "y") {
             continue;
         }
         Player *defendingPlayer;
         //find who the other node belongs to
-        for(int i = 0; i < players.size(); i++){
-            if(players.at(i)->getName() == this->getName()){ //the player is this player
+        for (int i = 0; i < players.size(); i++) {
+            if (players.at(i)->getName() == this->getName()) { //the player is this player
                 continue;
             }
-            for(auto const &node : players.at(i)->getNodes()){
-                if(node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()){
+            for (auto const &node : players.at(i)->getNodes()) {
+                if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
                     defendingPlayer = &(*players.at(i));
                     break;
                 }
             }
         }
-        bool wonBattle = this->attack(*this, *defendingPlayer, *(iterator->first->getPointerToCountry()), *(iterator->second->getPointerToCountry()));
-        if(wonBattle){
+        bool wonBattle = this->attack(*this, *defendingPlayer, *(iterator->first->getPointerToCountry()),
+                                      *(iterator->second->getPointerToCountry()));
+        if (wonBattle) {
             cout << this->getName() << ", you won!" << endl;
 
-            //Trying to add the conquered country to the winner's list and removing from the loser's list
-
-            std::list<Node*>::iterator it;
-            for(it = defendingPlayer->nodes.begin(); it != defendingPlayer->nodes.end(); it++) {
-                Node *thisNode = *nodeIterator;
-                if(thisNode->getPointerToCountry()->getName() == (*iterator).second->getPointerToCountry()->getName()){
-                    nodeIterator = defendingPlayer->getNodes().erase(nodeIterator);
-                    break;
-                }
-            }
-
-            Node* n = (*iterator).second;
-//            defendingPlayer->getNodes().remove(n);
+            //Add the conquered country to the winner's list and removing from the loser's list
+            Node *n = (*iterator).second;
+            defendingPlayer->removeNode(n);
             this->nodes.push_back(n);
 
             //Sending one army from the victorious country to the conquered country
-            iterator->first->getPointerToCountry()->setNbrArmies(iterator->first->getPointerToCountry()->getNbrArmies() - 1);
+            iterator->first->getPointerToCountry()->setNbrArmies(
+                    iterator->first->getPointerToCountry()->getNbrArmies() - 1);
             iterator->second->getPointerToCountry()->setNbrArmies(1);
 
-            cout << "Here are your countries after the battle." << endl;
-            for(auto const &node : this->getNodes()){
+            cout << "=============================================" <<
+                "Here are your countries after the battle." << endl;
+            for (auto const &node : this->getNodes()) {
                 cout << *node << endl;
             }
-            cout << "Here are the defenders countries after the battle." << endl;
-            for(auto const &node : defendingPlayer->getNodes()){
+            cout << "=============================================" <<
+                 "Here are the defenders countries after the battle." << endl;
+            for (auto const &node : defendingPlayer->getNodes()) {
                 cout << *node << endl;
             }
-
+        } else {
+            cout << "You lost this battle! Better luck next time." << endl;
         }
     }
-
+    cout << "That concludes all your attacks, " << this->getName() << "." << endl;
 }
 
 bool Player::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
@@ -304,6 +293,18 @@ bool Player::attack(Player &attacker, Player &defender, Country &attackingCountr
         rounds++;
     }
     return false;
+}
+
+void Player::removeNode(Node* n)
+{
+    list<Node*>::const_iterator countryIterator;
+    for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
+    {
+        if(*countryIterator == n)
+        {
+            nodes.erase(countryIterator++);  // alternatively, i = items.erase(i);
+        }
+    }
 }
 
 bool Player::containsNode(Node &node){
