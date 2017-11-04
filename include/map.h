@@ -10,40 +10,59 @@ using namespace std;
 class Country
 {
 private:
-	string name;
-	string continent; //the continent the Country belongs to
-	int nbrArmies;
+    string name;
+    string continent; //the continent the Country belongs to
+    int nbrArmies;
 public:
-	Country();
-	Country(string n);
-	Country(string n, string cont, int nbrArm);
-	bool operator==(Country& rhs)const;
-	bool operator==(Country rhs)const;
-	friend std::ostream& operator <<(std::ostream& stream, Country& c);
-	string getName();
-	string getContinent();
-	int getNbrArmies();
-	void setNbrArmies(int na);
+    Country();
+
+    Country(string n);
+
+    Country(string n, string cont, int nbrArm);
+
+    bool operator==(Country &rhs) const;
+
+    bool operator==(Country rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &stream, Country &c);
+
+    string getName();
+
+    string getContinent();
+
+    int getNbrArmies();
+
+    void setNbrArmies(int na);
 };
 //This class creates Node objects, that contain a Country and the list of nodes adjacent to it.
 class Node
 {
 private:
-	Country country;
-	vector<Node*> adjList;
-	bool visited;
+    Country country;
+    vector<Node *> adjList;
+    bool visited;
 public:
-	Node();
-	Node(Country c);
-	Node(Country c, vector<Node*> adjList);
-	Country getCountry();
-	vector<Node*> getAdjList();
-    Country* getPointerToCountry();
-	bool isVisited();
-	void addNode(Node& n);
-	void setAdjList(vector<Node*> newAdjList);
-	void setVisited(bool v);
-	friend std::ostream& operator <<(std::ostream& stream, Node& n);
+    Node();
+
+    Node(Country c);
+
+    Node(Country c, vector<Node *> adjList);
+
+    Country getCountry();
+
+    vector<Node *> getAdjList();
+
+    Country *getPointerToCountry();
+
+    bool isVisited();
+
+    void addNode(Node *n);
+
+    void setAdjList(vector<Node *> newAdjList);
+
+    void setVisited(bool v);
+
+    friend std::ostream &operator<<(std::ostream &stream, Node &n);
 };
 
 //This class creates a graph used as the map of our Risk game
@@ -64,8 +83,9 @@ public:
 	int getNbrCountries();
 	//Methods to add
 	void addNode(Node &n);
-	void addEdge(Node& n1, Node& n2);
-
+	void addEdge(Node *n1, Node *n2);
+    bool areConnectedByEdge(Node* n1, Node* n2);
+	bool areConnectedThroughOwned(int source, int destination);
 	bool isGraphConnected();
 	friend std::ostream& operator <<(std::ostream& stream, Graph& g);
 };

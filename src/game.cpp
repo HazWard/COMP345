@@ -1,7 +1,10 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
+#include<list>
 #include <random>
+
+//Imports necessary on Windows G++ compilers
 #include <algorithm>
 #include <ctime>
 #include <chrono>
@@ -17,7 +20,12 @@ const string MAPS_FOLDER = "../maps/";
 //If they are not equal, that means the constructor failed to do its job and we exit the program.
 Game::Game()
 {
-    list<string> mapFiles = getNameOfFiles("..\\maps");
+    list<string> mapFiles;
+
+    //Checking the operating system by using the windows boolean, determines how paths are set
+    if(windows){ mapFiles = getNameOfFiles("..\\maps"); }
+    else { mapFiles = getNameOfFiles("../maps"); }
+
     getMapUser(mapFiles);
     this->nbrPlayers = getNbrPlayersUser();
     this->arrayPlayers = *(getPlayersUser(nbrPlayers));
@@ -25,14 +33,14 @@ Game::Game()
     if(nbrPlayers != arrayPlayers.size())
     {
         cout << "The number of players (" << nbrPlayers << " and "
-             << "the number of players created (" + arrayPlayers.size()
+             << "the number of players created (" << arrayPlayers.size()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
     if(mainDeck.getNumberOfCards() != mapCountries.getNbrCountries())
     {
         cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
-             << "the number of nodes in the map (" + mapCountries.getNbrCountries()
+             << "the number of nodes in the map (" << mapCountries.getNbrCountries()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
@@ -61,16 +69,15 @@ void Game::setMap(Graph& newMap)
 {
     mapCountries = newMap;
 }
-
-void Game::setNbrPlayers(int nbrP) {
+void Game::setNbrPlayers(int nbrP)
+{
     nbrPlayers = nbrP;
 }
-
-void Game::setArrayPlayers(vector<Player *> &newArrayPl) {
+void Game::setArrayPlayers(vector<Player*>& newArrayPl)
+{
     arrayPlayers = newArrayPl;
 }
 
-////Why are we reading all files? - Emilio
 //Function to read all files from a given folder taken from:
 //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 list<string> Game::getNameOfFiles(const char *path)
@@ -79,10 +86,10 @@ list<string> Game::getNameOfFiles(const char *path)
     struct dirent *entry;
     DIR *directory = opendir(path);
     //If we cannot open the directory, we simply return an empty list of names
-    if (directory == nullptr) {
+    if (directory == nullptr)
+    {
         return list<string>();
     }
-<<<<<<< HEAD
     //We read the files in the given directory (MAPS_FOLDER) until there are no more directories to read.
     //That means we have read every file (presumably maps) inside that folder.
     while ((entry = readdir(directory)) != nullptr)
@@ -91,11 +98,6 @@ list<string> Game::getNameOfFiles(const char *path)
         //This condition is to avoid adding the file names that will always be there and that
         //we will not ever care about.
         if(currentFileName != "." && currentFileName != "..") {
-=======
-    while ((entry = readdir(directory)) != nullptr) {
-        string currentFileName = entry->d_name;
-        if (currentFileName != "." && currentFileName != "..") {
->>>>>>> game
             listOfMapFiles.push_back(currentFileName);
         }
     }
@@ -115,41 +117,52 @@ void Game::getMapUser(list<string> listOfMapFiles)
     int i = 0;
     int indexMapChosen = -1;
     list<string>::const_iterator iterator;
-    for (iterator = listOfMapFiles.begin(); iterator != listOfMapFiles.end(); ++iterator) {
-        cout << i + 1 << ": " << *iterator << endl;
+    for (iterator = listOfMapFiles.begin(); iterator != listOfMapFiles.end(); ++iterator)
+    {
+        cout << i+1 << ": " << *iterator << endl;
         i++;
     }
     cout << endl;
     bool validIndexMap = false;
-    Parser *parse1;
-    do {
+    Parser* parser;
+    do
+    {
         cout << "Map chosen: ";
         cin >> indexMapChosen;
         indexMapChosen--;
-        if (indexMapChosen >= listOfMapFiles.size() || indexMapChosen < 0) {
+        if (indexMapChosen >= listOfMapFiles.size() || indexMapChosen < 0)
+        {
             cout << indexMapChosen + 1 << " is not a valid index. Please enter an index from 1 to "
                  << listOfMapFiles.size() << "." << endl;
             validIndexMap = false;
-        } else {
+        }
+        else
+        {
             list<string>::iterator it = listOfMapFiles.begin();
             advance(it, indexMapChosen);
             mapName = *it;
             cout << "You chose the map " << mapName << endl;
             cout << "We will check if that map is a valid one." << endl;
-            parse1 = new Parser(MAPS_FOLDER + mapName);
-            cout << "Is parse1 a valid map ? : ";
-            if (parse1->mapIsValid()) {
+            parser = new Parser(MAPS_FOLDER + mapName);
+            cout << "Is parser a valid map ? : ";
+            if (parser->mapIsValid()) {
                 cout << "Yes, both the entire map as a whole and each continent are connected.\n";
                 validIndexMap = true;
-            } else {
+            }
+            else if(parser->getGraph()->getNbrCountries() > 80){
+                cout << "No" << endl << "We have detected that the number of countries in this Map is greater than 80." << endl
+                                << "That is not supported in the current version of the game." << endl;
+                validIndexMap = false;
+            }
+            else {
                 cout << "No, the graph and/or some of the continents are not strongly connected.\n";
                 validIndexMap = false;
             }
         }
     } while(!validIndexMap);
-    this->mapCountries = *parse1->getGraph();
-    this->continents = *parse1->getContinents();
-    delete parse1;
+    this->mapCountries = *parser->getGraph();
+    this->continents = *parser->getContinents();
+    delete parser;
 }
 //Method that asks the user for the number of players
 int Game::getNbrPlayersUser()
@@ -160,8 +173,10 @@ int Game::getNbrPlayersUser()
         cin >> nbrPlayers;
         if(nbrPlayers < 2 || nbrPlayers > 6)
             cout << "Error: Invalid amount of players (only from 2 to 6)" << endl;
-    } while(nbrPlayers < 2
-            || nbrPlayers > 6);
+    }
+    while(nbrPlayers < 2 || nbrPlayers > 6);
+
+    return nbrPlayers;
 }
 //Method that asks the user for the names of the players and creates player objects
 vector<Player*>* Game::getPlayersUser(int np)
@@ -178,42 +193,6 @@ vector<Player*>* Game::getPlayersUser(int np)
     }
     return pl;
 }
-<<<<<<< HEAD
-=======
-
-Game::Game() {
-    list<string> mapFiles = getNameOfFiles("..\\maps");
-	getMapUser(mapFiles);
-    this->nbrPlayers = getNbrPlayersUser();
-    this->arrayPlayers = *(getPlayersUser(nbrPlayers));
-    this->mainDeck = Deck(mapCountries.getNbrCountries());
-    if (nbrPlayers != arrayPlayers.size()) {
-        cout << "The number of players (" << nbrPlayers << " and "
-             << "the number of players creater (" + arrayPlayers.size()
-             << "is not equivalent. We will exit the program." << endl;
-        exit(EXIT_FAILURE);
-    }
-    if (mainDeck.getNumberOfCards() != mapCountries.getNbrCountries()) {
-        cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
-             << "the number of nodes in the map (" + mapCountries.getNbrCountries()
-             << "is not equivalent. We will exit the program." << endl;
-        exit(EXIT_FAILURE);
-    }
-}
-
-//ACCESSOR METHODS
-string Game::getMapName() { return mapName; }
-
-int Game::getNbrPlayers() { return nbrPlayers; }
-
-vector<Player*>* Game::getArrayPlayers() { return &arrayPlayers; }
-
-Graph Game::getMapCountries() { return mapCountries; }
-
-Deck Game::getMainDeck() { return mainDeck; }
-
-map<string, Graph>* Game::getContinents() { return &continents; };
->>>>>>> game
 
 //Method used to
 void Game::determinePlayerTurn() {
@@ -253,7 +232,7 @@ void Game::assignCountriesToPlayers()
             for (int i = 0; i < this->arrayPlayers.size(); i++) {
                 listShuffle(nodesToAssign);
                 if(nodesToAssign.front() != NULL) {
-                    arrayPlayers[i]->addNode(nodesToAssign.front());
+                    this->arrayPlayers[i]->addNode(nodesToAssign.front());
                     nodesToAssign.pop_front();
                 }
             }
@@ -293,12 +272,23 @@ void Game::placeArmies()
         case 5: nbrArmiesPerPlayer = 25; break;
         case 6: nbrArmiesPerPlayer = 20; break;
     }
+
+
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     for(int i = 0; i < nbrPlayers; i++)
     {
+
         cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
         int nbrArmiesPlayer = nbrArmiesPerPlayer;
-        //While the player still has armies to place, we loop
+
+        cout << "Placing 1 army per owned Territory..." << endl;
+
+        //Places one army to every territory owned by the player
+        for(auto const &node : arrayPlayers[i]->getNodes()){
+            node->getPointerToCountry()->setNbrArmies(1);
+            nbrArmiesPlayer--;
+        }
+
         while(nbrArmiesPlayer > 0) {
             bool validCountryName = false;
             Country *c;
@@ -366,14 +356,216 @@ bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
     return true;
 }
 
-//Main for Part 2
-int main()
+//Main for Part 1
+void gameStartDriver()
 {
-    /*
-    random_device rd;
-    srand(rd());
-    int indexPlayer = rand()%6 + 1;
-    cout << indexPlayer << endl;*/
+    // The constructor verifies that the map loaded is valid.
+    // Invalid maps are rejected without the program crashing.
+    // Also, we check that the right number of players is created inside the constructor as well.
+    Game riskGame;
+}
+
+
+// Main for Part 2
+void startupPhaseDriver()
+{
+    /*The constructor verifies that the map loaded is valid.
+    Invalid maps are rejected without the program crashing.
+    Also, we check that the right number of players is created inside the constructor as well.*/
+    Game riskGame;
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* cont = riskGame.getContinents();
+
+    cout << "Player order before we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << " ";
+    }
+    cout << endl;
+
+    riskGame.determinePlayerTurn();
+
+    cout << "Player order after we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << " ";
+    }
+    cout << endl << endl;
+
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    //Displaying all the countries in the graph
+    map<string, Graph>::reverse_iterator rit;
+    for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
+    {
+        cout << "=============================|" << rit->first << "|=============================" << endl;
+        cout << rit->second;
+    }
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    cout << "TESTING";
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << node << endl;
+    }
+}
+
+//Main for Part 3
+void mainGameLoopDriver()
+{
+    /*The constructor verifies that the map loaded is valid.
+    Invalid maps are rejected without the program crashing.
+    Also, we check that the right number of players is created inside the constructor as well.*/
+    Game riskGame;
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* continents = riskGame.getContinents();
+
+    map<string, Graph>::reverse_iterator rit;
+    for (rit = (*continents).rbegin(); rit != (*continents).rend(); ++rit)
+    {
+        cout << "=============================|" << rit->first << "|=============================" << endl;
+        cout << rit->second;
+    }
+    cout << "Player order before we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << " ";
+    }
+    cout << endl;
+
+    riskGame.determinePlayerTurn();
+
+    cout << "Player order after we randomize the order:" << endl;
+    for(int i = 0; i < players->size(); i++)
+    {
+        cout << (*players)[i]->getName() << " ";
+    }
+    cout << endl << endl;
+
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    //Boolean is false until a player wins. this is the breaking condition of the main game loop
+    bool playerWins = false;
+
+    //We keep track of the winning player
+    Player* winningPlayer;
+
+    //Main game loop
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            //Each player gets to reinforce, attack and fortify
+            (*players)[i]->reinforce(continents);
+            (*players)[i]->attack(*riskGame.getMapCountries(), play);
+            (*players)[i]->fortify(*riskGame.getMapCountries());
+
+            //After each player's turn, we check if one player owns all the countries in the map
+            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
+                playerWins = true;
+                winningPlayer = (*players)[i];
+                break;
+            }
+        }
+    }
+    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+}
+
+// Main for Part 4
+void reinforceDriver()
+{
+    Game riskGame;
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* continents = riskGame.getContinents();
+    map<string, Graph>::reverse_iterator countryIterator;
+
+    riskGame.determinePlayerTurn();
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    bool playerWins = false;
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            (*players)[i]->reinforce(continents);
+        }
+        playerWins = true; // Force quit for Demo
+    }
+
+    // Print state of map to see number of armies
+    for (auto &node : *riskGame.getMapCountries()->getVectorOfNodes())
+    {
+        std::cout << node << std::endl;
+    }
+}
+
+// Main for Part 5
+void attackDriver()
+{
+    Game riskGame;
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    map<string, Graph>* continents = riskGame.getContinents();
+    map<string, Graph>::reverse_iterator countryIterator;
+
+    riskGame.determinePlayerTurn();
+    riskGame.assignCountriesToPlayers();
+
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        play[i]->printNodes();
+    }
+    riskGame.placeArmies();
+
+    bool playerWins = false;
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            (*players)[i]->attack(*riskGame.getMapCountries(), *riskGame.getArrayPlayers());
+        }
+        playerWins = true; // Force quit for Demo
+    }
+
+    // Print state of map to see number of armies
+    for (auto &node : *riskGame.getMapCountries()->getVectorOfNodes())
+    {
+        std::cout << node << std::endl;
+    }
+}
+
+// Main for Part 6
+void fortifyDriver()
+{
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
     Also, we check that the right number of players is created inside the constructor as well.*/
@@ -408,11 +600,16 @@ int main()
     riskGame.assignCountriesToPlayers();
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
+
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
         play[i]->printNodes();
     }
     riskGame.placeArmies();
+    //testing fortify
+    for (int i = 0; i < players->size(); i++) {
+        (*players)[i]->fortify(*riskGame.getMapCountries());
+    }
 
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
@@ -420,7 +617,7 @@ int main()
     Player* winningPlayer;
 
     //Main game loop
-	/*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
+    /*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
     while(!playerWins)
     {
         for(int i = 0; i < players->size(); i++)
@@ -438,19 +635,41 @@ int main()
         }
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
-	*/
-    delete players;
-    delete cont;
-    return 0;
+    */
 }
-//Main for Part 1
-//int main()
-//{
-/*The constructor verifies that the map loaded is valid.
-Invalid maps are rejected without the program crashing.
-Also, we check that the right number of players is created inside the constructor as well.*/
-//    Game riskGame;
-//}
+
+int main()
+{
+    int part = 0;
+    while(part >= 0)
+    {
+        std::cout << "Please choose a part to run: ";
+        std::cin >> part;
+        switch(part) {
+            case 1 : std::cout << "== PART 1 == ";
+                gameStartDriver(); // Driver for Part 1
+                break;
+            case 2 : std::cout << "== PART 2 == ";
+                startupPhaseDriver(); // Driver for Part 2
+                break;
+            case 3 : std::cout << "== PART 3 == ";
+                mainGameLoopDriver(); // Driver for Part 3
+                break;
+            case 4 : std::cout << "== PART 4 == ";
+                reinforceDriver(); // Driver for Part 4
+                break;
+            case 5 : std::cout << "== PART 5 == ";
+                attackDriver(); // Driver for Part 5
+                break;
+            case 6 : std::cout << "== PART 6 == ";
+                fortifyDriver(); // Driver for Part 6
+                break;
+            default:
+                part = -1;
+                break;
+        }
+    }
+}
 
 /* //Old Player Turn:
 vector<Player*> oldPlayerOrder = arrayPlayers;

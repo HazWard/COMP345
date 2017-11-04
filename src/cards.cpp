@@ -54,7 +54,6 @@ Deck::Deck(int numberOfCountries){
     for(int i = 0; i < numberOfCards; i++){
         while(true){ //will loop until generates a random value equal to a card type that still needs to be created
             int r = distr(eng);
-            //int r = rand() % static_cast<int>(3); //non distributed random generator
             if(cardType[r] > 0){
                 top = new Card(r, top);
                 cardType[r]--;
@@ -69,17 +68,17 @@ Deck::Deck() : numberOfCards(0), top(NULL) {}
 
 int Deck::getNumberOfCards() { return numberOfCards; }
 
-/*
-Deck::~Deck(){
-        //Destructor for the Deck class, iterates through the linked list and destroys every node.
-    Card *temp = top;
-    while(temp != NULL){
-        temp = temp->next;
-        delete top;
-        top = temp;
-    }
-    temp = NULL;
-}*/
+//Deck::~Deck(){
+//        //Destructor for the Deck class, iterates through the linked list and destroys every node.
+//    if(top) {
+//        while (top->next != NULL) {
+//            Card *temp = top;
+//            top = top->next;
+//             temp;
+//        }
+//        delete top;
+//    }
+//}
 
 Card* Deck::draw(){
     /**
@@ -169,4 +168,9 @@ void Hand::draw(Card *c){
 void Hand::display(void){
     cout << "This hand contains " << inf << " infantry cards, " << cav << " cavalry cards, and "
     << art << " artillery cards." << endl;
+}
+
+int Hand::getTotalCards()
+{
+    return inf + art + cav;
 }
