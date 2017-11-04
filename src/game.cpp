@@ -411,49 +411,11 @@ void startupPhaseDriver()
         play[i]->printNodes();
     }
     riskGame.placeArmies();
-    //testing fortify
-        for (int i = 0; i < players->size(); i++) {
-            (*players)[i]->fortify(*riskGame.getMapCountries());
-        }
-
 
     cout << "TESTING";
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
         cout << node << endl;
     }
-//    for(int i = 0; i < riskGame.getNbrPlayers(); i++){
-//        for(auto node : play[i]->getNodes()){
-//            cout << *node;
-//        }
-//    }
-    play[0]->attack(*riskGame.getMapCountries(), play);
-
-
-    //Boolean is false until a player wins. this is the breaking condition of the main game loop
-    bool playerWins = false;
-    //We keep track of the winning player
-    Player* winningPlayer;
-
-    //Main game loop
-	/*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
-    while(!playerWins)
-    {
-        for(int i = 0; i < players->size(); i++)
-        {
-            //Each player gets to reinforce, attack and fortify
-            (*players)[i]->reinforce();
-            (*players)[i]->attack();
-            (*players)[i]->fortify();
-            //After each player's turn, we check if one player owns all the countries in the map
-            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
-                playerWins = true;
-                winningPlayer = (*players)[i];
-                break;
-            }
-        }
-    }
-    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
-	*/
 }
 
 //Main for Part 3
