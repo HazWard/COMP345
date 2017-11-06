@@ -17,6 +17,6 @@ set(SOURCE_FILES
         src/map.cpp
         src/reader.cpp
         src/game.cpp
-        src/exception.cpp src/Observer.cpp include/Observer.h)
+        src/exception.cpp src/observer.cpp include/observer.h)
 
 add_executable(COMP345 ${SOURCE_FILES})
