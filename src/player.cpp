@@ -10,13 +10,16 @@
 #include <map>
 #include "../include/player.h"
 
-
 // Constants
 static const int MIN_NUMBER_OF_ARMIES = 3;
 static const int MIN_NUMBER_OF_CARDS = 5;
 static const int INFANTRY_BONUS = 1;
 static const int CAVALRY_BONUS = 5;
 static const int ARTILLERY_BONUS = 10;
+
+/**
+ * PLAYER CLASS
+ */
 
 // Constructors
 Player::Player() : name(""), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
@@ -83,6 +86,11 @@ int Player::roll(int nbOfDice)
         roll += this->dice->numGenerator();
     }
     return roll;
+}
+
+void Player::setStrategy(Strategy *targetStrategy)
+{
+    this->strategy = targetStrategy;
 }
 
 void Player::reinforce(std::map<string, Graph>* map)

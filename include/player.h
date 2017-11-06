@@ -1,16 +1,19 @@
 /*
-    Filename: player.cpp 
+    Filename: player.h
     Author: Starly Solon (40022595)
     Date of creation: September 14, 2017
     Description: Header file for Risk player
 */
+
 #pragma once
 #include <list>
 #include <map>
 #include "../include/cards.h"
 #include "../include/dice.h"
 #include "../include/map.h"
+#include "strategy.h"
 
+class Strategy; // Forward declaration
 class Player
 {
     /*
@@ -23,6 +26,8 @@ class Player
         Player(string n, Hand* playerHand, std::list<Node*>* playerNodes);
         ~Player();
         int roll(int nbOfDice);
+        Strategy *strategy;
+        void setStrategy(Strategy *targetStrategy);
         void reinforce(std::map<string, Graph>* graph);
         void attack(Graph& map, std::vector<Player*> &players);
         void fortify(Graph& map);
@@ -38,14 +43,13 @@ class Player
         void addNode(Node* newNode);
         list<string> getsContinentsOwned(map<string, Graph>* continents);
         bool controlsAllCountriesInMap(Graph& map);
+        void placeArmies(int nbArmies);
     private:
         std::string name;
         static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
-        void placeArmies(int nbArmies);
         Hand* hand;
         Dice* dice;
         std::list<Node*> nodes;
         bool containsNode(Node &node);
-
-    void removeNode(Node *n);
+        void removeNode(Node *n);
 };
