@@ -615,27 +615,6 @@ void fortifyDriver()
     bool playerWins = false;
     //We keep track of the winning player
     Player* winningPlayer;
-
-    //Main game loop
-    /*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
-    while(!playerWins)
-    {
-        for(int i = 0; i < players->size(); i++)
-        {
-            //Each player gets to reinforce, attack and fortify
-            (*players)[i]->reinforce();
-            (*players)[i]->attack();
-            (*players)[i]->fortify();
-            //After each player's turn, we check if one player owns all the countries in the map
-            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
-                playerWins = true;
-                winningPlayer = (*players)[i];
-                break;
-            }
-        }
-    }
-    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
-    */
 }
 
 int main()
@@ -670,31 +649,3 @@ int main()
         }
     }
 }
-
-/* //Old Player Turn:
-vector<Player*> oldPlayerOrder = arrayPlayers;
-arrayPlayers.clear();
-vector<int> indicesOrder = vector<int>();
-
-random_device rd;
-srand(rd());
-bool newIndex;
-for(int i = 0; i < nbrPlayers; i++) {
-do {
-newIndex = true;
-int indexPlayer = rand() % (nbrPlayers); //indexPlayer in the range 0 to nbrPlayers-1
-for (int j = 0; j < indicesOrder.size(); j++) {
-if (indexPlayer == indicesOrder[j]) {
-newIndex = false;
-break;
-}
-}
-if (newIndex)
-indicesOrder.push_back(indexPlayer);
-} while (indicesOrder.size() != nbrPlayers);
-}
-for(int j = 0; j < nbrPlayers; j++) {
-arrayPlayers.push_back(oldPlayerOrder[indicesOrder[j]]);
-cout << arrayPlayers[j]->getName();
-}
-*/
