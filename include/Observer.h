@@ -4,19 +4,21 @@
 #pragma once
 
 #include <iostream>
-#include <vector>
+#include <list>
 using namespace std;
 
 class Observer {
-
-
+    Subject *model;
+public:
+    virtual void update();
+protected:
+    Subject *getSubject();
 };
 
 class Subject {
-    vector<Observer*> views;
-    int value;
-
+    list<Observer*> views;
+public:
+    void attach(Observer *observer);
+    void detach(Observer *observer);
+    void notify();
 };
-
-
-#endif //COMP345_OBSERVER_H
