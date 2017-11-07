@@ -97,6 +97,24 @@ void Player::setStrategy(Strategy *targetStrategy)
     this->strategy = targetStrategy;
 }
 
+/**
+ * Game phases using Strategy object
+*/
+void Player::reinforceS(std::map<string, Graph> *graph)
+{
+    this->strategy->reinforce(this,graph);
+}
+
+void Player::attackS(Graph &map, std::vector<Player *> &players)
+{
+    this->strategy->attack(this,map,players);
+}
+
+void Player::fortifyS(Graph &map)
+{
+    this->strategy->fortify(this,map);
+}
+
 void Player::reinforce(std::map<string, Graph>* map)
 {
     // Perform actions to reinforce

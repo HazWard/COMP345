@@ -7,41 +7,47 @@
  * STRATEGY CLASSES
  */
 
-/**
- * Human Player Strategy Implementation
- * - Calls the original implementations
- * @param targetPlayer Player instance
- * @param map Graph of the current map
- * @param listOfPlayers List of Players
- * @param continents List of continents
- */
-void HumanStrategy::play(Player *targetPlayer,
-                         Graph &map,
-                         std::vector<Player *> &listOfPlayers,
-                         std::map <string, Graph> *continents)
+void HumanStrategy::reinforce(Player *targetPlayer, std::map<string, Graph> *graph)
 {
-    targetPlayer->reinforce(continents);
-    targetPlayer->attack(map, listOfPlayers);
+    // Perform actions to reinforce
+    std::cout << "== REINFORCEMENT PHASE for " << targetPlayer->getName() << " ==" << std::endl;
+    unsigned long totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
+    if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
+    {
+        std::list<std::string> continentsOwned =  targetPlayer->getsContinentsOwned(graph);
+
+        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
+            totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
+        }
+
+        // Exchange process
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+
+        // Recursive call in the case that not all armies are placed
+        targetPlayer->placeArmies(totalNbArmies);
+    }
+    else
+    {
+        std::cout << "Not enough armies to reinforce troops." << std::endl;
+    }
+}
+
+void HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
+{
+    targetPlayer->attack(map,players);
+}
+
+void HumanStrategy::fortify(Player *targetPlayer, Graph &map)
+{
     targetPlayer->fortify(map);
 }
 
 /**
  * Aggressive Player Strategy Implementation
  * - Game phases for Aggressive Player
- * @param targetPlayer Player instance
- * @param map Graph of the current map
- * @param listOfPlayers List of Players
- * @param continents List of continents
  */
-void AggressiveStrategy::play(Player *targetPlayer,
-                             Graph &map,
-                             std::vector<Player *> &listOfPlayers,
-                             std::map<string, Graph> *continents)
-{
-    this->reinforce(targetPlayer,continents);
-    this->attack(targetPlayer, map, listOfPlayers);
-    this->fortify(targetPlayer,map);
-}
 
 /**
  * Reinforcement phase for Aggressive Player
@@ -273,15 +279,17 @@ void AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 
 /**
  * Benovolent Player Strategy Implementation
- * @param targetPlayer Player instance
- * @param map Graph of the current map
- * @param listOfPlayers List of Players
- * @param contients List of continents
  */
-void BenevolentStrategy::play(Player *targetPlayer,
-                              Graph &map,
-                              std::vector<Player *> &listOfPlayers,
-                              std::map<string,Graph> *continents)
+
+void BenevolentStrategy::reinforce(Player *targetPlayer, std::map<string, Graph> *graph)
 {
-    // TODO: Implement Benevolent Strategy
+    // TODO: Implement method
+}
+void BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
+{
+    // TODO: Implement method
+}
+void BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
+{
+    // TODO: Implement method
 }

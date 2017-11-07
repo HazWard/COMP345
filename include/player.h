@@ -37,6 +37,9 @@ class Player
         void reinforce(std::map<string, Graph>* graph);
         void attack(Graph& map, std::vector<Player*> &players);
         void fortify(Graph& map);
+        void reinforceS(std::map<string, Graph>* graph);
+        void attackS(Graph& map, std::vector<Player*> &players);
+        void fortifyS(Graph& map);
         string getName();
         std::list<Node*> getNodes();
         Hand* getHand();
@@ -51,6 +54,7 @@ class Player
         list<string> getsContinentsOwned(map<string, Graph>* continents);
         bool controlsAllCountriesInMap(Graph& map);
         void removeNode(Node *n);
+        void placeArmies(int nbArmies);
     private:
         std::string name;
         static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
@@ -58,5 +62,4 @@ class Player
         Dice* dice;
         std::list<Node*> nodes;
         bool containsNode(Node &node);
-        void placeArmies(int nbArmies);
 };

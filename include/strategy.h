@@ -11,10 +11,10 @@ class Player; // Forward declaration
 class Strategy
 {
 public:
-    virtual void play(Player* targetPlayer,
-                      Graph& map,
-                      std::vector<Player*> &listOfPlayers,
-                      std::map<string, Graph>* continents) = 0;
+    virtual void reinforce(Player* targetPlayer, std::map<string, Graph>* graph) = 0;
+    virtual void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
+    virtual void fortify(Player* targetPlayer, Graph& map) = 0;
+    virtual static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
 };
 
 /**
@@ -24,10 +24,10 @@ public:
 class HumanStrategy : Strategy
 {
 public:
-    void play(Player* targetPlayer,
-              Graph& map,
-              std::vector<Player*> &listOfPlayers,
-              std::map<string, Graph>* continents);
+    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph) = 0;
+    void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
+    void fortify(Player* targetPlayer, Graph& map) = 0;
+    static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
 };
 
 /**
@@ -39,15 +39,11 @@ public:
 class AggressiveStrategy : Strategy
 {
 public:
-    void play(Player* targetPlayer,
-              Graph& map,
-              std::vector<Player*> &listOfPlayers,
-              std::map<string, Graph>* continents);
+    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph) = 0;
+    void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
+    void fortify(Player* targetPlayer, Graph& map) = 0;
+    static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
 private:
-    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
-    void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
-    void fortify(Player* targetPlayer, Graph& map);
-    static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
     bool containsNode(Player* targetPlayer, Node &node);
 };
 
@@ -60,11 +56,8 @@ private:
 class BenevolentStrategy : Strategy
 {
 public:
-    void play(Player* targetPlayer,
-              Graph& map,
-              std::vector<Player*> &listOfPlayers,
-              std::map<string, Graph>* continents);
-private:
-    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
-    void fortify(Player* targetPlayer, Graph& map);
+    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph) = 0;
+    void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
+    void fortify(Player* targetPlayer, Graph& map) = 0;
+    static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
 };
