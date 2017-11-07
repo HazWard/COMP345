@@ -17,7 +17,8 @@
  */
 
 //TODO: Remove all print statements
-//TODO: Capture all phase changing information in a standard way to feel the model (game)
+//TODO: Capture all phase changing information in a standard way to feed the model (game)
+
 
 
 // Constants

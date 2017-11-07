@@ -1,7 +1,6 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
-#include<list>
 #include <random>
 
 //Imports necessary on Windows G++ compilers
@@ -106,13 +105,14 @@ list<string> Game::getNameOfFiles(const char *path)
     return listOfMapFiles;
 }
 
-/*A method to ask the user to choose a map file among the list.
-We will try to read the file and create a Graph from it, along with a map container of the continents it contains.
-If the method mapIsValid of our Parser object returns false, that means that the current map file is not valid.
- We will thus ask the user to enter another number until he chooses a valid map file.
- When a valid map file is selected, we set mapCountries to the map and continents to the map container of continents read from the file.*/
-void Game::getMapUser(list<string> listOfMapFiles)
-{
+void Game::getMapUser(list<string> listOfMapFiles) {
+    /**
+     * A method to ask the user to choose a map file among the list.
+     * We will try to read the file and create a Graph from it, along with a map container of the continents it contains.
+     * If the method mapIsValid of our Parser object returns false, that means that the current map file is not valid.
+     * We will thus ask the user to enter another number until he chooses a valid map file.
+     * When a valid map file is selected, we set mapCountries to the map and continents to the map container of continents read from the file.
+     */
     cout << "Here is the list of available map files. Choose a map by entering the number associated with the one you want." << endl;
     int i = 0;
     int indexMapChosen = -1;
@@ -164,6 +164,7 @@ void Game::getMapUser(list<string> listOfMapFiles)
     this->continents = *parser->getContinents();
     delete parser;
 }
+
 //Method that asks the user for the number of players
 int Game::getNbrPlayersUser()
 {
@@ -203,6 +204,7 @@ void Game::determinePlayerTurn() {
     random_shuffle ( arrayPlayers.begin(), arrayPlayers.end() );
      */
 }
+
 /*The following method has been provided by:
 http://rextester.com/HHTW39678
 http://www.cplusplus.com/forum/general/207328/*/
@@ -214,6 +216,7 @@ template <class T > void listShuffle( list<T> &L )
     shuffle( V.begin(), V.end(), gen );
     L.assign( V.begin(), V.end() );
 }
+
 //Method used to assign countries one by one to the players in a round robin fashion
 void Game::assignCountriesToPlayers()
 {
@@ -272,8 +275,6 @@ void Game::placeArmies()
         case 5: nbrArmiesPerPlayer = 25; break;
         case 6: nbrArmiesPerPlayer = 20; break;
     }
-
-
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     for(int i = 0; i < nbrPlayers; i++)
     {
