@@ -1,3 +1,5 @@
+#include <iostream>
+#include <list>
 #include "../include/strategy.h"
 
 /**
@@ -33,18 +35,54 @@ void AggressiveStrategy::play(Player *targetPlayer,
                              std::vector<Player *> &listOfPlayers,
                              std::map<string, Graph> *continents)
 {
-    this->reinforce(continents);
-    this->attack(map, listOfPlayers);
-    this->fortify(map);
+    this->reinforce(targetPlayer,continents);
+    this->attack(targetPlayer, map, listOfPlayers);
+    this->fortify(targetPlayer,map);
 }
 
 /**
  * Reinforcement phase for Aggressive Player
  * @param graph Graph of continents
  */
-void AggressiveStrategy::reinforce(std::map<string, Graph>* graph)
+void AggressiveStrategy::reinforce(Player *targetPlayer, std::map<string, Graph>* graph)
 {
-    // TODO: Find country with the most armies and reinforce it again
+    // Find strongest country
+    std::list<Node*>::iterator countryIter;
+
+    Node* strongestCountry = *targetPlayer->getNodes().begin();
+    for (countryIter = targetPlayer->getNodes().begin(); countryIter != targetPlayer->getNodes().end(); ++countryIter)
+    {
+        if(strongestCountry->getPointerToCountry()->getNbrArmies()
+           < (*countryIter)->getPointerToCountry()->getNbrArmies())
+        {
+            strongestCountry = *countryIter;
+        }
+    }
+
+    // Reinforce the strongest country
+    unsigned long totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
+    if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
+    {
+        std::list<std::string> continentsOwned = targetPlayer->getsContinentsOwned(graph);
+
+        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
+            totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
+        }
+
+        // Exchange process
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+
+        // Placing all new armies
+        int total =  totalNbArmies + strongestCountry->getPointerToCountry()->getNbrArmies();
+        std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total << std::endl;
+        strongestCountry->getPointerToCountry()->setNbrArmies(total);
+    }
+    else
+    {
+        std::cout << "Not enough armies to reinforce troops." << std::endl;
+    }
 }
 
 /**
@@ -52,18 +90,49 @@ void AggressiveStrategy::reinforce(std::map<string, Graph>* graph)
  * @param map Game map
  * @param players List of players
  */
-void AggressiveStrategy::attack(Graph& map, std::vector<Player*> &players)
+void AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
     // TODO: Attack with country with the most armies
+
+    // Find strongest country
+    std::list<Node*>::iterator countryIter;
+
+    Node* strongestCountry = *targetPlayer->getNodes().begin();
+    for (countryIter = targetPlayer->getNodes().begin(); countryIter != targetPlayer->getNodes().end(); ++countryIter)
+    {
+        if(strongestCountry->getPointerToCountry()->getNbrArmies()
+           < (*countryIter)->getPointerToCountry()->getNbrArmies())
+        {
+            strongestCountry = *countryIter;
+        }
+    }
 }
 
 /**
  * Fortification phase for Aggressive Player
  * @param map Game map
  */
-void AggressiveStrategy::fortify(Graph &map)
+void AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // TODO: Aggregate maximum troops on the country with the most armies
+
+    // Find strongest country
+    std::list<Node*>::iterator countryIter;
+
+    Node* strongestCountry = *targetPlayer->getNodes().begin();
+    for (countryIter = targetPlayer->getNodes().begin(); countryIter != targetPlayer->getNodes().end(); ++countryIter)
+    {
+        if(strongestCountry->getPointerToCountry()->getNbrArmies()
+           < (*countryIter)->getPointerToCountry()->getNbrArmies())
+        {
+            strongestCountry = *countryIter;
+        }
+    }
+
+    // Step 1: Find the strongest country
+    // Step 2: Find every country with more than 1 armies
+    // Step 3: Move armies from countries in step 2 to the strongest
+    //         while making sure 1 army is left on the 'weak' countries
 }
 
 /**

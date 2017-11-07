@@ -44,9 +44,9 @@ public:
               std::vector<Player*> &listOfPlayers,
               std::map<string, Graph>* continents);
 private:
-    void reinforce(std::map<string, Graph>* graph);
-    void attack(Graph& map, std::vector<Player*> &players);
-    void fortify(Graph& map);
+    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
+    void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
+    void fortify(Player* targetPlayer, Graph& map);
 };
 
 /**
@@ -63,6 +63,6 @@ public:
               std::vector<Player*> &listOfPlayers,
               std::map<string, Graph>* continents);
 private:
-    void reinforce(std::map<string, Graph>* graph);
-    void fortify(Graph& map);
+    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
+    void fortify(Player* targetPlayer, Graph& map);
 };
