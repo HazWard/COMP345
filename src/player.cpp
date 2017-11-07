@@ -11,6 +11,15 @@
 #include "../include/player.h"
 
 
+/*
+ * IMPORTANT: For the sake of working in an MVC architecture, Player is the controller: ie it receives the commands
+ * from the user, and feeds the model (game) with information about the game and any changes in the states.
+ */
+
+//TODO: Remove all print statements
+//TODO: Capture all phase changing information in a standard way to feel the model (game)
+
+
 // Constants
 static const int MIN_NUMBER_OF_ARMIES = 3;
 static const int MIN_NUMBER_OF_CARDS = 5;
@@ -160,6 +169,12 @@ void Player::placeArmies(int nbArmies)
 
 void Player::attack(Graph& map, std::vector<Player*> &players)
 {
+    /**
+     * This method is called by the model for each player when it is their turn to attack. First a decision is made on
+     * whether or not the player will make ANY attacks. Then, if the player chooses to make attacks, the first possible
+     * attack is generated. The user must then decide whether to go through with that attack. If so, this method delegates
+     * the actual attacking _event_ to the overloaded attack() method which returns boolean (true for win, false for loss)
+     */
     cout << this->getName() << ", do you wish to attack this turn? (y/n)";
     std::string willAttack;
     cin >> willAttack;
@@ -167,7 +182,11 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
         return;
     }
 
-    //TODO: Reevaluate the countries you can attack after every attack
+    //TODO: Reevaluate the countries you can attack after every attack. Instead of a list, make it the first available attack.
+
+    //TODO: Return information about what happened during this attack phase.
+
+    //TODO: Once adjacency list contains pointers and not copies fix this method to reflect hat (complexity plz)
 
     std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
     std::list<Node *>::iterator nodeIterator;
@@ -248,18 +267,13 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
 }
 
 bool Player::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
-    //TODO: Write the code that will encapsulate the attacking process according to the Risk rules
-    /*
-     The attacker and defender players choose the number of dice to roll for their attack/defense. The attacker
-    is allowed 1 to 3 dice, with the maximum number of dice being the number of armies on the attacking
-    country, minus one. The defender is allowed 1 to 2 dice, with the maximum number of dice being the
-    number of armies on the defending country.
-     The dice are rolled for each player and sorted, then compared pair-wise. For each pair, the player with
-    the lowest roll loses one army. If the pair is equal, the attacker loses an army.
-     If the attacked country runs out of armies, it has been defeated. The defending country now belongs to
-    the attacking player. The attacker is allowed to move a number of armies from the attacking country to the
-    attacked country, in the range [1 to (number of armies on attacking country -1)].
+    /**
+     * This method encapsulates the attacking 'event'. It is passed the two players involved in the attack, the attacker
+     * and defender, as well as the countries between which the attack is taking place. It used the dice rolling facilities
+     * of each othe player objects to decide the outcome of the attack.
      */
+
+    //TODO: Return event information about the attack event
     int rounds = 1;
     while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
         cout << "Round " << rounds << "." << endl;
