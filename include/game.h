@@ -1,13 +1,14 @@
 #pragma once
 #include "../include/reader.h"
 #include "../include/player.h"
+#include "../include/observer.h"
 
 bool windows = false;
 #ifdef OS_WINDOW1S
     windows = true;
 #endif
 
-class Game {
+class Game : public Subject {
 private:
     //private members:
     string mapName;

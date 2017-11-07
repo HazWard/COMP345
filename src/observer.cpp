@@ -4,12 +4,13 @@
 
 #include "../include/observer.h"
 
-#include <vector>
 #include <iostream>
 using namespace std;
 
 
-
+Subject* Observer::getSubject() {
+    return model;
+}
 
 void Subject::attach(Observer *observer) {
     views.push_back(observer);
