@@ -45,11 +45,12 @@ class Player
         void setHand(Hand* targetHand);
         void setNodes(std::list<Node*>* targetNodes);
         void setDice(Dice* targetDice);
+        Dice* getDice();
         void addCountry(Node* newCountry);
         void addNode(Node* newNode);
         list<string> getsContinentsOwned(map<string, Graph>* continents);
         bool controlsAllCountriesInMap(Graph& map);
-        void placeArmies(int nbArmies);
+        void removeNode(Node *n);
     private:
         std::string name;
         static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
@@ -57,5 +58,5 @@ class Player
         Dice* dice;
         std::list<Node*> nodes;
         bool containsNode(Node &node);
-        void removeNode(Node *n);
+        void placeArmies(int nbArmies);
 };

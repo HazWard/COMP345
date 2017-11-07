@@ -1,5 +1,6 @@
 #include <iostream>
 #include <list>
+#include <algorithm>
 #include "../include/strategy.h"
 
 /**
@@ -96,7 +97,7 @@ void AggressiveStrategy::reinforce(Player *targetPlayer, std::map<string, Graph>
  */
 void AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
-    // TODO: Attack with country with the most armies
+    // TODO: Attack with country with the country with most armies
 
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -110,6 +111,127 @@ void AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Pl
             strongestCountry = *countryIter;
         }
     }
+
+    // Find countries the Player can attack with its strongest country
+    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
+    for (auto const &node : strongestCountry->getAdjList()) {
+        if (!containsNode(targetPlayer, *node)) {
+            Node *toAttack;
+            for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
+                if (map.getVectorOfNodes()->at(i).getPointerToCountry()->getName()
+                    == node->getPointerToCountry()->getName()) {
+                    toAttack = &map.getVectorOfNodes()->at(i);
+                    break;
+                }
+            }
+            canAttack.insert(make_pair(strongestCountry, toAttack));
+        }
+    }
+
+    // Perform the attacks
+    std::map<Node *, Node *>::iterator iterator;
+    for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
+
+        // Find the defending player
+        Player *defendingPlayer;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.at(i)->getName() == targetPlayer->getName()) { //the player is this player
+                continue;
+            }
+            for (auto const &node : players.at(i)->getNodes()) {
+                if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
+                    defendingPlayer = &(*players.at(i));
+                    break;
+                }
+            }
+        }
+        bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
+                                      *(iterator->second->getPointerToCountry()));
+        if (wonBattle) {
+            std::cout << targetPlayer->getName() << ", you won!" << std::endl;
+
+            //Add the conquered country to the winner's list and removing from the loser's list
+            Node *n = (*iterator).second;
+            defendingPlayer->removeNode(n);
+            targetPlayer->getNodes().push_back(n);
+
+            //Sending one army from the victorious country to the conquered country
+            iterator->first->getPointerToCountry()->setNbrArmies(
+                    iterator->first->getPointerToCountry()->getNbrArmies() - 1);
+            iterator->second->getPointerToCountry()->setNbrArmies(1);
+
+            std::cout << "=============================================" <<
+                 "Here are your countries after the battle." << std::endl;
+            for (auto const &node : targetPlayer->getNodes()) {
+                std::cout << *node << std::endl;
+            }
+            std::cout << "=============================================" <<
+                 "Here are the defenders countries after the battle." << std::endl;
+            for (auto const &node : defendingPlayer->getNodes()) {
+                std::cout << *node << std::endl;
+            }
+        } else {
+            std::cout << "You lost this battle! Better luck next time." << std::endl;
+        }
+    }
+    std::cout << "That concludes all your attacks, " << targetPlayer->getName() << "." << std::endl;
+}
+
+/**
+ * Helper method to know if the player already owns the Node
+ */
+bool AggressiveStrategy::containsNode(Player *targetPlayer, Node &node){
+    std::list<Node*>::iterator nodeIterator;
+    for(nodeIterator = targetPlayer->getNodes().begin(); nodeIterator != targetPlayer->getNodes().end(); nodeIterator++){
+        //TODO: Uncomment this once and remove other if statement the adjacency list contains pointers not copies
+//        if(*nodeIterator == &node){
+//            return true;
+//        }
+        if((*nodeIterator)->getPointerToCountry()->getName() == node.getPointerToCountry()->getName()){
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Helper method to perform attacking phase
+ */
+bool AggressiveStrategy::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
+    // Same implementation as bool Player::attack(...)
+    int rounds = 1;
+    while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
+        cout << "Round " << rounds << "." << endl;
+        int attackerDice = attackingCountry.getNbrArmies() >= 4 ? 3 : attackingCountry.getNbrArmies() - 1;
+        int defenderDice = defendingCountry.getNbrArmies() >= 2 ? 2 : 1;
+
+        //Getting vectors of dice rolls
+        std::vector<int> attackerDiceRolls = attacker.getDice()->howManyDice(attackerDice);
+        std::vector<int> defenderDiceRolls = defender.getDice()->howManyDice(defenderDice);
+
+        //Sorting the dice roll vectors in descending order
+        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+        //iterating through the dice rolls, until run our of descending dice
+        for(int i = 0; i < defenderDiceRolls.size(); i++){
+            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
+            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+                attackingCountry.setNbrArmies(attackingCountry.getNbrArmies() - 1);
+            }
+            else{
+                defendingCountry.setNbrArmies(defendingCountry.getNbrArmies() - 1);
+            }
+            if(defendingCountry.getNbrArmies() == 0){
+                return true;
+            }
+            else if(attackingCountry.getNbrArmies() == 1){
+                return false;
+            }
+        }
+        rounds++;
+    }
+    return false;
 }
 
 /**
@@ -119,15 +241,8 @@ void AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Pl
  */
 void AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 {
-    // TODO: Aggregate maximum troops on the country with the most armies
-    // Step 1: Find the strongest country [X]
-    // Step 2: Find every country with more than 1 armies [X]
-    // Step 3: Move armies from countries in step 2 to the strongest
-    //         while making sure 1 army is left on the 'weak' countries
-
     // Find strongest country
     std::list<Node*>::iterator countryIter;
-
     Node* strongestCountry = *targetPlayer->getNodes().begin();
     for (countryIter = targetPlayer->getNodes().begin(); countryIter != targetPlayer->getNodes().end(); ++countryIter)
     {
@@ -138,20 +253,22 @@ void AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
         }
     }
 
-    // Find countries with more than 1 army
-    std::vector<Country *> populousCountries = std::vector<Country*>();
-    int totalArmiesToAdd = 0;
-    for (size_t i = 0; i < strongestCountry->getAdjList().size(); i++)
+    // Find second strongest country
+    Node* secondStrongestCountry = strongestCountry->getAdjList()[0];
+    for (size_t i = 1; i < strongestCountry->getAdjList().size(); i++)
     {
-        if (strongestCountry->getAdjList()[i]->getPointerToCountry()->getNbrArmies() > 1)
+        if (secondStrongestCountry->getPointerToCountry()->getNbrArmies()
+            < strongestCountry->getAdjList()[i]->getPointerToCountry()->getNbrArmies())
         {
-            totalArmiesToAdd += strongestCountry->getAdjList()[i]->getPointerToCountry()->getNbrArmies() - 1;
-            strongestCountry->getAdjList()[i]->getPointerToCountry()->setNbrArmies(1);
+            secondStrongestCountry = strongestCountry->getAdjList()[i];
         }
     }
-    int newTotal = strongestCountry->getPointerToCountry()->getNbrArmies() + totalArmiesToAdd;
-    std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << newTotal << std::endl;
-    strongestCountry->getPointerToCountry()->setNbrArmies(newTotal);
+
+    // Aggregate armies to strongest country
+    int total = strongestCountry->getPointerToCountry()->getNbrArmies() + (secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1);
+    secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
+    std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
+    strongestCountry->getPointerToCountry()->setNbrArmies(total);
 }
 
 /**

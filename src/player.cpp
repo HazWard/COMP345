@@ -50,14 +50,19 @@ void Player::setHand(Hand *targetHand)
     this->hand = targetHand;
 }
 
+Hand* Player::getHand()
+{
+    return this->hand;
+}
+
 void Player::setDice(Dice* targetDice)
 {
     this->dice = targetDice;
 }
 
-Hand* Player::getHand()
+Dice* Player::getDice()
 {
-    return this->hand;
+    return this->dice;
 }
 
 void Player::setNodes(std::list<Node*> *targetNodes)

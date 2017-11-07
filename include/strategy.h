@@ -47,6 +47,8 @@ private:
     void reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
     void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     void fortify(Player* targetPlayer, Graph& map);
+    static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
+    bool containsNode(Player* targetPlayer, Node &node);
 };
 
 /**
