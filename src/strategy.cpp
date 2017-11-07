@@ -8,10 +8,11 @@
 
 /**
  * Human Player Strategy Implementation
+ * - Calls the original implementations
  * @param targetPlayer Player instance
  * @param map Graph of the current map
  * @param listOfPlayers List of Players
- * @param contients List of continents
+ * @param continents List of continents
  */
 void HumanStrategy::play(Player *targetPlayer,
                          Graph &map,
@@ -25,10 +26,11 @@ void HumanStrategy::play(Player *targetPlayer,
 
 /**
  * Aggressive Player Strategy Implementation
+ * - Game phases for Aggressive Player
  * @param targetPlayer Player instance
  * @param map Graph of the current map
  * @param listOfPlayers List of Players
- * @param contients List of continents
+ * @param continents List of continents
  */
 void AggressiveStrategy::play(Player *targetPlayer,
                              Graph &map,
@@ -42,6 +44,7 @@ void AggressiveStrategy::play(Player *targetPlayer,
 
 /**
  * Reinforcement phase for Aggressive Player
+ * - Reinforces strongest country only
  * @param graph Graph of continents
  */
 void AggressiveStrategy::reinforce(Player *targetPlayer, std::map<string, Graph>* graph)
@@ -60,7 +63,7 @@ void AggressiveStrategy::reinforce(Player *targetPlayer, std::map<string, Graph>
     }
 
     // Reinforce the strongest country
-    unsigned long totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
+    int totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
         std::list<std::string> continentsOwned = targetPlayer->getsContinentsOwned(graph);
@@ -87,6 +90,7 @@ void AggressiveStrategy::reinforce(Player *targetPlayer, std::map<string, Graph>
 
 /**
  * Attack phase for Aggressive Player
+ * - Attacks with strongest country until it can't any more
  * @param map Game map
  * @param players List of players
  */
@@ -110,11 +114,16 @@ void AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Pl
 
 /**
  * Fortification phase for Aggressive Player
+ * - Aggregates maximum of armies on strongest country
  * @param map Game map
  */
 void AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // TODO: Aggregate maximum troops on the country with the most armies
+    // Step 1: Find the strongest country [X]
+    // Step 2: Find every country with more than 1 armies [X]
+    // Step 3: Move armies from countries in step 2 to the strongest
+    //         while making sure 1 army is left on the 'weak' countries
 
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -129,10 +138,20 @@ void AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
         }
     }
 
-    // Step 1: Find the strongest country
-    // Step 2: Find every country with more than 1 armies
-    // Step 3: Move armies from countries in step 2 to the strongest
-    //         while making sure 1 army is left on the 'weak' countries
+    // Find countries with more than 1 army
+    std::vector<Country *> populousCountries = std::vector<Country*>();
+    int totalArmiesToAdd = 0;
+    for (size_t i = 0; i < strongestCountry->getAdjList().size(); i++)
+    {
+        if (strongestCountry->getAdjList()[i]->getPointerToCountry()->getNbrArmies() > 1)
+        {
+            totalArmiesToAdd += strongestCountry->getAdjList()[i]->getPointerToCountry()->getNbrArmies() - 1;
+            strongestCountry->getAdjList()[i]->getPointerToCountry()->setNbrArmies(1);
+        }
+    }
+    int newTotal = strongestCountry->getPointerToCountry()->getNbrArmies() + totalArmiesToAdd;
+    std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << newTotal << std::endl;
+    strongestCountry->getPointerToCountry()->setNbrArmies(newTotal);
 }
 
 /**

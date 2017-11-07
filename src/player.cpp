@@ -12,7 +12,6 @@
 
 // Constants
 static const int MIN_NUMBER_OF_ARMIES = 3;
-static const int MIN_NUMBER_OF_CARDS = 5;
 static const int INFANTRY_BONUS = 1;
 static const int CAVALRY_BONUS = 5;
 static const int ARTILLERY_BONUS = 10;
@@ -145,11 +144,11 @@ void Player::placeArmies(int nbArmies)
             currentNode = *countryIter;
             std::cout << "You now have " << nbArmies << " to place." << std::endl;
             std::cout << "=== " << currentNode->getCountry().getName() << ": ";
-            std::cout << currentNode->getCountry().getNbrArmies() << " armie(s) ===" << std::endl;
+            std::cout << currentNode->getPointerToCountry()->getNbrArmies() << " armie(s) ===" << std::endl;
             std::cout << "Do you want to add armies? (y/n) ";
             std::cin >> answer;
             if (answer == "y") {
-                std::cout << "You already have " << currentNode->getCountry().getNbrArmies() << " armie(s) ?" << std::endl;
+                std::cout << "You already have " << currentNode->getPointerToCountry()->getNbrArmies() << " armie(s) ?" << std::endl;
                 while(targetNbArmies <= 0 || targetNbArmies > nbArmies)
                 {
                     std::cout << "How many armies do you want to add? ";
