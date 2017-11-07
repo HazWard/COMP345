@@ -9,15 +9,14 @@ set(SOURCE_FILES
         include/player.h
         include/map.h
         include/reader.h
-        include/exception.h
         include/game.h
+        include/strategy.h
         src/cards.cpp
         src/dice.cpp
         src/player.cpp
         src/map.cpp
         src/reader.cpp
         src/game.cpp
-        src/exception.cpp
-        include/strategy.h src/strategy.cpp)
+        src/strategy.cpp)
 
 add_executable(COMP345 ${SOURCE_FILES})

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <iterator>
 #include "../include/reader.h"
-#include "../include/exception.h"
 
 using namespace std;
 
