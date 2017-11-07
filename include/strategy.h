@@ -36,7 +36,7 @@ public:
  * - Attacks with strongest country
  * - Fortifies one country
  */
-class AgressiveStrategy : Strategy
+class AggressiveStrategy : Strategy
 {
 public:
     void play(Player* targetPlayer,
