@@ -97,25 +97,22 @@ void Player::reinforce(std::map<string, Graph>* map)
 {
     // Perform actions to reinforce
     std::cout << "== REINFORCEMENT PHASE for " << this->name << " =="<< std::endl;
-    unsigned long totalNbArmies = 0;
-    if (this->nodes.size() >= MIN_NUMBER_OF_ARMIES)
+    unsigned long totalNbArmies = this->nodes.size() / MIN_NUMBER_OF_ARMIES;
+    if (totalNbArmies >= MIN_NUMBER_OF_ARMIES)
     {
-        totalNbArmies = this->nodes.size() / MIN_NUMBER_OF_ARMIES;
         std::list<std::string> continentsOwned =  getsContinentsOwned(map);
 
         for (unsigned int i = 0; i < continentsOwned.size(); i++) {
             totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
         }
 
-        if(this->hand->getTotalCards() >= MIN_NUMBER_OF_CARDS)
-        {
-            totalNbArmies = (this->hand->exchange(Card::INFANTRY)) ? INFANTRY_BONUS + totalNbArmies : totalNbArmies;
-            totalNbArmies = (this->hand->exchange(Card::ARTILLERY)) ? ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
-            totalNbArmies = (this->hand->exchange(Card::CAVALRY)) ? CAVALRY_BONUS + totalNbArmies : totalNbArmies;
-        }
+        // Exchange process
+        totalNbArmies = (this->hand->exchange(Card::INFANTRY)) ? INFANTRY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (this->hand->exchange(Card::ARTILLERY)) ? ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (this->hand->exchange(Card::CAVALRY)) ? CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+
         // Recursive call in the case that not all armies are placed
         this->placeArmies(totalNbArmies);
-
     }
     else
     {
