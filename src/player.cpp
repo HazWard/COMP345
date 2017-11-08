@@ -98,21 +98,22 @@ void Player::setStrategy(Strategy *targetStrategy)
 }
 
 /**
- * Game phases using Strategy object
+ * GAME PHASES USING STRATEGY OBJECT
 */
-void Player::reinforceS(std::map<string, Graph> *graph)
+
+std::vector<ReinforceResponse> Player::reinforceS(std::map<string, Graph> *graph)
 {
-    this->strategy->reinforce(this,graph);
+    return this->strategy->reinforce(this,graph);
 }
 
-void Player::attackS(Graph &map, std::vector<Player *> &players)
+AttackResponse Player::attackS(Graph &map, std::vector<Player *> &players)
 {
-    this->strategy->attack(this,map,players);
+    return this->strategy->attack(this,map,players);
 }
 
-void Player::fortifyS(Graph &map)
+FortifyResponse Player::fortifyS(Graph &map)
 {
-    this->strategy->fortify(this,map);
+    return this->strategy->fortify(this,map);
 }
 
 void Player::reinforce(std::map<string, Graph>* map)

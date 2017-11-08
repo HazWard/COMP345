@@ -17,6 +17,6 @@ set(SOURCE_FILES
         src/map.cpp
         src/reader.cpp
         src/game.cpp
-        src/strategy.cpp)
+        src/strategy.cpp include/response.h)
 
 add_executable(COMP345 ${SOURCE_FILES})

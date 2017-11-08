@@ -12,6 +12,7 @@
 #include "../include/dice.h"
 #include "../include/map.h"
 #include "../include/strategy.h"
+#include "../include/response.h"
 
 class Strategy; // Forward declaration
 class Player
@@ -37,9 +38,9 @@ class Player
         void reinforce(std::map<string, Graph>* graph);
         void attack(Graph& map, std::vector<Player*> &players);
         void fortify(Graph& map);
-        void reinforceS(std::map<string, Graph>* graph);
-        void attackS(Graph& map, std::vector<Player*> &players);
-        void fortifyS(Graph& map);
+        std::vector<ReinforceResponse> reinforceS(std::map<string, Graph>* graph);
+        AttackResponse attackS(Graph& map, std::vector<Player*> &players);
+        FortifyResponse fortifyS(Graph& map);
         string getName();
         std::list<Node*> getNodes();
         Hand* getHand();
