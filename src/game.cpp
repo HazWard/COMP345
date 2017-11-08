@@ -255,6 +255,16 @@ string trim(const string& str)
     size_t last = str.find_last_not_of(' ');
     return str.substr(first, (last - first + 1));
 }
+
+bool Game::armiesLeftToPlace(vector<int> nbrArmiesPlayers){
+    for(int i = 0; i < nbrArmiesPlayers.size(); i++)
+    {
+        if(nbrArmiesPlayers[i]  > 0)
+            return true;
+    }
+    return false;
+}
+
 //This method is used to place armies on the players' countries.
 void Game::placeArmies()
 {
@@ -283,7 +293,7 @@ void Game::placeArmies()
     //Each player starts with the nbrArmiesPerPlayer for the current number of players playing
     //The index of this vector is the same as the index in the player array
     //Each player will have to place nbrArmiesPerPlayer number of armies.
-    vector<int> nbrArmiesPlayer(arrayPlayers.size(), nbrArmiesPerPlayer);
+    vector<int> nbrArmiesPlayers(arrayPlayers.size(), nbrArmiesPerPlayer);
 
     //We are going to place 1 army per owbed territory in a round robin fashion. This process is automated.
     cout << "Placing 1 army per owned Territory for each player..." << endl;
@@ -295,7 +305,7 @@ void Game::placeArmies()
             for(auto const &node : arrayPlayers[i]->getNodes()){
                 if(j == k) {
                     node->getPointerToCountry()->setNbrArmies(1);
-                    nbrArmiesPlayer[i]--;
+                    nbrArmiesPlayers[i]--;
                     break;
                 }
                 j++;
@@ -314,23 +324,25 @@ void Game::placeArmies()
 
     //Now, we ask for the player to add the remaining armies that were not automatically added, one by one.
     //He only has to select a valid index associated with the country.
-    for(int i = 0; i < nbrPlayers; i++)
-    {
-        cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
-        int k = 1;
-        for (auto const &node : arrayPlayers[i]->getNodes()) {
-            cout << k << ": " << node->getCountry().getName() << endl;
-            k++;
-        }
-
-        while(nbrArmiesPlayer[i] > 0) {
+    while(armiesLeftToPlace(nbrArmiesPlayers)) {
+        for(int i = 0; i < nbrPlayers; i++)
+        {
             Country *c;
             bool validCountryIndex = false;
-            do {
-                cout << arrayPlayers[i]->getName() << " has " << nbrArmiesPlayer[i]
-                     << " armies to place. Please choose the index of the country you want to place 1 army on."
-                     << endl;
 
+            if(nbrArmiesPlayers[i] <= 0)
+                continue;
+
+            cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
+            int k = 1;
+            for (auto const &node : arrayPlayers[i]->getNodes()) {
+                cout << k << ": " << node->getCountry().getName() << endl;
+                k++;
+            }
+            cout << arrayPlayers[i]->getName() << " has " << nbrArmiesPlayers[i]
+                 << " armies to place. Please choose the index of the country you want to place 1 army on."
+                 << endl;
+            do{
                 int chosenCountryInd;
                 cin >> chosenCountryInd;
                 k = 1;
@@ -345,34 +357,29 @@ void Game::placeArmies()
                 }
                 if(!validCountryIndex)
                     cout << "You did not enter a valid country index from the list. Please make sure to enter a number between 1 and " << arrayPlayers[i]->getNodes().size() << ".\n";
-            } while(!validCountryIndex);
+            }   while(!validCountryIndex);
 
             //ONE ARMY AT A TIME: (comment this out for SUBMISSION)
-            c->setNbrArmies(c->getNbrArmies() + 1);
-            nbrArmiesPlayer[i]--;
-/*
+            //c->setNbrArmies(c->getNbrArmies() + 1);
+            //nbrArmiesPlayers[i]--;
+
             //SPEED UP VERSION FOR TESTING: (comment this out for TESTING)
             int nbrArmiesToPlace = 0;
             cout << "Please enter the number of armies to place on " << c->getName() << ": ";
             cin >> nbrArmiesToPlace;
             cin.ignore();
-            if(nbrArmiesToPlace <= nbrArmiesPlayer[i]) {
-                nbrArmiesPlayer[i] -= nbrArmiesToPlace;
+            if(nbrArmiesToPlace <= nbrArmiesPlayers[i]) {
+                nbrArmiesPlayers[i] -= nbrArmiesToPlace;
                 c->setNbrArmies(c->getNbrArmies() + nbrArmiesToPlace);
             }
             else
             {
-                cout << "The player has " << nbrArmiesPlayer[i] << " armies left to place. ";
+                cout << "The player has " << nbrArmiesPlayers[i] << " armies left to place. ";
                 cout << "You cannot place " << nbrArmiesToPlace << " armies on " << c->getName() << ".\n\n";
-            }*/
-
-            if(nbrArmiesPlayer[i] == 0) {
-                cout << arrayPlayers[i]->getName()
-                     << " has successfully placed all of their armies. We will go to the next player." << endl;
             }
         }
     }
-    if(verifyPlayerArmiers(nbrArmiesPerPlayer))
+    if(verifyPlayerArmies(nbrArmiesPerPlayer))
         cout << endl << "All players have successfully placed their armies.\n";
     else {
         cout << "There was an error: Each player has not placed " << nbrArmiesPerPlayer << " armies.\n";
@@ -380,7 +387,7 @@ void Game::placeArmies()
     }
 }
 //Private method used to verify that each player successfully placed exactly the right number of armies to be placed.
-bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
+bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
 {
     for(int i = 0; i < nbrPlayers; i++)
     {
@@ -643,6 +650,11 @@ void fortifyDriver()
         play[i]->printNodes();
     }
     riskGame.placeArmies();
+
+    cout << "TESTING";
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << *node << endl;
+    }
 
     //testing fortify
     for (int i = 0; i < players->size(); i++) {
