@@ -69,7 +69,7 @@ std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, st
                         std::cout << "You already have " << currentNode->getPointerToCountry()->getNbrArmies() << " armie(s) ?" << std::endl;
                         while(targetNbArmies <= 0 || targetNbArmies > totalNbArmies)
                         {
-                            std::cout << "How many armies do you want now? ";
+                            std::cout << "How many armies do you want to add? ";
                             std::cin >> targetNbArmies;
                         }
 

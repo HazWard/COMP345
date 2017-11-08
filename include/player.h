@@ -30,6 +30,7 @@ class Player
 
         Player();
         Player(string n);
+        Player(string n, Strategy* playerStrategy);
         Player(string n, Hand* playerHand, std::list<Node*>* playerNodes);
         ~Player();
         int roll(int nbOfDice);

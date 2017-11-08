@@ -33,7 +33,7 @@ public:
  * Human Player Strategy
  * - Every phase requires user interaction
  */
-class HumanStrategy : Strategy
+class HumanStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
@@ -48,7 +48,7 @@ public:
  * - Attacks with strongest country
  * - Fortifies one country
  */
-class AggressiveStrategy : Strategy
+class AggressiveStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
@@ -63,7 +63,7 @@ public:
  * - Never attacks
  * - Fortifies weakest countries
  */
-class BenevolentStrategy : Strategy
+class BenevolentStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
