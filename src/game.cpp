@@ -1,6 +1,7 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
+#include <list>
 #include <random>
 
 //Imports necessary on Windows G++ compilers

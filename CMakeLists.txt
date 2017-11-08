@@ -19,5 +19,6 @@ set(SOURCE_FILES
         src/reader.cpp
         src/game.cpp
         src/strategy.cpp)
+        src/exception.cpp src/observer.cpp include/observer.h src/views.cpp include/views.h)
 
 add_executable(COMP345 ${SOURCE_FILES})
