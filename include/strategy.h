@@ -25,7 +25,6 @@ public:
     virtual std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents) = 0;
     virtual AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
     virtual FortifyResponse* fortify(Player* targetPlayer, Graph& map) = 0;
-    virtual bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
     bool containsNode(Player* targetPlayer, Node &node);
 };
 
@@ -39,7 +38,6 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
 };
 
 /**
@@ -54,7 +52,6 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
 };
 
 /**
@@ -69,5 +66,4 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
 };

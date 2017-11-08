@@ -17,9 +17,6 @@
  */
 
 //TODO: Remove all print statements
-//TODO: Capture all phase changing information in a standard way to feed the model (game)
-
-
 
 // Constants
 static const int MIN_NUMBER_OF_ARMIES = 3;
@@ -95,7 +92,6 @@ std::list<Node*> Player::getNodes()
     return this->nodes;
 }
 
-
 int Player::roll(int nbOfDice)
 {
     // Perform rolls
@@ -125,7 +121,7 @@ AttackResponse* Player::attack(Graph &map, std::vector<Player *> &players)
 {
     return this->strategy->attack(this, map, players);
 }
-//Temporary
+
 // TODO: Fix attack method, please do so in Strategy
 // void Player::attack(Graph& map, std::vector<Player*> &players){}
 /*
@@ -310,7 +306,7 @@ void Player::printNodes()
     for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
     {
         Country c = (*countryIterator)->getCountry();
-        cout << c.getName() << "; ";
+        cout << c.getName() << ";";
     }
     cout << endl << endl;
 }

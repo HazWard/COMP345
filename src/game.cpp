@@ -1,6 +1,7 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
+#include <list>
 #include <random>
 
 //Imports necessary on Windows G++ compilers
@@ -194,10 +195,6 @@ vector<Player*>* Game::getPlayersUser(int np)
 void Game::determinePlayerTurn() {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     shuffle (arrayPlayers.begin(), arrayPlayers.end(), std::default_random_engine(seed));
-    /*
-    srand ( unsigned ( std::time(0) ) );
-    random_shuffle ( arrayPlayers.begin(), arrayPlayers.end() );
-     */
 }
 
 /*The following method has been provided by:
@@ -229,14 +226,15 @@ void Game::assignCountriesToPlayers()
         //We assign countries to players one by one in a round robin fashion, until there are no more countries to assign
             for (int i = 0; i < this->arrayPlayers.size(); i++) {
                 listShuffle(nodesToAssign);
-                if(nodesToAssign.front() != NULL) {
+                if(nodesToAssign.front() != nullptr) {
                     this->arrayPlayers[i]->addNode(nodesToAssign.front());
                     nodesToAssign.pop_front();
                 }
             }
         }
 }
-//The 2 following functions are used in the method placeArmies.
+//The 2 following functions are used in the method:
+//TODO: use them in fortify
 //They are used to allow more flexibility when reading user input
 static string tolower(string& str)
 {
@@ -257,47 +255,94 @@ string trim(const string& str)
     size_t last = str.find_last_not_of(' ');
     return str.substr(first, (last - first + 1));
 }
+
+bool Game::armiesLeftToPlace(vector<int> nbrArmiesPlayers){
+    for(int i = 0; i < nbrArmiesPlayers.size(); i++)
+    {
+        if(nbrArmiesPlayers[i]  > 0)
+            return true;
+    }
+    return false;
+}
+
 //This method is used to place armies on the players' countries.
 void Game::placeArmies()
 {
     //the number of armies each player has to place varies depending on the number of players
     int nbrArmiesPerPlayer = 0;
-    switch(nbrPlayers)
-    {
-        case 2: nbrArmiesPerPlayer = 40; break;
-        case 3: nbrArmiesPerPlayer = 35; break;
-        case 4: nbrArmiesPerPlayer = 30; break;
-        case 5: nbrArmiesPerPlayer = 25; break;
-        case 6: nbrArmiesPerPlayer = 20; break;
+    switch(nbrPlayers) {
+        case 2:
+            nbrArmiesPerPlayer = 40;
+            break;
+        case 3:
+            nbrArmiesPerPlayer = 35;
+            break;
+        case 4:
+            nbrArmiesPerPlayer = 30;
+            break;
+        case 5:
+            nbrArmiesPerPlayer = 25;
+            break;
+        case 6:
+            nbrArmiesPerPlayer = 20;
+            break;
+        default:
+            exit(EXIT_FAILURE);
     }
+
+    //Each player starts with the nbrArmiesPerPlayer for the current number of players playing
+    //The index of this vector is the same as the index in the player array
     //Each player will have to place nbrArmiesPerPlayer number of armies.
-    for(int i = 0; i < nbrPlayers; i++)
-    {
+    vector<int> nbrArmiesPlayers(arrayPlayers.size(), nbrArmiesPerPlayer);
 
-        cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
-        int nbrArmiesPlayer = nbrArmiesPerPlayer;
-
-        cout << "Placing 1 army per owned Territory..." << endl;
-
-        //Places one army to every territory owned by the player
-        for(auto const &node : arrayPlayers[i]->getNodes()){
-            node->getPointerToCountry()->setNbrArmies(1);
-            nbrArmiesPlayer--;
-        }
-
-        while(nbrArmiesPlayer > 0) {
-            bool validCountryName = false;
-            Country *c;
-            do {
-                cout << arrayPlayers[i]->getName() << " has " << nbrArmiesPlayer
-                     << " armies to place. Please choose the index of the country you want to place 1 army on."
-                     << endl;
-                int k = 1;
-
-                for (auto const &node : arrayPlayers[i]->getNodes()) {
-                    cout << k << ": " << node->getCountry().getName() << endl;
-                    k++;
+    //We are going to place 1 army per owbed territory in a round robin fashion. This process is automated.
+    cout << "Placing 1 army per owned Territory for each player..." << endl;
+    bool allNodesHaveOneArmy = false;
+    int i = 0, k = 0;
+    while(!allNodesHaveOneArmy) {
+        for (int i = 0; i < nbrPlayers; i++) {
+            int j = 0;
+            for(auto const &node : arrayPlayers[i]->getNodes()){
+                if(j == k) {
+                    node->getPointerToCountry()->setNbrArmies(1);
+                    nbrArmiesPlayers[i]--;
+                    break;
                 }
+                j++;
+            }
+        }
+        k++;
+        allNodesHaveOneArmy = true;
+        for(int i = 0; i < nbrPlayers; i++)
+        {
+            if(k < arrayPlayers[i]->getNodes().size()) {
+                allNodesHaveOneArmy = false;
+                break;
+            }
+        }
+    }
+
+    //Now, we ask for the player to add the remaining armies that were not automatically added, one by one.
+    //He only has to select a valid index associated with the country.
+    while(armiesLeftToPlace(nbrArmiesPlayers)) {
+        for(int i = 0; i < nbrPlayers; i++)
+        {
+            Country *c;
+            bool validCountryIndex = false;
+
+            if(nbrArmiesPlayers[i] <= 0)
+                continue;
+
+            cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
+            int k = 1;
+            for (auto const &node : arrayPlayers[i]->getNodes()) {
+                cout << k << ": " << node->getCountry().getName() << endl;
+                k++;
+            }
+            cout << arrayPlayers[i]->getName() << " has " << nbrArmiesPlayers[i]
+                 << " armies to place. Please choose the index of the country you want to place 1 army on."
+                 << endl;
+            do{
                 int chosenCountryInd;
                 cin >> chosenCountryInd;
                 k = 1;
@@ -305,41 +350,36 @@ void Game::placeArmies()
                     if(k == chosenCountryInd)
                     {
                         c = node2->getPointerToCountry();
-                        validCountryName = true;
+                        validCountryIndex = true;
                         break;
                     }
                     k++;
                 }
-                if(!validCountryName)
+                if(!validCountryIndex)
                     cout << "You did not enter a valid country index from the list. Please make sure to enter a number between 1 and " << arrayPlayers[i]->getNodes().size() << ".\n";
-            } while(!validCountryName);
+            }   while(!validCountryIndex);
 
-            /*
-            //ONE ARMY AT A TIME:
-            nbrArmiesPlayer--;
-            c->setNbrArmies(c->getNbrArmies() + 1);*/
-            //SPEED UP VERSION FOR TESTING:
+            //ONE ARMY AT A TIME: (comment this out for SUBMISSION)
+            //c->setNbrArmies(c->getNbrArmies() + 1);
+            //nbrArmiesPlayers[i]--;
+
+            //SPEED UP VERSION FOR TESTING: (comment this out for TESTING)
             int nbrArmiesToPlace = 0;
             cout << "Please enter the number of armies to place on " << c->getName() << ": ";
             cin >> nbrArmiesToPlace;
             cin.ignore();
-            if(nbrArmiesToPlace <= nbrArmiesPlayer) {
-                nbrArmiesPlayer -= nbrArmiesToPlace;
+            if(nbrArmiesToPlace <= nbrArmiesPlayers[i]) {
+                nbrArmiesPlayers[i] -= nbrArmiesToPlace;
                 c->setNbrArmies(c->getNbrArmies() + nbrArmiesToPlace);
             }
             else
             {
-                cout << "The player has " << nbrArmiesPlayer << " armies left to place. ";
+                cout << "The player has " << nbrArmiesPlayers[i] << " armies left to place. ";
                 cout << "You cannot place " << nbrArmiesToPlace << " armies on " << c->getName() << ".\n\n";
-            }
-
-            if(nbrArmiesPlayer == 0) {
-                cout << arrayPlayers[i]->getName()
-                     << " has successfully placed all of their armies. We will go to the next player." << endl;
             }
         }
     }
-    if(verifyPlayerArmiers(nbrArmiesPerPlayer))
+    if(verifyPlayerArmies(nbrArmiesPerPlayer))
         cout << endl << "All players have successfully placed their armies.\n";
     else {
         cout << "There was an error: Each player has not placed " << nbrArmiesPerPlayer << " armies.\n";
@@ -347,7 +387,7 @@ void Game::placeArmies()
     }
 }
 //Private method used to verify that each player successfully placed exactly the right number of armies to be placed.
-bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
+bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
 {
     for(int i = 0; i < nbrPlayers; i++)
     {
@@ -359,6 +399,46 @@ bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
             return false;
     }
     return true;
+}
+
+/**
+ * Helper method to perform attacking phase
+ */
+bool Game::performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
+    // Same implementation as bool Player::attack(...)
+    int rounds = 1;
+    while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
+        cout << "Round " << rounds << "." << endl;
+        int attackerDice = attackingCountry.getNbrArmies() >= 4 ? 3 : attackingCountry.getNbrArmies() - 1;
+        int defenderDice = defendingCountry.getNbrArmies() >= 2 ? 2 : 1;
+
+        //Getting vectors of dice rolls
+        std::vector<int> attackerDiceRolls = attacker.getDice()->howManyDice(attackerDice);
+        std::vector<int> defenderDiceRolls = defender.getDice()->howManyDice(defenderDice);
+
+        //Sorting the dice roll vectors in descending order
+        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+        //iterating through the dice rolls, until run our of descending dice
+        for(int i = 0; i < defenderDiceRolls.size(); i++){
+            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
+            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+                attackingCountry.setNbrArmies(attackingCountry.getNbrArmies() - 1);
+            }
+            else{
+                defendingCountry.setNbrArmies(defendingCountry.getNbrArmies() - 1);
+            }
+            if(defendingCountry.getNbrArmies() == 0){
+                return true;
+            }
+            else if(attackingCountry.getNbrArmies() == 1){
+                return false;
+            }
+        }
+        rounds++;
+    }
+    return false;
 }
 
 //Main for Part 1
@@ -611,6 +691,11 @@ void fortifyDriver()
         play[i]->printNodes();
     }
     riskGame.placeArmies();
+
+    cout << "TESTING";
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << *node << endl;
+    }
 
     //testing fortify
     for (int i = 0; i < players->size(); i++) {

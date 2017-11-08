@@ -34,7 +34,7 @@ class Player
         Player(string n, Hand* playerHand, std::list<Node*>* playerNodes);
         ~Player();
         int roll(int nbOfDice);
-        Strategy *strategy;
+
         void setStrategy(Strategy *targetStrategy);
         std::vector<ReinforceResponse*>* reinforce(std::vector<Continent*> continents);
         AttackResponse* attack(Graph& map, std::vector<Player*> &players);
@@ -55,6 +55,7 @@ class Player
         void removeNode(Node *n);
         void placeArmies(int nbArmies);
     private:
+        Strategy *strategy;
         std::string name;
         Hand* hand;
         Dice* dice;
