@@ -53,12 +53,13 @@ public:
     //TO DELETE map<string, Graph> *getContinents();
     vector<Continent*>* getContinents();
 
-
     //Public methods:
     void determinePlayerTurn();
 
     void assignCountriesToPlayers();
 
     void placeArmies();
+
+    bool performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry);
 };
 

@@ -394,6 +394,46 @@ bool Game::verifyPlayerArmiers(int nbrArmiesPerPlayer)
     return true;
 }
 
+/**
+ * Helper method to perform attacking phase
+ */
+bool Game::performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
+    // Same implementation as bool Player::attack(...)
+    int rounds = 1;
+    while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
+        cout << "Round " << rounds << "." << endl;
+        int attackerDice = attackingCountry.getNbrArmies() >= 4 ? 3 : attackingCountry.getNbrArmies() - 1;
+        int defenderDice = defendingCountry.getNbrArmies() >= 2 ? 2 : 1;
+
+        //Getting vectors of dice rolls
+        std::vector<int> attackerDiceRolls = attacker.getDice()->howManyDice(attackerDice);
+        std::vector<int> defenderDiceRolls = defender.getDice()->howManyDice(defenderDice);
+
+        //Sorting the dice roll vectors in descending order
+        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+        //iterating through the dice rolls, until run our of descending dice
+        for(int i = 0; i < defenderDiceRolls.size(); i++){
+            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
+            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+                attackingCountry.setNbrArmies(attackingCountry.getNbrArmies() - 1);
+            }
+            else{
+                defendingCountry.setNbrArmies(defendingCountry.getNbrArmies() - 1);
+            }
+            if(defendingCountry.getNbrArmies() == 0){
+                return true;
+            }
+            else if(attackingCountry.getNbrArmies() == 1){
+                return false;
+            }
+        }
+        rounds++;
+    }
+    return false;
+}
+
 //Main for Part 1
 void gameStartDriver()
 {

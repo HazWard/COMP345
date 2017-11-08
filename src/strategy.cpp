@@ -167,8 +167,8 @@ AttackResponse HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vect
         }
 
         // TODO: Verify implementation of attack()
-        bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
-                                      *(iterator->second->getPointerToCountry()));
+        bool wonBattle = attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
+        *(iterator->second->getPointerToCountry()));
         if (wonBattle) {
             cout << targetPlayer->getName() << ", you won!" << endl;
 
@@ -294,17 +294,11 @@ FortifyResponse HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 
     validInput=false;
 
-    FortifyResponse response = FortifyResponse();
+    FortifyResponse *response = new FortifyResponse();
     response.nbArmies = armNum;
     response.sourceCountry = sourceCtr;
     response.destinationCountry = destCtr;
     return response;
-}
-
-bool HumanStrategy::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry)
-{
-    // TODO: Implement correct attack phase
-    return false;
 }
 
 /**
@@ -372,8 +366,9 @@ std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlaye
  */
 AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
-    // TODO: Attack with country with the country with most armies
-    // TODO: Order canAttack list to make sure the weakest opponent is always attacked
+    // TODO: Return AttackResponse that captures the attack with HIGHEST priority
+    // Priority is defined as: attacking player is attacking from strongest country, and attacking into weakest enemy country
+    // in its adjacency list
 
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -421,7 +416,7 @@ AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std:
                 }
             }
         }
-        bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
+        //bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
                                       *(iterator->second->getPointerToCountry()));
         if (wonBattle) {
             std::cout << targetPlayer->getName() << ", you won!" << std::endl;
@@ -451,46 +446,6 @@ AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std:
         }
     }
     std::cout << "That concludes all your attacks, " << targetPlayer->getName() << "." << std::endl;
-}
-
-/**
- * Helper method to perform attacking phase
- */
-bool AggressiveStrategy::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
-    // Same implementation as bool Player::attack(...)
-    int rounds = 1;
-    while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
-        cout << "Round " << rounds << "." << endl;
-        int attackerDice = attackingCountry.getNbrArmies() >= 4 ? 3 : attackingCountry.getNbrArmies() - 1;
-        int defenderDice = defendingCountry.getNbrArmies() >= 2 ? 2 : 1;
-
-        //Getting vectors of dice rolls
-        std::vector<int> attackerDiceRolls = attacker.getDice()->howManyDice(attackerDice);
-        std::vector<int> defenderDiceRolls = defender.getDice()->howManyDice(defenderDice);
-
-        //Sorting the dice roll vectors in descending order
-        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
-        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
-
-        //iterating through the dice rolls, until run our of descending dice
-        for(int i = 0; i < defenderDiceRolls.size(); i++){
-            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
-            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
-                attackingCountry.setNbrArmies(attackingCountry.getNbrArmies() - 1);
-            }
-            else{
-                defendingCountry.setNbrArmies(defendingCountry.getNbrArmies() - 1);
-            }
-            if(defendingCountry.getNbrArmies() == 0){
-                return true;
-            }
-            else if(attackingCountry.getNbrArmies() == 1){
-                return false;
-            }
-        }
-        rounds++;
-    }
-    return false;
 }
 
 /**
@@ -590,6 +545,7 @@ AttackResponse BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std:
 {
     return AttackResponse();
 }
+
 FortifyResponse BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // Find weakest country
@@ -628,9 +584,3 @@ FortifyResponse BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     return response;
 }
 
-bool BenevolentStrategy::attack(Player &attacker, Player &defender, Country &attackingCountry,
-                                Country &defendingCountry)
-{
-    // Dummy function because BenevolentStrategy never attacks
-    return false;
-}

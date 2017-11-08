@@ -21,6 +21,7 @@ class ReinforceResponse
 public:
     int nbArmies;
     Node* country;
+    ReinforceResponse(int n, Node *c) : nbArmies(n), country(c) {};
 };
 
 class AttackResponse
@@ -28,6 +29,7 @@ class AttackResponse
 public:
     std::pair<Player*, Node*> attacker;
     std::pair<Player*, Node*> defender;
+    AttackResponse(std::pair<Player*,Node*> a, std::pair<Player*,Node*> d) : attacker(a), defender(d) {};
 };
 
 class FortifyResponse
@@ -36,4 +38,5 @@ public:
     int nbArmies;
     Node* sourceCountry;
     Node* destinationCountry;
+    FortifyResponse(int n, Node *s, Node *d) : nbArmies(n), sourceCountry(s), destinationCountry(d) {};
 };
