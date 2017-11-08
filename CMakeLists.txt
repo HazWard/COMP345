@@ -11,12 +11,13 @@ set(SOURCE_FILES
         include/reader.h
         include/game.h
         include/strategy.h
+        include/response.h
         src/cards.cpp
         src/dice.cpp
         src/player.cpp
         src/map.cpp
         src/reader.cpp
         src/game.cpp
-        src/strategy.cpp include/response.h)
+        src/strategy.cpp)
 
 add_executable(COMP345 ${SOURCE_FILES})

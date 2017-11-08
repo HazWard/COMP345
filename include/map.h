@@ -39,7 +39,7 @@ class Node
 {
 private:
     Country country;
-    vector<Node *> adjList;
+    vector<Node*> adjList;
     bool visited;
 public:
     Node();
@@ -50,7 +50,7 @@ public:
 
     Country getCountry();
 
-    vector<Node *> getAdjList();
+    vector<Node*> getAdjList();
 
     Country *getPointerToCountry();
 
@@ -58,7 +58,7 @@ public:
 
     void addNode(Node *n);
 
-    void setAdjList(vector<Node *> newAdjList);
+    void setAdjList(vector<Node*> newAdjList);
 
     void setVisited(bool v);
 
@@ -79,13 +79,32 @@ public:
 	Graph();
 	Graph(int v, vector<Node>& arrayOfNodes);
 	//Accessor methods (no mutator methods since the graph will not change after the initial creation
-	vector<Node>* getVectorOfNodes();
+	vector<Node*>* getVectorOfNodes();
 	int getNbrCountries();
 	//Methods to add
 	void addNode(Node &n);
 	void addEdge(Node *n1, Node *n2);
     bool areConnectedByEdge(Node* n1, Node* n2);
-	bool areConnectedThroughOwned(int source, int destination);
+	//bool areConnectedThroughOwned(int source, int destination);
 	bool isGraphConnected();
 	friend std::ostream& operator <<(std::ostream& stream, Graph& g);
+};
+class Continent
+{
+private:
+	string name;
+	int bonus;
+	Graph continent;
+	vector<Node*> nodesInContinent;
+
+	void visitAdjacentNodes(vector<Node*> adjListNode);
+public:
+	Continent();
+	Continent(string n, int b);
+	string getName() { return name; }
+	int getBonus() { return bonus; }
+	vector<Node*>* getNodesInContinent() { return &nodesInContinent; }
+	void addNode(Node* n);
+	bool isContinentConnected();
+	friend std::ostream& operator <<(std::ostream& stream, Continent& c);
 };

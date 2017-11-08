@@ -22,7 +22,7 @@ class Player; // Forward declaration
 class Strategy
 {
 public:
-    virtual std::vector<ReinforceResponse> reinforce(Player* targetPlayer, std::map<string, Graph>* graph) = 0;
+    virtual std::vector<ReinforceResponse> reinforce(Player* targetPlayer, std::vector<Continent*> continents) = 0;
     virtual AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
     virtual FortifyResponse fortify(Player* targetPlayer, Graph& map) = 0;
     virtual bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
@@ -36,7 +36,7 @@ public:
 class HumanStrategy : Strategy
 {
 public:
-    std::vector<ReinforceResponse> reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
+    std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse fortify(Player* targetPlayer, Graph& map);
     bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
@@ -51,7 +51,7 @@ public:
 class AggressiveStrategy : Strategy
 {
 public:
-    std::vector<ReinforceResponse> reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
+    std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse fortify(Player* targetPlayer, Graph& map);
     bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
@@ -66,7 +66,7 @@ public:
 class BenevolentStrategy : Strategy
 {
 public:
-    std::vector<ReinforceResponse> reinforce(Player* targetPlayer, std::map<string, Graph>* graph);
+    std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse fortify(Player* targetPlayer, Graph& map);
     bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
