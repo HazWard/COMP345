@@ -35,12 +35,9 @@ class Player
         int roll(int nbOfDice);
         Strategy *strategy;
         void setStrategy(Strategy *targetStrategy);
-        void reinforce(std::map<string, Graph>* graph);
-        void attack(Graph& map, std::vector<Player*> &players);
-        void fortify(Graph& map);
-        std::vector<ReinforceResponse> reinforceS(std::map<string, Graph>* graph);
-        AttackResponse attackS(Graph& map, std::vector<Player*> &players);
-        FortifyResponse fortifyS(Graph& map);
+        std::vector<ReinforceResponse> reinforce(std::map<string, Graph>* graph);
+        AttackResponse attack(Graph& map, std::vector<Player*> &players);
+        FortifyResponse fortify(Graph& map);
         string getName();
         std::list<Node*> getNodes();
         Hand* getHand();
@@ -58,7 +55,6 @@ class Player
         void placeArmies(int nbArmies);
     private:
         std::string name;
-        static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
         Hand* hand;
         Dice* dice;
         std::list<Node*> nodes;
