@@ -1,7 +1,6 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include <iostream>
-#include<list>
 #include <random>
 
 //Imports necessary on Windows G++ compilers
@@ -46,11 +45,6 @@ Game::Game()
     }
 }
 
-/*Game::~Game()
-{
-
-}*/
-
 //ACCESSOR METHODS
 string Game::getMapName() { return mapName; }
 
@@ -62,7 +56,7 @@ Graph* Game::getMapCountries() { return &mapCountries; }
 
 Deck Game::getMainDeck() { return mainDeck; }
 
-map<string, Graph>* Game::getContinents() { return &continents; };
+vector<Continent*>* Game::getContinents() { return &continents; };
 
 //-- MUTATOR METHODS --
 void Game::setMap(Graph& newMap)
@@ -106,13 +100,14 @@ list<string> Game::getNameOfFiles(const char *path)
     return listOfMapFiles;
 }
 
-/*A method to ask the user to choose a map file among the list.
-We will try to read the file and create a Graph from it, along with a map container of the continents it contains.
-If the method mapIsValid of our Parser object returns false, that means that the current map file is not valid.
- We will thus ask the user to enter another number until he chooses a valid map file.
- When a valid map file is selected, we set mapCountries to the map and continents to the map container of continents read from the file.*/
-void Game::getMapUser(list<string> listOfMapFiles)
-{
+void Game::getMapUser(list<string> listOfMapFiles) {
+    /**
+     * A method to ask the user to choose a map file among the list.
+     * We will try to read the file and create a Graph from it, along with a map container of the continents it contains.
+     * If the method mapIsValid of our Parser object returns false, that means that the current map file is not valid.
+     * We will thus ask the user to enter another number until he chooses a valid map file.
+     * When a valid map file is selected, we set mapCountries to the map and continents to the map container of continents read from the file.
+     */
     cout << "Here is the list of available map files. Choose a map by entering the number associated with the one you want." << endl;
     int i = 0;
     int indexMapChosen = -1;
@@ -164,6 +159,7 @@ void Game::getMapUser(list<string> listOfMapFiles)
     this->continents = *parser->getContinents();
     delete parser;
 }
+
 //Method that asks the user for the number of players
 int Game::getNbrPlayersUser()
 {
@@ -203,6 +199,7 @@ void Game::determinePlayerTurn() {
     random_shuffle ( arrayPlayers.begin(), arrayPlayers.end() );
      */
 }
+
 /*The following method has been provided by:
 http://rextester.com/HHTW39678
 http://www.cplusplus.com/forum/general/207328/*/
@@ -214,17 +211,18 @@ template <class T > void listShuffle( list<T> &L )
     shuffle( V.begin(), V.end(), gen );
     L.assign( V.begin(), V.end() );
 }
+
 //Method used to assign countries one by one to the players in a round robin fashion
 void Game::assignCountriesToPlayers()
 {
-    vector<Node>* listOfNodes = this->mapCountries.getVectorOfNodes();
+    vector<Node*> listOfNodes = *(this->mapCountries.getVectorOfNodes());
     //We create a list from the vector of nodes of the map
     //We use a list since we will be removing a lot of elements and the
     //underlying data structure of a list is a linked list, which is better suited for insertion/removal of elements
     //then arrays (vectors use arrays as their underlying structure)
     list<Node*> nodesToAssign;
-    for(int i = 0; i < listOfNodes->size(); i++)
-        nodesToAssign.push_back(&(*listOfNodes)[i]);
+    for(int i = 0; i < listOfNodes.size(); i++)
+        nodesToAssign.push_back(listOfNodes[i]);
 
     //As long as there are still nodes to be assigned to players, we shuffle the list and pop the first element from it
     while(!nodesToAssign.empty()) {
@@ -272,8 +270,6 @@ void Game::placeArmies()
         case 5: nbrArmiesPerPlayer = 25; break;
         case 6: nbrArmiesPerPlayer = 20; break;
     }
-
-
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     for(int i = 0; i < nbrPlayers; i++)
     {
@@ -294,7 +290,7 @@ void Game::placeArmies()
             Country *c;
             do {
                 cout << arrayPlayers[i]->getName() << " has " << nbrArmiesPlayer
-                     << " armies to place. Please choose the name of the country you want to place some armies on."
+                     << " armies to place. Please choose the index of the country you want to place 1 army on."
                      << endl;
                 int k = 1;
 
@@ -302,32 +298,41 @@ void Game::placeArmies()
                     cout << k << ": " << node->getCountry().getName() << endl;
                     k++;
                 }
-                //We find the country where the player wants to add armies by the name of the selected country.
-                string chosenCountry;
-                getline(cin, chosenCountry);
-                //We ignore cases and blank space around the actual name of the country.
-                chosenCountry = trim(tolower(chosenCountry));
+                int chosenCountryInd;
+                cin >> chosenCountryInd;
+                k = 1;
                 for (auto const &node2 : arrayPlayers[i]->getNodes()) {
-                    string name = node2->getCountry().getName();
-                    name = tolower(name);
-                    if (name == chosenCountry) {
+                    if(k == chosenCountryInd)
+                    {
                         c = node2->getPointerToCountry();
                         validCountryName = true;
                         break;
                     }
+                    k++;
                 }
                 if(!validCountryName)
-                    cout << "You did not enter a valid country name from the list. Please make sure to enter it properly." << endl;
+                    cout << "You did not enter a valid country index from the list. Please make sure to enter a number between 1 and " << arrayPlayers[i]->getNodes().size() << ".\n";
             } while(!validCountryName);
-            int nbrArmiesToPut = 0;
-            cout << "Please enter the number of armies to put on country " << c->getName() << ": ";
-            cin >> nbrArmiesToPut;
-            cin.ignore();
 
-            if(nbrArmiesPlayer >= nbrArmiesToPut && nbrArmiesToPut >= 0) {
-                nbrArmiesPlayer -= nbrArmiesToPut;
-                c->setNbrArmies(c->getNbrArmies() + nbrArmiesToPut);
-            } else cout << "There is not enough armies available to player " << arrayPlayers[i]->getName() << ", we cannot do this." << endl;
+            /*
+            //ONE ARMY AT A TIME:
+            nbrArmiesPlayer--;
+            c->setNbrArmies(c->getNbrArmies() + 1);*/
+            //SPEED UP VERSION FOR TESTING:
+            int nbrArmiesToPlace = 0;
+            cout << "Please enter the number of armies to place on " << c->getName() << ": ";
+            cin >> nbrArmiesToPlace;
+            cin.ignore();
+            if(nbrArmiesToPlace <= nbrArmiesPlayer) {
+                nbrArmiesPlayer -= nbrArmiesToPlace;
+                c->setNbrArmies(c->getNbrArmies() + nbrArmiesToPlace);
+            }
+            else
+            {
+                cout << "The player has " << nbrArmiesPlayer << " armies left to place. ";
+                cout << "You cannot place " << nbrArmiesToPlace << " armies on " << c->getName() << ".\n\n";
+            }
+
             if(nbrArmiesPlayer == 0) {
                 cout << arrayPlayers[i]->getName()
                      << " has successfully placed all of their armies. We will go to the next player." << endl;
@@ -376,7 +381,7 @@ void startupPhaseDriver()
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
 
-    map<string, Graph>* cont = riskGame.getContinents();
+    vector<Continent*> continents = *(riskGame.getContinents());
 
     cout << "Player order before we randomize the order:" << endl;
     for(int i = 0; i < players->size(); i++)
@@ -399,11 +404,9 @@ void startupPhaseDriver()
     vector<Player*> play = *(riskGame.getArrayPlayers());
 
     //Displaying all the countries in the graph
-    map<string, Graph>::reverse_iterator rit;
-    for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
+    for(int i = 0; i < continents.size(); i++)
     {
-        cout << "=============================|" << rit->first << "|=============================" << endl;
-        cout << rit->second;
+        cout << *(continents[i]);
     }
 
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
@@ -414,11 +417,12 @@ void startupPhaseDriver()
 
     cout << "TESTING";
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
-        cout << node << endl;
+        cout << *node << endl;
     }
 }
 
 //Main for Part 3
+
 void mainGameLoopDriver()
 {
     /*The constructor verifies that the map loaded is valid.
@@ -428,14 +432,8 @@ void mainGameLoopDriver()
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
 
-    map<string, Graph>* continents = riskGame.getContinents();
+    vector<Continent*> continents = *(riskGame.getContinents());
 
-    map<string, Graph>::reverse_iterator rit;
-    for (rit = (*continents).rbegin(); rit != (*continents).rend(); ++rit)
-    {
-        cout << "=============================|" << rit->first << "|=============================" << endl;
-        cout << rit->second;
-    }
     cout << "Player order before we randomize the order:" << endl;
     for(int i = 0; i < players->size(); i++)
     {
@@ -455,6 +453,12 @@ void mainGameLoopDriver()
     riskGame.assignCountriesToPlayers();
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
+
+    //Displaying all the countries in the graph
+    for(int i = 0; i < continents.size(); i++)
+    {
+        cout << *(continents[i]);
+    }
 
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
@@ -496,7 +500,7 @@ void reinforceDriver()
     Game riskGame;
     vector<Player*>* players = riskGame.getArrayPlayers();
 
-    map<string, Graph>* continents = riskGame.getContinents();
+    vector<Continent*> continents = *(riskGame.getContinents());
     map<string, Graph>::reverse_iterator countryIterator;
 
     riskGame.determinePlayerTurn();
@@ -523,7 +527,7 @@ void reinforceDriver()
     // Print state of map to see number of armies
     for (auto &node : *riskGame.getMapCountries()->getVectorOfNodes())
     {
-        std::cout << node << std::endl;
+        std::cout << *node << std::endl;
     }
 }
 
@@ -533,8 +537,7 @@ void attackDriver()
     Game riskGame;
     vector<Player*>* players = riskGame.getArrayPlayers();
 
-    map<string, Graph>* continents = riskGame.getContinents();
-    map<string, Graph>::reverse_iterator countryIterator;
+    vector<Continent*>* continents = riskGame.getContinents();
 
     riskGame.determinePlayerTurn();
     riskGame.assignCountriesToPlayers();
@@ -568,20 +571,14 @@ void attackDriver()
 void fortifyDriver()
 {
     /*The constructor verifies that the map loaded is valid.
-    Invalid maps are rejected without the program crashing.
-    Also, we check that the right number of players is created inside the constructor as well.*/
+     Invalid maps are rejected without the program crashing.
+     Also, we check that the right number of players is created inside the constructor as well.*/
     Game riskGame;
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
 
-    map<string, Graph>* cont = riskGame.getContinents();
+    vector<Continent*> continents = *(riskGame.getContinents());
 
-    map<string, Graph>::reverse_iterator rit;
-    for (rit = (*cont).rbegin(); rit != (*cont).rend(); ++rit)
-    {
-        cout << "=============================|" << rit->first << "|=============================" << endl;
-        cout << rit->second;
-    }
     cout << "Player order before we randomize the order:" << endl;
     for(int i = 0; i < players->size(); i++)
     {
@@ -602,41 +599,22 @@ void fortifyDriver()
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
 
+    //Displaying all the countries in the graph
+    for(int i = 0; i < continents.size(); i++)
+    {
+        cout << *(continents[i]);
+    }
+
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
         play[i]->printNodes();
     }
     riskGame.placeArmies();
+
     //testing fortify
     for (int i = 0; i < players->size(); i++) {
         (*players)[i]->fortify(*riskGame.getMapCountries());
     }
-
-    //Boolean is false until a player wins. this is the breaking condition of the main game loop
-    bool playerWins = false;
-    //We keep track of the winning player
-    Player* winningPlayer;
-
-    //Main game loop
-    /*COMMENTED OUT BECAUSE CAUSES AN INFINITE LOOP (we have to implement reinforce(), attack(), fortify())
-    while(!playerWins)
-    {
-        for(int i = 0; i < players->size(); i++)
-        {
-            //Each player gets to reinforce, attack and fortify
-            (*players)[i]->reinforce();
-            (*players)[i]->attack();
-            (*players)[i]->fortify();
-            //After each player's turn, we check if one player owns all the countries in the map
-            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
-                playerWins = true;
-                winningPlayer = (*players)[i];
-                break;
-            }
-        }
-    }
-    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
-    */
 }
 
 int main()
@@ -650,6 +628,7 @@ int main()
             case 1 : std::cout << "== PART 1 == ";
                 gameStartDriver(); // Driver for Part 1
                 break;
+
             case 2 : std::cout << "== PART 2 == ";
                 startupPhaseDriver(); // Driver for Part 2
                 break;
@@ -671,31 +650,3 @@ int main()
         }
     }
 }
-
-/* //Old Player Turn:
-vector<Player*> oldPlayerOrder = arrayPlayers;
-arrayPlayers.clear();
-vector<int> indicesOrder = vector<int>();
-
-random_device rd;
-srand(rd());
-bool newIndex;
-for(int i = 0; i < nbrPlayers; i++) {
-do {
-newIndex = true;
-int indexPlayer = rand() % (nbrPlayers); //indexPlayer in the range 0 to nbrPlayers-1
-for (int j = 0; j < indicesOrder.size(); j++) {
-if (indexPlayer == indicesOrder[j]) {
-newIndex = false;
-break;
-}
-}
-if (newIndex)
-indicesOrder.push_back(indexPlayer);
-} while (indicesOrder.size() != nbrPlayers);
-}
-for(int j = 0; j < nbrPlayers; j++) {
-arrayPlayers.push_back(oldPlayerOrder[indicesOrder[j]]);
-cout << arrayPlayers[j]->getName();
-}
-*/

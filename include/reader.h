@@ -15,7 +15,9 @@ private:
 	//Private members of Parser
 	vector<Node>* nodes;
 	Graph* graph;
-	map<string, Graph>* continents;
+	vector<Continent*>* continents;
+	//The following is only used to test if the continents are strongly connected
+	map<string, Graph>* tempContinents;
 	bool error;
 	//Helper methods
 	bool graphIsConnected();
@@ -28,7 +30,7 @@ public:
 	//~Parser();
 	//Accessor methods
 	Graph* getGraph();
-	map<string, Graph>* getContinents();
+	vector<Continent*>* getContinents();
 	//Public methods
 	bool mapIsValid();
 	void displayContinents();

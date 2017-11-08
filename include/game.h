@@ -14,7 +14,8 @@ private:
     int nbrPlayers;
     vector<Player *> arrayPlayers;
     Graph mapCountries;
-    map<string, Graph> continents;
+    //TO DELETE map<string, Graph> continents;
+    vector<Continent*> continents;
     Deck mainDeck;
 
     //Helper methods:
@@ -48,7 +49,9 @@ public:
     Graph* getMapCountries();
     Deck getMainDeck();
 
-    map<string, Graph> *getContinents();
+    //TO DELETE map<string, Graph> *getContinents();
+    vector<Continent*>* getContinents();
+
 
     //Public methods:
     void determinePlayerTurn();

@@ -28,7 +28,7 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
     return false;
 }
 
-std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, std::map<string, Graph> *graph)
+std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Perform actions to reinforce
     std::cout << "== REINFORCEMENT PHASE for " << targetPlayer->getName() << " ==" << std::endl;
@@ -36,10 +36,10 @@ std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, st
     std::vector<ReinforceResponse> responses = std::vector<ReinforceResponse>();
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
-        std::list<std::string> continentsOwned =  targetPlayer->getsContinentsOwned(graph);
+        std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
 
         for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
+            totalNbArmies += continentsOwned[i]->getBonus();
         }
 
         // Exchange process
@@ -126,9 +126,9 @@ AttackResponse HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vect
                 if (!Strategy::containsNode(targetPlayer, *node)) {
                     Node *toAttack;
                     for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
-                        if (map.getVectorOfNodes()->at(i).getPointerToCountry()->getName()
+                        if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
                             == node->getPointerToCountry()->getName()) {
-                            toAttack = &map.getVectorOfNodes()->at(i);
+                            toAttack = map.getVectorOfNodes()->at(i);
                             break;
                         }
                     }
@@ -215,7 +215,7 @@ bool HumanStrategy::attack(Player &attacker, Player &defender, Country &attackin
  * - Reinforces strongest country only
  * @param graph Graph of continents
  */
-std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlayer, std::map<string, Graph>* graph)
+std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -235,10 +235,10 @@ std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlaye
     int totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
-        std::list<std::string> continentsOwned = targetPlayer->getsContinentsOwned(graph);
-
+        // Get continent bonuses
+        std::vector<Continent*> continentsOwned = targetPlayer->getsContinentsOwned(continents);
         for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
+            totalNbArmies += continentsOwned[i]->getBonus();
         }
 
         // Exchange process
@@ -294,9 +294,9 @@ AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std:
         if (!containsNode(targetPlayer, *node)) {
             Node *toAttack;
             for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
-                if (map.getVectorOfNodes()->at(i).getPointerToCountry()->getName()
+                if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
                     == node->getPointerToCountry()->getName()) {
-                    toAttack = &map.getVectorOfNodes()->at(i);
+                    toAttack = map.getVectorOfNodes()->at(i);
                     break;
                 }
             }
@@ -445,7 +445,7 @@ FortifyResponse AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
  * Benovolent Player Strategy Implementation
  */
 
-std::vector<ReinforceResponse> BenevolentStrategy::reinforce(Player *targetPlayer, std::map<string, Graph> *graph)
+std::vector<ReinforceResponse> BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> continents)
 {
     // TODO: Implement method
     return std::vector<ReinforceResponse>();

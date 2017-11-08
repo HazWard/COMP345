@@ -48,7 +48,7 @@ string Country::getContinent() { return continent; }
 int Country::getNbrArmies() { return nbrArmies; }
 
 //-- MUTATOR METHODS --
-void Country::setNbrArmies(int na) { nbrArmies = na; }
+void Country::setNbrArmies(int na) { this->nbrArmies = na; }
 
 //Default constructor for Node class
 Node::Node() : country(), adjList(vector<Node *>()), visited(false) {}
@@ -158,7 +158,15 @@ void Graph::addEdge(Node *n1, Node *n2)
 }
 
 //--ACCESSOR METHODS--
-vector<Node>* Graph::getVectorOfNodes() { return &vectorOfNodes; }
+vector<Node*>* Graph::getVectorOfNodes()
+{
+	vector<Node*>* nodes = new vector<Node*>();
+	for(int i = 0; i < nbrVert; i++)
+	{
+		nodes->push_back(&vectorOfNodes[i]);
+	}
+	return nodes;
+}
 
 int Graph::getNbrCountries() { return nbrVert; };
 
@@ -194,10 +202,11 @@ bool Graph::isGraphConnected()
     if(vectorOfNodes.empty())
         return false;
     vector<Node *> initialAdjListNode = vectorOfNodes[0].getAdjList();
-    visitAdjacentNodes(initialAdjListNode);
 
     if (initialAdjListNode.empty())
         return false;
+
+	visitAdjacentNodes(initialAdjListNode);
 
     for (size_t i = 0; i < vectorOfNodes.size(); i++) {
         //If any vector has not been visited, it means it is not connected to at least one node, so the graph is not strongly connected
@@ -249,4 +258,84 @@ bool Graph::areConnectedByEdge(Node* n1, Node* n2) {
             return true;
     }
     return false;
+}
+
+Continent::Continent(): name(""), bonus(0), nodesInContinent(vector<Node*>())
+{ }
+Continent::Continent(string n, int b): name(n), bonus(b), nodesInContinent(vector<Node*>())
+{ }
+void Continent::addNode(Node* n)
+{
+	nodesInContinent.push_back(n);
+}
+bool Continent::isContinentConnected()
+{
+	bool continentIsConnected = true;
+	if(nodesInContinent.empty())
+		return false;
+	vector<Node*> initialAdjListNode = nodesInContinent[0]->getAdjList();
+
+	if (initialAdjListNode.empty())
+		return false;
+
+	visitAdjacentNodes(initialAdjListNode);
+
+	for (size_t i = 0; i < nodesInContinent.size(); i++) {
+		//If any vector has not been visited, it means it is not connected to at least one node, so the graph is not strongly connected
+		if (!nodesInContinent[i]->isVisited()) {
+			continentIsConnected = false;
+			break;
+		}
+	}
+	//Reinitialize the visited member of each node in our graph
+	for (size_t i = 0; i < nodesInContinent.size(); i++) {
+		nodesInContinent[i]->setVisited(false);
+	}
+	return continentIsConnected;
+}
+
+//Recursive helper method used to visit all the nodes accessible from the initial node and mark them as visited.
+void Continent::visitAdjacentNodes(vector<Node*> adjListNode)
+{
+	/*
+	Recurive method that visits all the adjacent nodes of the initial passed adjListNode.
+	It marks every visited Nodes visited.
+	It recursuvely looks at every adjacent nodes of every visited Nodes.
+	*/
+	if (!adjListNode.empty())
+	{
+		for (size_t i = 0; i < adjListNode.size(); i++)
+		{
+			if (!adjListNode[i]->isVisited())
+			{
+				for (size_t j = 0; j < nodesInContinent.size(); j++)
+				{
+					if (adjListNode[i]->getCountry() == nodesInContinent[j]->getCountry())
+					{
+						if (!nodesInContinent[j]->isVisited())
+						{
+							nodesInContinent[j]->setVisited(true);
+							visitAdjacentNodes(nodesInContinent[j]->getAdjList());
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+std::ostream& operator << (std::ostream& stream, Continent& c)
+{
+	/*
+	Overloading << operator to print out Continent objects.
+	*/
+	stream << c.getName() << ":\n";
+	stream << "Bonus: " << c.getBonus() << endl;
+	stream << "Number of countries: " << c.getNodesInContinent()->size() << endl;
+	stream << "List of countries:\n";
+	for (size_t i = 0; i < c.getNodesInContinent()->size(); i++) {
+		stream << (*c.getNodesInContinent())[i]->getCountry().getName() << endl;
+	}
+	stream << endl;
+	return stream;
 }
