@@ -23,7 +23,7 @@ class Player
         Player(string n, Hand* playerHand, std::list<Node*>* playerNodes);
         ~Player();
         int roll(int nbOfDice);
-        void reinforce(std::map<string, Graph>* graph);
+        void reinforce(vector<Continent*> continents);
         void attack(Graph& map, std::vector<Player*> &players);
         void fortify(Graph& map);
         string getName();
@@ -34,9 +34,8 @@ class Player
         void setHand(Hand* targetHand);
         void setNodes(std::list<Node*>* targetNodes);
         void setDice(Dice* targetDice);
-        void addCountry(Node* newCountry);
         void addNode(Node* newNode);
-        list<string> getsContinentsOwned(map<string, Graph>* continents);
+        vector<Continent*> getsContinentsOwned(vector<Continent*> continents);
         bool controlsAllCountriesInMap(Graph& map);
     private:
         std::string name;

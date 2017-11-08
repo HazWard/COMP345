@@ -95,17 +95,18 @@ int Player::roll(int nbOfDice)
     return roll;
 }
 
-void Player::reinforce(std::map<string, Graph>* map)
+void Player::reinforce(vector<Continent*> continents)
 {
     // Perform actions to reinforce
     std::cout << "== REINFORCEMENT PHASE for " << this->name << " =="<< std::endl;
     unsigned long totalNbArmies = this->nodes.size() / MIN_NUMBER_OF_ARMIES;
+
     if (totalNbArmies >= MIN_NUMBER_OF_ARMIES)
     {
-        std::list<std::string> continentsOwned =  getsContinentsOwned(map);
+        vector<Continent*> continentsOwned =  getsContinentsOwned(continents);
 
         for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += 1; // Add 1 bonus point for each continent owned for now.
+            totalNbArmies += continentsOwned[i]->getBonus();
         }
 
         // Exchange process
@@ -168,21 +169,25 @@ void Player::placeArmies(int nbArmies)
     placeArmies(nbArmies);
 }
 
+//Temporary
+//TODO: Fix attack method
+void Player::attack(Graph& map, std::vector<Player*> &players){}
+/*
 void Player::attack(Graph& map, std::vector<Player*> &players)
-{
+{*/
     /**
      * This method is called by the model for each player when it is their turn to attack. First a decision is made on
      * whether or not the player will make ANY attacks. Then, if the player chooses to make attacks, the first possible
      * attack is generated. The user must then decide whether to go through with that attack. If so, this method delegates
      * the actual attacking _event_ to the overloaded attack() method which returns boolean (true for win, false for loss)
      */
+/*
     cout << this->getName() << ", do you wish to attack this turn? (y/n)";
     std::string willAttack;
     cin >> willAttack;
     if(willAttack == "n"){
         return;
     }
-
     //TODO: Reevaluate the countries you can attack after every attack. Instead of a list, make it the first available attack.
 
     //TODO: Return information about what happened during this attack phase.
@@ -209,7 +214,8 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
             }
         }
     }
-
+*/
+/*
     std::map<Node *, Node *>::iterator iterator;
     for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
         cout << this->getName() << ", you can attack " << iterator->second->getPointerToCountry()->getName()
@@ -266,6 +272,7 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
     }
     cout << "That concludes all your attacks, " << this->getName() << "." << endl;
 }
+*/
 
 bool Player::attack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
     /**
@@ -275,6 +282,7 @@ bool Player::attack(Player &attacker, Player &defender, Country &attackingCountr
      */
 
     //TODO: Return event information about the attack event
+
     int rounds = 1;
     while(attackingCountry.getNbrArmies() > 2 && defendingCountry.getNbrArmies() > 0){
         cout << "Round " << rounds << "." << endl;
@@ -430,7 +438,6 @@ void Player::fortify(Graph& map)
 
     validInput=false;
 
-
 }
 
 
@@ -438,7 +445,7 @@ bool Player::controlsAllCountriesInMap(Graph& map)
 {
     for(int i = 0; i < map.getNbrCountries(); i++)
     {
-        Node* n = &(*map.getVectorOfNodes())[i];
+        Node* n = (*map.getVectorOfNodes())[i];
         if(std::find(nodes.begin(), nodes.end(), n) != nodes.end())
             continue;
         else
@@ -447,34 +454,31 @@ bool Player::controlsAllCountriesInMap(Graph& map)
     return true;
 }
 
-list<string> Player::getsContinentsOwned(std::map<string, Graph>* continents) {
-    list<string> continentsOwned;
-    map<string, Graph>::reverse_iterator graphIterator;
+vector<Continent*> Player::getsContinentsOwned(vector<Continent*> continents) {
+    vector<Continent*> continentsOwned;
     //We iterate through all the continents and add the ones that the player completely owns
-    for (graphIterator = continents->rbegin(); graphIterator != continents->rend(); ++graphIterator) {
+    for (int i = 0; i < continents.size(); i++) {
         bool continentOwned = true;
-        Graph *current_continent = &(graphIterator->second);
-        vector<Node> *nodesInContinent = current_continent->getVectorOfNodes();
+        vector<Node*> nodesInCurrentContinent = *(continents[i]->getNodesInContinent());
         //we iterate through all the countries in the current continent and check if the player owns them all
-        for (int i = 0; i < nodesInContinent->size(); i++) {
+        for (int j = 0; j < nodesInCurrentContinent.size(); j++) {
             bool countryOwned = false;
             list<Node *>::const_iterator countryIterator;
             //We iterate through all the countries the player owns and see if he owns the current country from the continent we are checking
             for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator) {
-                if ((*nodesInContinent)[i].getCountry() == (*countryIterator)->getCountry()) {
+                if (nodesInCurrentContinent[j]->getCountry() == (*countryIterator)->getCountry()) {
                     countryOwned = true;
                     break;
                 }
             }
             //If the current country does not belong to the player, then the whole continent does not belong to them.
             if (!countryOwned) {
-                //cout << "allo";
                 continentOwned = false;
                 break;
             }
         }
         if (continentOwned)
-            continentsOwned.push_back(graphIterator->first);
+            continentsOwned.push_back(continents[i]);
     }
     return continentsOwned;
 }
