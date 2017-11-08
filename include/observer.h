@@ -5,6 +5,9 @@
 
 #include <list>
 
+//Forward declaration of Observer
+class Observer;
+
 class Subject {
     /**
      * Abstract class for subjects. In the Observer model, there is a one to many
@@ -14,6 +17,7 @@ class Subject {
      */
     std::list<Observer*> views;
 public:
+    Subject();
     void attach(Observer *observer);
     void detach(Observer *observer);
     void notify();
@@ -27,7 +31,8 @@ class Observer {
      */
     Subject *model;
 public:
-    virtual void update();
+    Observer();
+    virtual void update() {};
 protected:
     Subject *getSubject();
 };

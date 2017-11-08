@@ -7,7 +7,7 @@
 #import <iostream>
 using namespace std;
 
-StatObserver::StatObserver() {}
+StatObserver::StatObserver() :Observer() {}
 
 void StatObserver::update() {
     this->display();
@@ -17,7 +17,7 @@ void StatObserver::display() {
     //TODO: Implement how to display the information
 }
 
-PhaseObserver::PhaseObserver() {}
+PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
