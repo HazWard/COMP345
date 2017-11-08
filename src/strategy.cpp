@@ -7,16 +7,21 @@
  * STRATEGY CLASSES
  */
 
-
-bool Strategy::containsNode(Player *targetPlayer, Node &node)
+/**
+ * Checks if a Player owns the provided Node
+ * @param player Player
+ * @param targetNode Node to check
+ * @return
+ */
+bool Strategy::containsNode(Player *player, Node &targetNode)
 {
     std::list<Node*>::iterator nodeIterator;
-    for(nodeIterator = targetPlayer->getNodes().begin(); nodeIterator != targetPlayer->getNodes().end(); nodeIterator++){
+    for(nodeIterator = player->getNodes().begin(); nodeIterator != player->getNodes().end(); nodeIterator++){
         //TODO: Uncomment this once and remove other if statement the adjacency list contains pointers not copies
         //if(*nodeIterator == &node){
         //  return true;
         //}
-        if((*nodeIterator)->getPointerToCountry()->getName() == node.getPointerToCountry()->getName()){
+        if((*nodeIterator)->getPointerToCountry()->getName() == targetNode.getPointerToCountry()->getName()){
             return true;
         }
     }
@@ -268,6 +273,7 @@ std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlaye
 AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
     // TODO: Attack with country with the country with most armies
+    // TODO: Order canAttack list to make sure the weakest opponent is always attacked
 
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -424,9 +430,9 @@ FortifyResponse AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 
     // Aggregate armies to strongest country
     int total = strongestCountry->getPointerToCountry()->getNbrArmies() + (secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1);
-    secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
-    std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
-    strongestCountry->getPointerToCountry()->setNbrArmies(total);
+    // secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
+    // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
+    // strongestCountry->getPointerToCountry()->setNbrArmies(total);
 
     FortifyResponse response = FortifyResponse();
     response.destinationCountry = strongestCountry;
@@ -452,7 +458,7 @@ AttackResponse BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std:
 FortifyResponse BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // TODO: Implement method
-    return  FortifyResponse();
+    return FortifyResponse();
 }
 
 bool BenevolentStrategy::attack(Player &attacker, Player &defender, Country &attackingCountry,

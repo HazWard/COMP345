@@ -11,6 +11,11 @@
 
 class Player; // Forward Declaration
 
+/** Response Summary (PLEASE READ THIS!)
+ * This set of classes represent all the possible changes a Player's game phases can produce.
+ * The is then interpreted by the Game to produce the actual changes to the map.
+ */
+
 class ReinforceResponse
 {
 public:
