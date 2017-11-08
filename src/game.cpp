@@ -302,7 +302,7 @@ void Game::placeArmies()
                 cin >> chosenCountryInd;
                 k = 1;
                 for (auto const &node2 : arrayPlayers[i]->getNodes()) {
-                    if(k == chosenCountryInd)k = 1;
+                    if(k == chosenCountryInd)
                     {
                         c = node2->getPointerToCountry();
                         validCountryName = true;
