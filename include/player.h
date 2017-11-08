@@ -1,16 +1,20 @@
 /*
-    Filename: player.cpp 
+    Filename: player.h
     Author: Starly Solon (40022595)
     Date of creation: September 14, 2017
     Description: Header file for Risk player
 */
+
 #pragma once
 #include <list>
 #include <map>
 #include "../include/cards.h"
 #include "../include/dice.h"
 #include "../include/map.h"
+#include "../include/strategy.h"
+#include "../include/response.h"
 
+class Strategy; // Forward declaration
 class Player
 {
     /*
@@ -18,14 +22,23 @@ class Player
         game as well as hold a Hand and a list of nodes the player owns.
     */
     public:
+        // Constants
+        static const int MIN_NUMBER_OF_ARMIES = 3;
+        static const int INFANTRY_BONUS = 1;
+        static const int CAVALRY_BONUS = 5;
+        static const int ARTILLERY_BONUS = 10;
+
         Player();
         Player(string n);
+        Player(string n, Strategy* playerStrategy);
         Player(string n, Hand* playerHand, std::list<Node*>* playerNodes);
         ~Player();
         int roll(int nbOfDice);
-        void reinforce(vector<Continent*> continents);
-        void attack(Graph& map, std::vector<Player*> &players);
-        void fortify(Graph& map);
+        Strategy *strategy;
+        void setStrategy(Strategy *targetStrategy);
+        std::vector<ReinforceResponse> reinforce(std::vector<Continent*> continents);
+        AttackResponse attack(Graph& map, std::vector<Player*> &players);
+        FortifyResponse fortify(Graph& map);
         string getName();
         std::list<Node*> getNodes();
         Hand* getHand();
@@ -34,17 +47,17 @@ class Player
         void setHand(Hand* targetHand);
         void setNodes(std::list<Node*>* targetNodes);
         void setDice(Dice* targetDice);
+        Dice* getDice();
+        void addCountry(Node* newCountry);
         void addNode(Node* newNode);
         vector<Continent*> getsContinentsOwned(vector<Continent*> continents);
         bool controlsAllCountriesInMap(Graph& map);
+        void removeNode(Node *n);
+        void placeArmies(int nbArmies);
     private:
         std::string name;
-        static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry);
-        void placeArmies(int nbArmies);
         Hand* hand;
         Dice* dice;
         std::list<Node*> nodes;
         bool containsNode(Node &node);
-
-    void removeNode(Node *n);
 };

@@ -268,61 +268,6 @@ void Continent::addNode(Node* n)
 {
 	nodesInContinent.push_back(n);
 }
-bool Continent::isContinentConnected()
-{
-	bool continentIsConnected = true;
-	if(nodesInContinent.empty())
-		return false;
-	vector<Node*> initialAdjListNode = nodesInContinent[0]->getAdjList();
-
-	if (initialAdjListNode.empty())
-		return false;
-
-	visitAdjacentNodes(initialAdjListNode);
-
-	for (size_t i = 0; i < nodesInContinent.size(); i++) {
-		//If any vector has not been visited, it means it is not connected to at least one node, so the graph is not strongly connected
-		if (!nodesInContinent[i]->isVisited()) {
-			continentIsConnected = false;
-			break;
-		}
-	}
-	//Reinitialize the visited member of each node in our graph
-	for (size_t i = 0; i < nodesInContinent.size(); i++) {
-		nodesInContinent[i]->setVisited(false);
-	}
-	return continentIsConnected;
-}
-
-//Recursive helper method used to visit all the nodes accessible from the initial node and mark them as visited.
-void Continent::visitAdjacentNodes(vector<Node*> adjListNode)
-{
-	/*
-	Recurive method that visits all the adjacent nodes of the initial passed adjListNode.
-	It marks every visited Nodes visited.
-	It recursuvely looks at every adjacent nodes of every visited Nodes.
-	*/
-	if (!adjListNode.empty())
-	{
-		for (size_t i = 0; i < adjListNode.size(); i++)
-		{
-			if (!adjListNode[i]->isVisited())
-			{
-				for (size_t j = 0; j < nodesInContinent.size(); j++)
-				{
-					if (adjListNode[i]->getCountry() == nodesInContinent[j]->getCountry())
-					{
-						if (!nodesInContinent[j]->isVisited())
-						{
-							nodesInContinent[j]->setVisited(true);
-							visitAdjacentNodes(nodesInContinent[j]->getAdjList());
-						}
-					}
-				}
-			}
-		}
-	}
-}
 
 std::ostream& operator << (std::ostream& stream, Continent& c)
 {
