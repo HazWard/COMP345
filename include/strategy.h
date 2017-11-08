@@ -37,7 +37,7 @@ class HumanStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
+    AttackResponse attack(Player* targetPlayer, std::vector<Player*> &players);
     FortifyResponse fortify(Player* targetPlayer, Graph& map);
 };
 

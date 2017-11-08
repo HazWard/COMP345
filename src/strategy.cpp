@@ -108,33 +108,24 @@ std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, st
     return responses;
 }
 
-AttackResponse HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
+AttackResponse HumanStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
-    cout << targetPlayer->getName() << ", do you wish to attack this turn? (y/n)";
+    cout << targetPlayer->getName() << ", do you wish to attack? (y/n)";
     std::string willAttack;
     cin >> willAttack;
     if(willAttack == "n"){
-        return AttackResponse();
+        return nullptr;
     }
 
-    // TODO: Reevaluate the countries you can attack after every attack
-
+    //Creating a map of possible attack vectors between nodes this player owns and ones that are adjacent and not owned
     std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
     std::list<Node *>::iterator nodeIterator;
     for (nodeIterator = targetPlayer->getNodes().begin(); nodeIterator != targetPlayer->getNodes().end(); nodeIterator++) {
-        Node *currentNode = *nodeIterator;
-        if (currentNode->getPointerToCountry()->getNbrArmies() >= 2) {
-            for (auto const &node : currentNode->getAdjList()) {
-                if (!Strategy::containsNode(targetPlayer, *node)) {
-                    Node *toAttack;
-                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
-                        if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
-                            == node->getPointerToCountry()->getName()) {
-                            toAttack = map.getVectorOfNodes()->at(i);
-                            break;
-                        }
-                    }
-                    canAttack.insert(make_pair(currentNode, toAttack));
+        Node *playerOwnedNode = *nodeIterator;
+        if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
+            for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
+                if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
+                    canAttack.insert(make_pair(playerOwnedNode, adjacentNode));
                 }
             }
         }
@@ -152,10 +143,11 @@ AttackResponse HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vect
         if (answer != "y") {
             continue;
         }
+
+        //Determining who the defending player will be for this particular attack vector
         Player *defendingPlayer;
-        //find who the other node belongs to
         for (int i = 0; i < players.size(); i++) {
-            if (players.at(i)->getName() == targetPlayer->getName()) { //the player is this player
+            if (players.at(i) == targetPlayer) { //This player is our current player
                 continue;
             }
             for (auto const &node : players.at(i)->getNodes()) {
@@ -166,37 +158,11 @@ AttackResponse HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vect
             }
         }
 
-        // TODO: Verify implementation of attack()
-        bool wonBattle = attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
-        *(iterator->second->getPointerToCountry()));
-        if (wonBattle) {
-            cout << targetPlayer->getName() << ", you won!" << endl;
-
-            //Add the conquered country to the winner's list and removing from the loser's list
-            Node *n = (*iterator).second;
-            defendingPlayer->removeNode(n);
-            targetPlayer->getNodes().push_back(n);
-
-            //Sending one army from the victorious country to the conquered country
-            iterator->first->getPointerToCountry()->setNbrArmies(
-                    iterator->first->getPointerToCountry()->getNbrArmies() - 1);
-            iterator->second->getPointerToCountry()->setNbrArmies(1);
-
-            cout << "=============================================" <<
-                 "Here are your countries after the battle." << endl;
-            for (auto const &node : targetPlayer->getNodes()) {
-                cout << *node << endl;
-            }
-            cout << "=============================================" <<
-                 "Here are the defenders countries after the battle." << endl;
-            for (auto const &node : defendingPlayer->getNodes()) {
-                cout << *node << endl;
-            }
-        } else {
-            cout << "You lost this battle! Better luck next time." << endl;
-        }
+        std::pair<Player*, Node*> attacker = new std::pair<Player*, Node*>(targetPlayer, iterator->first);
+        std::pair<Player*, Node*> defender = new std::pair<Player*, Node*>(defendingPlayer, iterator->second);
+        return new AttackResponse(attacker, defender);
     }
-    cout << "That concludes all your attacks, " << targetPlayer->getName() << "." << endl;
+
 }
 
 FortifyResponse HumanStrategy::fortify(Player *targetPlayer, Graph &map)
@@ -206,7 +172,7 @@ FortifyResponse HumanStrategy::fortify(Player *targetPlayer, Graph &map)
     cout << targetPlayer->getName() << ", Would you like to fortify? (y/n)";
     cin >> option;
     if(option == "n"){
-        return FortifyResponse();
+        return nullptr;
     }
 
     string sourceStr;
