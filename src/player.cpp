@@ -306,8 +306,7 @@ void Player::printNodes()
     for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
     {
         Country c = (*countryIterator)->getCountry();
-        cout << c.getName() << " ";
-        cout << c.getNbrArmies() << endl;
+        cout << c.getName() << ";";
     }
     cout << endl << endl;
 }
