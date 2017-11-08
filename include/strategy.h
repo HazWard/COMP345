@@ -22,10 +22,9 @@ class Player; // Forward declaration
 class Strategy
 {
 public:
-    virtual std::vector<ReinforceResponse> reinforce(Player* targetPlayer, std::vector<Continent*> continents) = 0;
-    virtual AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
-    virtual FortifyResponse fortify(Player* targetPlayer, Graph& map) = 0;
-
+    virtual std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents) = 0;
+    virtual AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
+    virtual FortifyResponse* fortify(Player* targetPlayer, Graph& map) = 0;
     bool containsNode(Player* targetPlayer, Node &node);
 };
 
@@ -36,9 +35,9 @@ public:
 class HumanStrategy : public Strategy
 {
 public:
-    std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse attack(Player* targetPlayer, std::vector<Player*> &players);
-    FortifyResponse fortify(Player* targetPlayer, Graph& map);
+    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
+    AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
+    FortifyResponse* fortify(Player* targetPlayer, Graph& map);
 };
 
 /**
@@ -50,9 +49,9 @@ public:
 class AggressiveStrategy : public Strategy
 {
 public:
-    std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
-    FortifyResponse fortify(Player* targetPlayer, Graph& map);
+    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
+    AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
+    FortifyResponse* fortify(Player* targetPlayer, Graph& map);
 };
 
 /**
@@ -64,7 +63,7 @@ public:
 class BenevolentStrategy : public Strategy
 {
 public:
-    std::vector<ReinforceResponse> reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
-    FortifyResponse fortify(Player* targetPlayer, Graph& map);
+    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
+    AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
+    FortifyResponse* fortify(Player* targetPlayer, Graph& map);
 };

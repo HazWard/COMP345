@@ -112,12 +112,12 @@ void Player::setStrategy(Strategy *targetStrategy)
  * GAME PHASES USING STRATEGY OBJECT
 */
 
-std::vector<ReinforceResponse> Player::reinforce(vector<Continent*> continents)
+std::vector<ReinforceResponse*>* Player::reinforce(vector<Continent*> continents)
 {
     return this->strategy->reinforce(this, continents);
 }
 
-AttackResponse Player::attack(Graph &map, std::vector<Player *> &players)
+AttackResponse* Player::attack(Graph &map, std::vector<Player *> &players)
 {
     return this->strategy->attack(this, map, players);
 }
@@ -226,7 +226,7 @@ void Player::attack(Graph& map, std::vector<Player*> &players)
 }
 */
 
-FortifyResponse Player::fortify(Graph &map)
+FortifyResponse* Player::fortify(Graph &map)
 {
     return this->strategy->fortify(this, map);
 }

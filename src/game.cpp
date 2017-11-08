@@ -559,9 +559,10 @@ void mainGameLoopDriver()
         {
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
-            std::vector<ReinforceResponse> reinforceChanges = (*players)[i]->reinforce(continents);
-            AttackResponse attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
-            FortifyResponse fortifyChanges = (*players)[i]->fortify(*riskGame.getMapCountries());
+            std::vector<ReinforceResponse*>* reinforceChanges = (*players)[i]->reinforce(continents);
+            std::cout << "What is wrong M8 ?" << std::endl;
+            AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
+            FortifyResponse* fortifyChanges = (*players)[i]->fortify(*riskGame.getMapCountries());
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {

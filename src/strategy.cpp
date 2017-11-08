@@ -1,6 +1,7 @@
 #include <iostream>
 #include <list>
 #include <algorithm>
+#include <utility>
 #include <set>
 #include "../include/strategy.h"
 
@@ -29,12 +30,12 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
     return false;
 }
 
-std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
+std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Perform actions to reinforce
     std::cout << "== REINFORCEMENT PHASE for " << targetPlayer->getName() << " ==" << std::endl;
     unsigned long totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
-    std::vector<ReinforceResponse> responses = std::vector<ReinforceResponse>();
+    std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
         std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
@@ -74,26 +75,23 @@ std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, st
                         }
 
                         totalNbArmies -= targetNbArmies;
-                        std::cout << "Adding  " << targetNbArmies << " to " << currentNode->getCountry().getName() << std::endl;
-                        ReinforceResponse response = ReinforceResponse();
+                        std::cout << "Adding " << targetNbArmies << " to " << currentNode->getCountry().getName() << std::endl;
 
                         // Check if the country has already been added to the response list
                         // if so, simply update the number of armies to add
                         bool updatedExistingResponse = false;
-                        for (int i = 0; i < responses.size(); i++)
+                        for (int i = 0; i < responses->size(); i++)
                         {
-                            if (responses[i].country->getPointerToCountry()->getName()
+                            if (responses->at(i)->country->getPointerToCountry()->getName()
                                 == currentNode->getPointerToCountry()->getName())
                             {
-                                responses[i].nbArmies = responses[i].nbArmies + targetNbArmies;
+                                responses->at(i)->nbArmies = responses->at(i)->nbArmies + targetNbArmies;
                                 updatedExistingResponse = true;
                             }
                         }
                         if(!updatedExistingResponse)
                         {
-                            response.country = currentNode;
-                            response.nbArmies = targetNbArmies;
-                            responses.push_back(response);
+                            responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
                         }
                     }
                 }
@@ -108,7 +106,7 @@ std::vector<ReinforceResponse> HumanStrategy::reinforce(Player *targetPlayer, st
     return responses;
 }
 
-AttackResponse HumanStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+AttackResponse* HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
 {
     cout << targetPlayer->getName() << ", do you wish to attack? (y/n)";
     std::string willAttack;
@@ -165,7 +163,7 @@ AttackResponse HumanStrategy::attack(Player *targetPlayer, std::vector<Player *>
 
 }
 
-FortifyResponse HumanStrategy::fortify(Player *targetPlayer, Graph &map)
+FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     cout << "========== Fortification ==========" << endl;
     std::string option;
@@ -259,12 +257,7 @@ FortifyResponse HumanStrategy::fortify(Player *targetPlayer, Graph &map)
     //std::cout << armNum << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
 
     validInput=false;
-
-    FortifyResponse *response = new FortifyResponse();
-    response.nbArmies = armNum;
-    response.sourceCountry = sourceCtr;
-    response.destinationCountry = destCtr;
-    return response;
+    return new FortifyResponse(armNum, sourceCtr,destCtr);
 }
 
 /**
@@ -277,7 +270,7 @@ FortifyResponse HumanStrategy::fortify(Player *targetPlayer, Graph &map)
  * - Reinforces strongest country only
  * @param graph Graph of continents
  */
-std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
+std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -293,7 +286,7 @@ std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlaye
     }
 
     // Reinforce the strongest country
-    std::vector<ReinforceResponse> responses = std::vector<ReinforceResponse>();
+    std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
     int totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
@@ -311,11 +304,7 @@ std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlaye
         // Placing all new armies
         // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total << std::endl;
         // strongestCountry->getPointerToCountry()->setNbrArmies(total);
-
-        ReinforceResponse response = ReinforceResponse();
-        response.country = strongestCountry;
-        response.nbArmies = totalNbArmies;
-        responses.push_back(response);
+        responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
     }
     else
     {
@@ -330,7 +319,7 @@ std::vector<ReinforceResponse> AggressiveStrategy::reinforce(Player *targetPlaye
  * @param map Game map
  * @param players List of players
  */
-AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
+AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
     // TODO: Return AttackResponse that captures the attack with HIGHEST priority
     // Priority is defined as: attacking player is attacking from strongest country, and attacking into weakest enemy country
@@ -382,7 +371,8 @@ AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std:
                 }
             }
         }
-        //bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
+        /* Commented out to compile correctly
+        bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
                                       *(iterator->second->getPointerToCountry()));
         if (wonBattle) {
             std::cout << targetPlayer->getName() << ", you won!" << std::endl;
@@ -410,6 +400,7 @@ AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std:
         } else {
             std::cout << "You lost this battle! Better luck next time." << std::endl;
         }
+        */
     }
     std::cout << "That concludes all your attacks, " << targetPlayer->getName() << "." << std::endl;
 }
@@ -419,7 +410,7 @@ AttackResponse AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std:
  * - Aggregates maximum of armies on strongest country
  * @param map Game map
  */
-FortifyResponse AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
+FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // Find strongest country
     std::list<Node*>::iterator countryIter;
@@ -449,19 +440,14 @@ FortifyResponse AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
     // secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
     // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
     // strongestCountry->getPointerToCountry()->setNbrArmies(total);
-
-    FortifyResponse response = FortifyResponse();
-    response.destinationCountry = strongestCountry;
-    response.sourceCountry = secondStrongestCountry;
-    response.nbArmies = total;
-    return response;
+    return new FortifyResponse(total, secondStrongestCountry, strongestCountry);
 }
 
 /**
  * Benovolent Player Strategy Implementation
  */
 
-std::vector<ReinforceResponse> BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> continents)
+std::vector<ReinforceResponse*>* BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> continents)
 {
     // Find weakest country
     std::list<Node*>::iterator countryIter;
@@ -477,7 +463,7 @@ std::vector<ReinforceResponse> BenevolentStrategy::reinforce(Player *targetPlaye
     }
 
     // Reinforce the weakest country
-    std::vector<ReinforceResponse> responses = std::vector<ReinforceResponse>();
+    std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
     int totalNbArmies = targetPlayer->getNodes().size() / Player::MIN_NUMBER_OF_ARMIES;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
@@ -495,11 +481,7 @@ std::vector<ReinforceResponse> BenevolentStrategy::reinforce(Player *targetPlaye
         // Placing all new armies
         // std::cout << "Setting number of armies on " << weakestCountry->getCountry().getName() << " to " << total << std::endl;
         // weakestCountry->getPointerToCountry()->setNbrArmies(total);
-
-        ReinforceResponse response = ReinforceResponse();
-        response.country = weakestCountry;
-        response.nbArmies = totalNbArmies;
-        responses.push_back(response);
+        responses->push_back(new ReinforceResponse(totalNbArmies, weakestCountry));
     }
     else
     {
@@ -507,12 +489,11 @@ std::vector<ReinforceResponse> BenevolentStrategy::reinforce(Player *targetPlaye
     }
     return responses;
 }
-AttackResponse BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
+AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
 {
-    return AttackResponse();
+    return new AttackResponse(std::pair<Player*, Node*>(), std::pair<Player*, Node*>());
 }
-
-FortifyResponse BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
+FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // Find weakest country
     std::list<Node*>::iterator countryIter;
@@ -542,11 +523,6 @@ FortifyResponse BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     // secondWeakestCountry->getPointerToCountry()->setNbrArmies(1);
     // std::cout << "Setting number of armies on " << weakestCountry->getCountry().getName() << " to " << total<< std::endl;
     // weakestCountry->getPointerToCountry()->setNbrArmies(total);
-
-    FortifyResponse response = FortifyResponse();
-    response.destinationCountry = weakestCountry;
-    response.sourceCountry = secondWeakestCountry;
-    response.nbArmies = total;
-    return response;
+    return new FortifyResponse(total, secondWeakestCountry, weakestCountry);
 }
 
