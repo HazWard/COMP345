@@ -15,23 +15,14 @@ private:
     int nbrArmies;
 public:
     Country();
-
     Country(string n);
-
     Country(string n, string cont, int nbrArm);
-
     bool operator==(Country &rhs) const;
-
     bool operator==(Country rhs) const;
-
     friend std::ostream &operator<<(std::ostream &stream, Country &c);
-
     string getName();
-
     string getContinent();
-
     int getNbrArmies();
-
     void setNbrArmies(int na);
 };
 //This class creates Node objects, that contain a Country and the list of nodes adjacent to it.
@@ -43,25 +34,15 @@ private:
     bool visited;
 public:
     Node();
-
     Node(Country c);
-
     Node(Country c, vector<Node *> adjList);
-
     Country getCountry();
-
     vector<Node*> getAdjList();
-
     Country *getPointerToCountry();
-
     bool isVisited();
-
     void addNode(Node *n);
-
     void setAdjList(vector<Node*> newAdjList);
-
     void setVisited(bool v);
-
     friend std::ostream &operator<<(std::ostream &stream, Node &n);
 };
 
@@ -96,8 +77,6 @@ private:
 	int bonus;
 	Graph continent;
 	vector<Node*> nodesInContinent;
-
-	void visitAdjacentNodes(vector<Node*> adjListNode);
 public:
 	Continent();
 	Continent(string n, int b);
@@ -105,6 +84,5 @@ public:
 	int getBonus() { return bonus; }
 	vector<Node*>* getNodesInContinent() { return &nodesInContinent; }
 	void addNode(Node* n);
-	bool isContinentConnected();
 	friend std::ostream& operator <<(std::ostream& stream, Continent& c);
 };
