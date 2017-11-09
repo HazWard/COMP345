@@ -7,19 +7,18 @@
 
 #include <iostream>
 #include <vector>
-#include <random>
 #include "../include/dice.h"
 using namespace std;
 
-Dice::Dice() : numTracker(6){} // contructor
+Dice::Dice() : numTracker(6){
+	std::random_device rd;
+	std::mt19937 mt(rd());
+} // contructor
 
 int Dice::numGenerator()
 {
-	std::random_device rd; // obtain a random number from hardware
-	std::mt19937 eng(rd()); // seed the generator
-	std::uniform_int_distribution<> distr(1, 6); // define the range
-	int ranNum = distr(eng); // store the random number
-
+	std::uniform_int_distribution<int> dist(1, 6);
+	int ranNum = dist(mt);
 	return ranNum; // return the random number generated
 }
 

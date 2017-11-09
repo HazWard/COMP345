@@ -279,7 +279,7 @@ std::ostream& operator << (std::ostream& stream, Continent& c)
 	stream << "Number of countries: " << c.getNodesInContinent()->size() << endl;
 	stream << "List of countries:\n";
 	for (size_t i = 0; i < c.getNodesInContinent()->size(); i++) {
-		stream << (*c.getNodesInContinent())[i]->getCountry().getName() << endl;
+		stream << "\t" << (*c.getNodesInContinent())[i]->getCountry().getName() << endl;
 	}
 	stream << endl;
 	return stream;
