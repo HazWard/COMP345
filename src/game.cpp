@@ -344,7 +344,7 @@ void Game::placeArmies()
     while(!allNodesHaveOneArmy) {
         for (int i = 0; i < nbrPlayers; i++) {
             int j = 0;
-            for(auto const &node : arrayPlayers[i]->getNodes()){
+            for(auto const &node : *(arrayPlayers[i]->getNodes())){
                 if(j == k) {
                     node->getPointerToCountry()->setNbrArmies(1);
                     nbrArmiesPlayers[i]--;
@@ -357,7 +357,7 @@ void Game::placeArmies()
         allNodesHaveOneArmy = true;
         for(int i = 0; i < nbrPlayers; i++)
         {
-            if(k < arrayPlayers[i]->getNodes().size()) {
+            if(k < arrayPlayers[i]->getNodes()->size()) {
                 allNodesHaveOneArmy = false;
                 break;
             }
@@ -377,7 +377,7 @@ void Game::placeArmies()
 
             cout << "\n---------------Player: " << arrayPlayers[i]->getName() << " --------------" << endl;
             int k = 1;
-            for (auto const &node : arrayPlayers[i]->getNodes()) {
+            for (auto const &node : *(arrayPlayers[i]->getNodes())) {
                 cout << k << ": " << node->getCountry().getName() << endl;
                 k++;
             }
@@ -388,7 +388,7 @@ void Game::placeArmies()
                 int chosenCountryInd;
                 cin >> chosenCountryInd;
                 k = 1;
-                for (auto const &node2 : arrayPlayers[i]->getNodes()) {
+                for (auto const &node2 : *(arrayPlayers[i]->getNodes())) {
                     if(k == chosenCountryInd)
                     {
                         c = node2->getPointerToCountry();
@@ -398,7 +398,7 @@ void Game::placeArmies()
                     k++;
                 }
                 if(!validCountryIndex)
-                    cout << "You did not enter a valid country index from the list. Please make sure to enter a number between 1 and " << arrayPlayers[i]->getNodes().size() << ".\n";
+                    cout << "You did not enter a valid country index from the list. Please make sure to enter a number between 1 and " << arrayPlayers[i]->getNodes()->size() << ".\n";
             }   while(!validCountryIndex);
 
             //ONE ARMY AT A TIME: (comment this out for SUBMISSION)
@@ -468,7 +468,7 @@ void Game::placeArmiesAutomatic()
     while(!allNodesHaveOneArmy) {
         for (int i = 0; i < nbrPlayers; i++) {
             int j = 0;
-            for(auto const &node : arrayPlayers[i]->getNodes()){
+            for(auto const &node : *(arrayPlayers[i]->getNodes())){
                 if(j == k) {
                     node->getPointerToCountry()->setNbrArmies(1);
                     nbrArmiesPlayers[i]--;
@@ -481,7 +481,7 @@ void Game::placeArmiesAutomatic()
         allNodesHaveOneArmy = true;
         for(int i = 0; i < nbrPlayers; i++)
         {
-            if(k < arrayPlayers[i]->getNodes().size()) {
+            if(k < arrayPlayers[i]->getNodes()->size()) {
                 allNodesHaveOneArmy = false;
                 break;
             }
@@ -498,12 +498,12 @@ void Game::placeArmiesAutomatic()
 
             if(nbrArmiesPlayers[i] <= 0)
                 continue;
-            std::uniform_int_distribution<int> dist(0, arrayPlayers[i]->getNodes().size()-1);
+            std::uniform_int_distribution<int> dist(0, arrayPlayers[i]->getNodes()->size()-1);
             do{
                 int chosenCountryInd = dist(mt); // store the random number into the chosen country index
 
                 int k = 0;
-                for (auto const &node2 : arrayPlayers[i]->getNodes()) {
+                for (auto const &node2 : *(arrayPlayers[i]->getNodes())) {
                     if(k == chosenCountryInd)
                     {
                         c = node2->getPointerToCountry();
@@ -532,7 +532,7 @@ bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
     for(int i = 0; i < nbrPlayers; i++)
     {
         int nbrArmies = 0;
-        for (auto const& node : arrayPlayers[i]->getNodes()) {
+        for (auto const& node : *(arrayPlayers[i]->getNodes())) {
             nbrArmies += node->getCountry().getNbrArmies();
         }
         if(nbrArmies != nbrArmiesPerPlayer)
@@ -587,9 +587,9 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
             std::vector<ReinforceResponse*>* reinforceChanges = (*players)[i]->reinforce(continents);
-            std::cout << "What is wrong M8 ?" << std::endl;
-            AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
-            FortifyResponse* fortifyChanges = (*players)[i]->fortify(*riskGame.getMapCountries());
+            //std::cout << "What is wrong M8 ?" << std::endl;
+            //AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
+            //FortifyResponse* fortifyChanges = (*players)[i]->fortify(*riskGame.getMapCountries());
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -600,6 +600,11 @@ void mainGameLoopDriver()
         }
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+}
+
+void performReinforce(Player &player, std::vector<ReinforceResponse*> responses)
+{
+
 }
 
 int main()

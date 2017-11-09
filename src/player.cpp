@@ -87,9 +87,9 @@ void Player::addNode(Node* newNode)
     this->nodes.push_back(newNode);
 }
 
-std::list<Node*> Player::getNodes()
+std::list<Node*>* Player::getNodes()
 {
-    return this->nodes;
+    return &(this->nodes);
 }
 
 int Player::roll(int nbOfDice)

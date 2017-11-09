@@ -40,7 +40,7 @@ class Player
         AttackResponse* attack(Graph& map, std::vector<Player*> &players);
         FortifyResponse* fortify(Graph& map);
         string getName();
-        std::list<Node*> getNodes();
+        std::list<Node*>* getNodes();
         Hand* getHand();
         void printNodes();
         void setName(string n);
