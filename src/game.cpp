@@ -402,6 +402,21 @@ bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
 }
 
 /**
+ * Helper method to perform the reinforcement phase
+ * @param player Player doing the reinforcement
+ * @param responses List of Reinforcement responses
+ */
+void Game::performReinforce(Player &player, std::vector<ReinforceResponse*> responses)
+{
+    int resultingNbOfArmies;
+    for ( auto response : responses)
+    {
+        resultingNbOfArmies = response->nbArmies + response->country->getPointerToCountry()->getNbrArmies();
+        response->country->getPointerToCountry()->setNbrArmies(resultingNbOfArmies);
+    }
+}
+
+/**
  * Helper method to perform attacking phase
  */
 bool Game::performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry) {
