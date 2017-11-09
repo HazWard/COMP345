@@ -139,9 +139,9 @@ Parser::Parser(string fileName) {
 			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
 
 			//Getting a pointer to the node on the current line. We will create its adjacency list.
-			for (int k = 0; k < nodes->size(); k++) {
-				if ((*nodes)[k].getCountry().getName() == lineData[0]) {
-					currentNode = &(*nodes)[k];
+			for (int k = 0; k < (*graph->getVectorOfNodes()).size(); k++) {
+				if ((*graph->getVectorOfNodes())[k]->getCountry().getName() == lineData[0]) {
+					currentNode = (*graph->getVectorOfNodes())[k];
 					break;
 				}
 			}
@@ -160,9 +160,9 @@ Parser::Parser(string fileName) {
 
 				bool currentContinentIsValid = (tempCont != nullptr && !tempContName.empty());
 				for (int j = 4; j < lineData.size(); j++) {
-					for (int k = 0; k < nodes->size(); k++) {
-						if ((*nodes)[k].getCountry().getName() == lineData[j]) {
-							Node *add = &(*nodes)[k];
+					for (int k = 0; k < (*graph->getVectorOfNodes()).size(); k++) {
+						if ((*graph->getVectorOfNodes())[k]->getCountry().getName() == lineData[j]) {
+							Node *add = (*graph->getVectorOfNodes())[k];
 							graph->addEdge(currentNode, add);
 						}
 					}
@@ -181,7 +181,7 @@ Parser::Parser(string fileName) {
 				}
 				//Getting a pointer to the continent of the node on the current line. We will add it to that continent's vector of pointers to nodes.
 				Continent *currentContinent = nullptr;
-				for (int j = 0; j < nodes->size(); j++) {
+				for (int j = 0; j < (*graph->getVectorOfNodes()).size(); j++) {
 					if (currentNode->getCountry().getContinent() == (*continents)[j]->getName()) {
 						currentContinent = (*continents)[j];
 						break;
