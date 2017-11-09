@@ -104,7 +104,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
     return responses;
 }
 
-AttackResponse* HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
+AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
     cout << targetPlayer->getName() << ", do you wish to attack? (y/n)";
     std::string willAttack;
@@ -121,16 +121,7 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vec
         if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
                 if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
-                    Node *toAttack;
-                    //TODO: if adjList ever gets fixed, remove this hack
-                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
-                        if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
-                            == adjacentNode->getPointerToCountry()->getName()) {
-                            toAttack = map.getVectorOfNodes()->at(i);
-                            break;
-                        }
-                    }
-                    canAttack.insert(make_pair(playerOwnedNode, toAttack));
+                    canAttack.insert(make_pair(playerOwnedNode, adjacentNode));
                 }
             }
         }
@@ -330,7 +321,7 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
  * - Attacks with strongest country until it can't any more
  * @param players List of players
  */
-AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
+AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Player*> &players)
 {
     // Sort the players countries by strongest
     std::vector<Node*> strongestCountries { targetPlayer->getNodes()->begin(), targetPlayer->getNodes()->end()}; //creates a vector from the adjacency list
@@ -348,16 +339,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std
             std::vector<Node*> adjacentEnemyNodes = {};
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
                 if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
-                    Node *toAttack;
-                    //TODO: if adjList ever gets fixed, remove this hack
-                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
-                        if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
-                            == adjacentNode->getPointerToCountry()->getName()) {
-                            toAttack = map.getVectorOfNodes()->at(i);
-                            break;
-                        }
-                    }
-                    adjacentEnemyNodes.push_back(toAttack);
+                    adjacentEnemyNodes.push_back(adjacentNode);
                 }
             }
             if(!adjacentEnemyNodes.empty()){
@@ -503,7 +485,7 @@ BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> con
     return responses;
 }
 
-AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
+AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
     return new AttackResponse(new std::pair<Player*, Node*>(), new std::pair<Player*, Node*>());
 }

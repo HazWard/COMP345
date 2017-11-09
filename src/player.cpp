@@ -117,9 +117,9 @@ std::vector<ReinforceResponse*>* Player::reinforce(vector<Continent*> continents
     return this->strategy->reinforce(this, continents);
 }
 
-AttackResponse* Player::attack(Graph &map, std::vector<Player *> &players)
+AttackResponse* Player::attack(std::vector<Player *> &players)
 {
-    return this->strategy->attack(this, map, players);
+    return this->strategy->attack(this, players);
 }
 
 FortifyResponse* Player::fortify(Graph &map)

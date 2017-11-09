@@ -187,19 +187,6 @@ void Game::getMapUser(list<string> listOfMapFiles) {
         }
     } while(!validIndexMap);
 
-    //Here not copies:
-    vector<Node*>* a = parser->getGraph()->getVectorOfNodes();
-    vector<Node*> b = (*a)[0]->getAdjList();
-    cout << *(b)[0] << endl;
-    (b)[0]->getPointerToCountry()->setNbrArmies(499);
-    cout << *(b)[0] << endl;
-    for(int i = 0; i < a->size(); i++)
-    {
-        if((*a)[i]->getCountry().getName() == "Northwest Territory"){
-            cout << "\nADDRESS: " << (b)[0] << "   " << ((*a)[i]) << endl;
-            cout << *((*a)[i]) << endl;}
-    }
-
     this->mapCountries = parser->getGraph();
     this->continents = *parser->getContinents();
     delete parser;
@@ -582,20 +569,7 @@ void mainGameLoopDriver()
         play[i]->printNodes();
     }
     riskGame.placeArmiesAutomatic();
-
-    //Here copies:
-    vector<Node*>* a = riskGame.getMapCountries()->getVectorOfNodes();
-    vector<Node*> b = (*a)[0]->getAdjList();
-    cout << *(b)[0] << endl;
-    (b)[0]->getPointerToCountry()->setNbrArmies(499);
-    cout << *(b)[0] << endl;
-    for(int i = 0; i < a->size(); i++)
-    {
-        if((*a)[i]->getCountry().getName() == "Northwest Territory"){
-            cout << "\nADDRESS: " << (b)[0] << "   " << ((*a)[i]) << endl;
-            cout << *((*a)[i]) << endl;}
-    }
-
+    
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
 
@@ -613,12 +587,12 @@ void mainGameLoopDriver()
             //riskGame.performReinforce((*players)[i]->reinforce(continents));
             AttackResponse *attackResponse;
             do{
-                attackResponse = (*players)[i]->attack(*riskGame.getMapCountries(), play);
+                attackResponse = (*players)[i]->attack(play);
                 if(attackResponse){
                     riskGame.performAttack(attackResponse);
                 }
             }while(attackResponse);
-            AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
+            AttackResponse* attackChanges = (*players)[i]->attack(play);
             //riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
 
             //After each player's turn, we check if one player owns all the countries in the map

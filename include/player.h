@@ -37,7 +37,7 @@ class Player
 
         void setStrategy(Strategy *targetStrategy);
         std::vector<ReinforceResponse*>* reinforce(std::vector<Continent*> continents);
-        AttackResponse* attack(Graph& map, std::vector<Player*> &players);
+        AttackResponse* attack(std::vector<Player*> &players);
         FortifyResponse* fortify(Graph& map);
         string getName();
         std::list<Node*>* getNodes();
