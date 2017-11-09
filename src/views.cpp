@@ -23,5 +23,27 @@ void PhaseObserver::update() {
 }
 
 void PhaseObserver::display() {
-    //TODO: Implement how to display the information
+    //TODO: display other info here
+
+    //display info deppending on phase
+   if(typeid(model.currentEvent)== typeid(reinforceEvent))
+       this.displayReinforceInfo();
+    else
+    if(typeid(model.currentEvent)== typeid(attackEvent))
+        this.displayAttackInfo();
+    else
+    if(typeid(model.currentEvent)== typeid(fortifyEvent))
+        this.displayFortifyInfo();
 }
+
+void PhaseObserver::displayReinforceInfo(){
+
+}
+void PhaseObserver::displayAttackInfo(){
+
+}
+void PhaseObserver::displayFortifyInfo(){
+    std:: cout << model.currentEvent.armiesMoved << " armies are being moved from " << model.currentEvent.source->getPointerToCountry()->getName()
+               << " to" << model.currentEvent.destination->getPointerToCountry()->getName() << std::endl;
+}
+

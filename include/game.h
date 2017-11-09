@@ -22,9 +22,7 @@ private:
     Graph mapCountries;
     vector<Continent*> continents;
     Deck mainDeck;
-    //ReinforceEvent reinforceEvent;
-    //AttackEvent attackEvent;
-    //FortifyEvent fortifyEvent;
+    Event* currentEvent;
 
     //Helper methods:
     list<string> getNameOfFiles(const char *path);

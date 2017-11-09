@@ -617,15 +617,17 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
     }
 }
 bool Game::performFortify(FortifyResponse* response) {
-    //Apply changes and return fortifyresponse object for views
+    //Apply changes
     string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
     string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
     response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
     std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
-    //this.fortifyEvent.armiesMoved = response.nbArmies;
-    //this.fortifyEvent.source = response.sourceCountry;
-    //this.fortifyEvent.destination = response.destinationCountry;
+    //update currentEvent
+    this->currentEvent = new fortifyEvent();
+    this.currentEvent.armiesMoved = response.nbArmies;
+    this.curtrentEvent.source = response.sourceCountry;
+    this.currentEvent.destination = response.destinationCountry;
     return true;
 }
 
