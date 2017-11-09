@@ -38,12 +38,13 @@ public:
     Node(Country c, vector<Node *> adjList);
     Country getCountry();
     vector<Node*> getAdjList();
-    Country *getPointerToCountry();
+    Country * getPointerToCountry()const;
     bool isVisited();
     void addNode(Node *n);
     void setAdjList(vector<Node*> newAdjList);
     void setVisited(bool v);
     friend std::ostream &operator<<(std::ostream &stream, Node &n);
+    friend bool operator<(const Node &lhs, const Node &rhs);
 };
 
 //This class creates a graph used as the map of our Risk game

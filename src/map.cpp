@@ -66,7 +66,7 @@ vector<Node *> Node::getAdjList() { return adjList; }
 
 bool Node::isVisited() { return visited; }
 
-Country *Node::getPointerToCountry() { return &country; }
+Country* Node::getPointerToCountry() const { return const_cast<Country*>(&country); }
 
 //-- MUTATOR METHODS --
 void Node::setAdjList(vector<Node *> newAdjList) {
@@ -89,6 +89,10 @@ void Node::addNode(Node *n)
 			return;
 	}
 	this->adjList.push_back(n);
+}
+
+bool operator<(const Node &lhs, const Node &rhs){
+	return lhs.getPointerToCountry()->getNbrArmies() < rhs.getPointerToCountry()->getNbrArmies();
 }
 
 //The << operator is overloaded for Country to be able to print Country objects

@@ -321,23 +321,22 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
 AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
     // Sort the players countries by strongest
-    std::list<Node*> strongestCountries = targetPlayer->getNodes(); //Creates a copy of the list -> cplusplus.com/reference/list/list/operator=/
-    strongestCountries.sort([](Node &a, Node &b) -> bool
-            { return a.getPointerToCountry()->getNbrArmies() > b.getPointerToCountry()->getNbrArmies(); }); //Sorting the list with a lambda
+    std::vector<Node*> strongestCountries { targetPlayer->getNodes().begin(), targetPlayer->getNodes().end()}; //creates a vector from the adjacency list
+    std::sort(std::begin(strongestCountries), std::end(strongestCountries)); //Sorting the list with a lambda
 
     //Setting up some pointers for returning an attack response
     std::pair<Player*,Node*> *attacker;
     Node *defendingCountry;
 
     //Finding an attack vector between the strongest node and an adjacent weak node
-    std::list<Node *>::iterator nodeIterator;
+    std::vector<Node *>::iterator nodeIterator;
     for (nodeIterator = strongestCountries.begin(); nodeIterator != strongestCountries.end(); nodeIterator++) {
         Node *playerOwnedNode = *nodeIterator;
         if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
             std::vector<Node*> adjacentEnemyNodes = {};
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
                 if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
-                    adjacentEnemyNodes.push_back(*adjacentNode);
+                    adjacentEnemyNodes.push_back(adjacentNode);
                 }
             }
             if(!adjacentEnemyNodes.empty()){
@@ -370,7 +369,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std
         }
     }
 
-    std::pair<Player*, Node*> defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
+    std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
     return new AttackResponse(attacker, defender);
 }
 
