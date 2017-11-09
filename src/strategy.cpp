@@ -166,7 +166,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
     cout << "========== Fortification ==========" << endl;
     std::string option;
     //return null if user does not want to fortify
-    cout << this->getName() << ", Would you like to fortify? (y/n)";
+    cout << targetPlayer->getName() << ", Would you like to fortify? (y/n)";
     cin >> option;
     if(option == "n"){
         return nullptr;

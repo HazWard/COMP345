@@ -22,9 +22,9 @@ private:
     Graph mapCountries;
     vector<Continent*> continents;
     Deck mainDeck;
-    ReinforceEvent reinforceEvent;
-    AttackEvent attackEvent;
-    FortifyEvent fortifyEvent;
+    //ReinforceEvent reinforceEvent;
+    //AttackEvent attackEvent;
+    //FortifyEvent fortifyEvent;
 
     //Helper methods:
     list<string> getNameOfFiles(const char *path);
@@ -55,5 +55,6 @@ public:
     void placeArmies();
     void performReinforce(std::vector<ReinforceResponse*>* responses);
     bool performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry);
+    bool performFortify(FortifyResponse* response);
     void placeArmiesAutomatic();
 };

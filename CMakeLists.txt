@@ -14,6 +14,7 @@ set(SOURCE_FILES
         include/response.h
         include/observer.h
         include/views.h
+        include/events.h
         src/cards.cpp
         src/dice.cpp
         src/player.cpp

@@ -1,6 +1,6 @@
 #include "../include/game.h"
 #include <dirent.h>
-#include <events.h>
+#include "../include/events.h"
 #include <iostream>
 
 //Imports necessary on Windows G++ compilers
@@ -585,7 +585,7 @@ void mainGameLoopDriver()
             (*players)[i]->setStrategy(new BenevolentStrategy());
             riskGame.performReinforce((*players)[i]->reinforce(continents));
             //AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
-            //FortifyResponse* fortifyChanges = (*players)[i]->fortify(*riskGame.getMapCountries());
+            riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -616,16 +616,17 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
         response->country->setNbrArmies(tempTotal);
     }
 }
-bool Game::performFortify(FortifyResponse response) {
+bool Game::performFortify(FortifyResponse* response) {
     //Apply changes and return fortifyresponse object for views
-    string sourceStr = response.sourceCountry->getPointerToCountry()->getName();
-    string destinationStr = response.destinationCountry->getPointerToCountry()->getName();
-    response.sourceCountry->getPointerToCountry()->setNbrArmies(response.sourceCountry->getPointerToCountry()->getNbrArmies() - response.nbArmies);
-    response.destinationCountry->getPointerToCountry()->setNbrArmies(response.destinationCountry->getPointerToCountry()->getNbrArmies() + response.nbArmies);
-    std::cout << response.nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
-    this.fortifyEvent.armiesMoved = response.nbArmies;
-    this.fortifyEvent.source = response.sourceCountry;
-    this.fortifyEvent.destination = response.destinationCountry;
+    string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
+    string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
+    response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
+    response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
+    std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
+    //this.fortifyEvent.armiesMoved = response.nbArmies;
+    //this.fortifyEvent.source = response.sourceCountry;
+    //this.fortifyEvent.destination = response.destinationCountry;
+    return true;
 }
 
 int main()
