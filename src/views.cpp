@@ -4,7 +4,6 @@
 
 #include "../include/views.h"
 
-#import <iostream>
 using namespace std;
 
 StatObserver::StatObserver() :Observer() {}

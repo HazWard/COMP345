@@ -156,8 +156,8 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vec
             }
         }
 
-        std::pair<Player*, Node*> attacker = new std::pair<Player*, Node*>(targetPlayer, iterator->first);
-        std::pair<Player*, Node*> defender = new std::pair<Player*, Node*>(defendingPlayer, iterator->second);
+        std::pair<Player*, Node*>* attacker = new std::pair<Player*, Node*>(targetPlayer, iterator->first);
+        std::pair<Player*, Node*>* defender = new std::pair<Player*, Node*>(defendingPlayer, iterator->second);
         return new AttackResponse(attacker, defender);
     }
 
@@ -559,7 +559,7 @@ std::vector<ReinforceResponse*>* BenevolentStrategy::reinforce(Player *targetPla
 }
 AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, Graph &map, std::vector<Player *> &players)
 {
-    return new AttackResponse(std::pair<Player*, Node*>(), std::pair<Player*, Node*>());
+    return new AttackResponse(new std::pair<Player*, Node*>(), new std::pair<Player*, Node*>());
 }
 FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 {

@@ -8,12 +8,14 @@
 #pragma once
 
 #include <vector>
+#include <random>
 using namespace std;
 
 class Dice
 {
 private:
 	vector<int> numTracker;
+	std::mt19937 mt;
 public:
 	Dice();
 	int numGenerator();
