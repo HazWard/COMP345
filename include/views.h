@@ -15,6 +15,9 @@ public:
     PhaseObserver();
     void update();
     void display();
+    void PhaseObserver::displayReinforceInfo();
+    void PhaseObserver::displayAttackInfo();
+    void PhaseObserver::displayFortifyInfo();
 };
 
 class StatObserver : public Observer{

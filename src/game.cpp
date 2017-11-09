@@ -19,6 +19,7 @@ const string MAPS_FOLDER = "../maps/";
 //If they are not equal, that means the constructor failed to do its job and we exit the program.
 Game::Game()
 {
+    currentEvent=new Event();
     list<string> mapFiles;
 
     //Checking the operating system by using the windows boolean, determines how paths are set
@@ -629,6 +630,10 @@ bool Game::performFortify(FortifyResponse* response) {
     this.curtrentEvent.source = response.sourceCountry;
     this.currentEvent.destination = response.destinationCountry;
     return true;
+}
+
+Event* Game::getCurrentEvent(){
+    return this.currentEvent();
 }
 
 int main()

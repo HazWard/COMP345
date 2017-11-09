@@ -2,6 +2,8 @@
 #include "../include/reader.h"
 #include "../include/player.h"
 #include "../include/observer.h"
+#include "../include/events.h"
+
 
 bool windows = false;
 #ifdef OS_WINDOW1S
@@ -31,6 +33,7 @@ private:
     int getNbrPlayersUser();
     vector<Player *>* getPlayersUser(int np);
     vector<Player *>* getPlayersAutomatic(int np);
+    Event* getCurrentEvent();
     bool verifyPlayerArmies(int nbrArmiesPerPlayer);
     bool armiesLeftToPlace(vector<int> nbrArmiesPlayers);
 public:

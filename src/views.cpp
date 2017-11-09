@@ -1,7 +1,8 @@
 //
 // Created by Emilio Assuncao on 2017-11-06.
 //
-
+#include <iostream>
+#include "../include/events.h"
 #include "../include/views.h"
 
 using namespace std;
@@ -26,14 +27,14 @@ void PhaseObserver::display() {
     //TODO: display other info here
 
     //display info deppending on phase
-   if(typeid(model.currentEvent)== typeid(reinforceEvent))
-       this.displayReinforceInfo();
+   if(typeid(model.currentEvent)== typeid(ReinforceEvent))
+        displayReinforceInfo();
+   else
+    if(typeid(getSubject().currentEvent)== typeid(AttackEvent))
+        displayAttackInfo();
     else
-    if(typeid(model.currentEvent)== typeid(attackEvent))
-        this.displayAttackInfo();
-    else
-    if(typeid(model.currentEvent)== typeid(fortifyEvent))
-        this.displayFortifyInfo();
+    if(typeid(model.currentEvent)== typeid(FortifyEvent))
+        displayFortifyInfo();
 }
 
 void PhaseObserver::displayReinforceInfo(){
