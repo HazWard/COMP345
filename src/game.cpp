@@ -582,10 +582,17 @@ void mainGameLoopDriver()
         {
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
-            (*players)[i]->setStrategy(new BenevolentStrategy());
-            riskGame.performReinforce((*players)[i]->reinforce(continents));
-            //AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
-            riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
+            //(*players)[i]->setStrategy(new BenevolentStrategy());
+            //riskGame.performReinforce((*players)[i]->reinforce(continents));
+            AttackResponse *attackResponse;
+            do{
+                attackResponse = (*players)[i]->attack(*riskGame.getMapCountries(), play);
+                if(attackResponse){
+                    riskGame.performAttack(attackResponse);
+                }
+            }while(attackResponse);
+            AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
+            //riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -616,6 +623,47 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
         response->country->setNbrArmies(tempTotal);
     }
 }
+
+/**
+ * Helper method to perform attacking phase
+ */
+bool Game::performAttack(AttackResponse *response) {
+    int rounds = 1;
+    while(response->attacker->second->getPointerToCountry()->getNbrArmies() > 2 && response->defender->second->getPointerToCountry()->getNbrArmies() > 0){
+        cout << "Round " << rounds << "." << endl;
+        int attackerDice = response->attacker->second->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : response->attacker->second->getPointerToCountry()->getNbrArmies() - 1;
+        int defenderDice = response->defender->second->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
+
+        //Getting vectors of dice rolls
+        std::vector<int> attackerDiceRolls = response->attacker->first->getDice()->howManyDice(attackerDice);
+        std::vector<int> defenderDiceRolls = response->defender->first->getDice()->howManyDice(defenderDice);
+
+        //Sorting the dice roll vectors in descending order
+        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+        //iterating through the dice rolls, until run our of descending dice
+        for(int i = 0; i < defenderDiceRolls.size(); i++){
+            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
+            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+                response->attacker->second->getPointerToCountry()->setNbrArmies(response->attacker->second->getPointerToCountry()->getNbrArmies() - 1);
+            }
+            else{
+                response->defender->second->getPointerToCountry()->setNbrArmies(response->defender->second->getPointerToCountry()->getNbrArmies() - 1);
+            }
+            if(response->defender->second->getPointerToCountry()->getNbrArmies() == 0){
+                return true;
+            }
+            else if(response->attacker->second->getPointerToCountry()->getNbrArmies() == 1){
+                return false;
+            }
+        }
+        rounds++;
+    }
+    return false;
+}
+
+
 bool Game::performFortify(FortifyResponse* response) {
     //Apply changes and return fortifyresponse object for views
     string sourceStr = response->sourceCountry->getPointerToCountry()->getName();

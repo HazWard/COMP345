@@ -121,44 +121,60 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, Graph &map, std::vec
         if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
                 if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
-                    canAttack.insert(make_pair(playerOwnedNode, adjacentNode));
+                    Node *toAttack;
+                    //TODO: if adjList ever gets fixed, remove this hack
+                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
+                        if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
+                            == adjacentNode->getPointerToCountry()->getName()) {
+                            toAttack = map.getVectorOfNodes()->at(i);
+                            break;
+                        }
+                    }
+                    canAttack.insert(make_pair(playerOwnedNode, toAttack));
                 }
             }
         }
     }
 
-    std::map<Node *, Node *>::iterator iterator;
-    for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
-        cout << targetPlayer->getName() << ", you can attack " << iterator->second->getPointerToCountry()->getName()
-             << " from your country " << iterator->first->getPointerToCountry()->getName() << "." << endl;
-        cout << "You have " << iterator->first->getPointerToCountry()->getNbrArmies() << " armies and they have " <<
-             iterator->second->getPointerToCountry()->getNbrArmies() << " armies." << endl;
-        cout << "DO YOU WISH TO ATTACK? (y/n)";
-        std::string answer;
-        cin >> answer;
-        if (answer != "y") {
-            continue;
-        }
-
-        //Determining who the defending player will be for this particular attack vector
-        Player *defendingPlayer;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.at(i) == targetPlayer) { //This player is our current player
+    //If no possible attacks were found
+    if(canAttack.empty()){
+        return nullptr;
+    }
+    else { //Some possible attacks were found
+        std::map<Node *, Node *>::iterator iterator;
+        for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
+            //For every attack in the map, prompt the user if he wishes to perform the attack
+            cout << targetPlayer->getName() << ", you can attack " << iterator->second->getPointerToCountry()->getName()
+                 << " from your country " << iterator->first->getPointerToCountry()->getName() << "." << endl;
+            cout << "You have " << iterator->first->getPointerToCountry()->getNbrArmies() << " armies and they have " <<
+                 iterator->second->getPointerToCountry()->getNbrArmies() << " armies." << endl;
+            cout << "DO YOU WISH TO ATTACK? (y/n)";
+            std::string answer;
+            cin >> answer;
+            if (answer != "y") {
                 continue;
             }
-            for (auto const &node : *(players.at(i)->getNodes())) {
-                if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
-                    defendingPlayer = &(*players.at(i));
-                    break;
+
+            //Determining who the defending player will be for this particular attack vector
+            Player *defendingPlayer;
+            for (int i = 0; i < players.size(); i++) {
+                if (players.at(i) == targetPlayer) { //This player is our current player
+                    continue;
+                }
+                for (auto const &node : *(players.at(i)->getNodes())) {
+                    if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
+                        defendingPlayer = &(*players.at(i));
+                        break;
+                    }
                 }
             }
+
+            //return the first possible attack that the user approved
+            std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
+            std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
+            return new AttackResponse(attacker, defender);
         }
-
-        std::pair<Player*, Node*>* attacker = new std::pair<Player*, Node*>(targetPlayer, iterator->first);
-        std::pair<Player*, Node*>* defender = new std::pair<Player*, Node*>(defendingPlayer, iterator->second);
-        return new AttackResponse(attacker, defender);
     }
-
 }
 
 FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
@@ -332,7 +348,16 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std
             std::vector<Node*> adjacentEnemyNodes = {};
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
                 if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
-                    adjacentEnemyNodes.push_back(adjacentNode);
+                    Node *toAttack;
+                    //TODO: if adjList ever gets fixed, remove this hack
+                    for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
+                        if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
+                            == adjacentNode->getPointerToCountry()->getName()) {
+                            toAttack = map.getVectorOfNodes()->at(i);
+                            break;
+                        }
+                    }
+                    adjacentEnemyNodes.push_back(toAttack);
                 }
             }
             if(!adjacentEnemyNodes.empty()){
