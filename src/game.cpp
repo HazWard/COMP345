@@ -19,7 +19,6 @@ const string MAPS_FOLDER = "../maps/";
 //If they are not equal, that means the constructor failed to do its job and we exit the program.
 Game::Game()
 {
-    currentEvent=new Event();
     list<string> mapFiles;
 
     //Checking the operating system by using the windows boolean, determines how paths are set
@@ -625,7 +624,7 @@ bool Game::performFortify(FortifyResponse* response) {
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
     std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
     //update currentEvent
-    this->currentEvent = new fortifyEvent();
+    this->currentEvent = new FortifyEvent(0,NULL,NULL);
     this.currentEvent.armiesMoved = response.nbArmies;
     this.curtrentEvent.source = response.sourceCountry;
     this.currentEvent.destination = response.destinationCountry;
