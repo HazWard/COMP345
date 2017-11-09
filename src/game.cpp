@@ -29,7 +29,7 @@ Game::Game()
     this->nbrPlayers = getNbrPlayersUser();
     this->arrayPlayers = *(getPlayersAutomatic(nbrPlayers));
     determinePlayerTurn();
-    this->mainDeck = Deck(mapCountries.getNbrCountries());
+    this->mainDeck = Deck(mapCountries->getNbrCountries());
     if(nbrPlayers != arrayPlayers.size())
     {
         cout << "The number of players (" << nbrPlayers << " and "
@@ -37,10 +37,10 @@ Game::Game()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
-    if(mainDeck.getNumberOfCards() != mapCountries.getNbrCountries())
+    if(mainDeck.getNumberOfCards() != mapCountries->getNbrCountries())
     {
         cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
-             << "the number of nodes in the map (" << mapCountries.getNbrCountries()
+             << "the number of nodes in the map (" << mapCountries->getNbrCountries()
              << "is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
@@ -53,14 +53,14 @@ int Game::getNbrPlayers() { return nbrPlayers; }
 
 vector<Player*>* Game::getArrayPlayers() { return &arrayPlayers; }
 
-Graph* Game::getMapCountries() { return &mapCountries; }
+Graph* Game::getMapCountries() { return mapCountries; }
 
 Deck Game::getMainDeck() { return mainDeck; }
 
 vector<Continent*>* Game::getContinents() { return &continents; };
 
 //-- MUTATOR METHODS --
-void Game::setMap(Graph& newMap)
+void Game::setMap(Graph* newMap)
 {
     mapCountries = newMap;
 }
@@ -126,7 +126,7 @@ void Game::getMapAutomatic()
         cout << "We will exit the program." << endl;
         exit(EXIT_FAILURE);
     }
-    this->mapCountries = *parser->getGraph();
+    this->mapCountries = parser->getGraph();
     this->continents = *parser->getContinents();
     delete parser;
 }
@@ -200,7 +200,7 @@ void Game::getMapUser(list<string> listOfMapFiles) {
             cout << *((*a)[i]) << endl;}
     }
 
-    this->mapCountries = *parser->getGraph();
+    this->mapCountries = parser->getGraph();
     this->continents = *parser->getContinents();
     delete parser;
 }
@@ -269,7 +269,7 @@ template <class T > void listShuffle( list<T> &L )
 //Method used to assign countries one by one to the players in a round robin fashion
 void Game::assignCountriesToPlayers()
 {
-    vector<Node*> listOfNodes = *(this->mapCountries.getVectorOfNodes());
+    vector<Node*> listOfNodes = *(this->mapCountries->getVectorOfNodes());
     //We create a list from the vector of nodes of the map
     //We use a list since we will be removing a lot of elements and the
     //underlying data structure of a list is a linked list, which is better suited for insertion/removal of elements
@@ -583,7 +583,6 @@ void mainGameLoopDriver()
     }
     riskGame.placeArmiesAutomatic();
 
-/*
     //Here copies:
     vector<Node*>* a = riskGame.getMapCountries()->getVectorOfNodes();
     vector<Node*> b = (*a)[0]->getAdjList();
@@ -596,7 +595,7 @@ void mainGameLoopDriver()
             cout << "\nADDRESS: " << (b)[0] << "   " << ((*a)[i]) << endl;
             cout << *((*a)[i]) << endl;}
     }
-*/
+
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
 

@@ -19,7 +19,7 @@ private:
     string mapName;
     int nbrPlayers;
     vector<Player *> arrayPlayers;
-    Graph mapCountries;
+    Graph* mapCountries;
     vector<Continent*> continents;
     Deck mainDeck;
     //ReinforceEvent reinforceEvent;
@@ -39,7 +39,7 @@ public:
     //Constructor:
     Game();
     //Mutator methods:
-    void setMap(Graph &newMap);
+    void setMap(Graph* newMap);
     void setNbrPlayers(int nbrP);
     void setArrayPlayers(vector<Player *> &);
     //Accessor methods:

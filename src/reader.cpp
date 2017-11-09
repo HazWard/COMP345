@@ -197,7 +197,9 @@ Parser::Parser(string fileName) {
 }
 
 //-- ACCESSOR METHODS --
-Graph* Parser::getGraph() { return graph; }
+Graph* Parser::getGraph() {
+	return graph;
+}
 
 vector<Continent*>* Parser::getContinents() { return continents; }
 
