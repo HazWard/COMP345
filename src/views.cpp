@@ -24,4 +24,5 @@ void PhaseObserver::update() {
 
 void PhaseObserver::display() {
     //TODO: Implement how to display the information
+    model.
 }

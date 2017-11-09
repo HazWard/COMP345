@@ -35,9 +35,10 @@ public:
 class HumanStrategy : public Strategy
 {
 public:
-    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
-    FortifyResponse* fortify(Player* targetPlayer, Graph& map);
+    void reinforce(Player* targetPlayer, std::map<string, Graph>* graph) = 0;
+    void attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players) = 0;
+    FortifyResponse fortify(Player* targetPlayer, Graph& map);
+    static bool attack(Player& attacker, Player& defender, Country& attackingCountry, Country& defendingCountry) = 0;
 };
 
 /**

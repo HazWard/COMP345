@@ -165,7 +165,8 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     cout << "========== Fortification ==========" << endl;
     std::string option;
-    cout << targetPlayer->getName() << ", Would you like to fortify? (y/n)";
+    //return null if user does not want to fortify
+    cout << this->getName() << ", Would you like to fortify? (y/n)";
     cin >> option;
     if(option == "n"){
         return nullptr;
@@ -218,7 +219,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
             cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
         }
 
-
+    //Get destination and check if valid
         std::cout << "Please enter the destination country: ";
         getline(cin, destinationStr);
 
@@ -238,6 +239,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 
     validInput=false;
 
+    //Get number of armies to move and check if valid
     while(armNum >= sourceCtr->getCountry().getNbrArmies() || armNum <= 0){
 
         if(validInput)
@@ -249,13 +251,9 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 
         validInput=true;
     }
-
-    //sourceCtr->getPointerToCountry()->setNbrArmies(sourceCtr->getPointerToCountry()->getNbrArmies() - armNum);
-    //destCtr->getPointerToCountry()->setNbrArmies(destCtr->getPointerToCountry()->getNbrArmies() + armNum);
-    //std::cout << armNum << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
-
     validInput=false;
-    return new FortifyResponse(armNum, sourceCtr,destCtr);
+    return new FortifyResponse(armNum,sourceCtr,destCtr);
+
 }
 
 /**
@@ -403,6 +401,8 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 
     // Aggregate armies to strongest country
     int total = secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1;
+    if (total==0)
+        return nullptr;
     // secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
     // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
     // strongestCountry->getPointerToCountry()->setNbrArmies(total);
@@ -509,6 +509,8 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 
     // Aggregate armies to strongest country
     int total = secondWeakestCountry->getPointerToCountry()->getNbrArmies() - 1;
+    if (total==0)
+        return nullptr;
     // secondWeakestCountry->getPointerToCountry()->setNbrArmies(1);
     // std::cout << "Setting number of armies on " << weakestCountry->getCountry().getName() << " to " << total<< std::endl;
     // weakestCountry->getPointerToCountry()->setNbrArmies(total);
