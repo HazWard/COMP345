@@ -316,93 +316,62 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
 /**
  * Attack phase for Aggressive Player
  * - Attacks with strongest country until it can't any more
- * @param map Game map
  * @param players List of players
  */
 AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, Graph& map, std::vector<Player*> &players)
 {
-    // TODO: Return AttackResponse that captures the attack with HIGHEST priority
-    // Priority is defined as: attacking player is attacking from strongest country, and attacking into weakest enemy country
-    // in its adjacency list
+    // Sort the players countries by strongest
+    std::list<Node*> strongestCountries = targetPlayer->getNodes(); //Creates a copy of the list -> cplusplus.com/reference/list/list/operator=/
+    strongestCountries.sort([](Node &a, Node &b) -> bool
+            { return a.getPointerToCountry()->getNbrArmies() > b.getPointerToCountry()->getNbrArmies(); }); //Sorting the list with a lambda
 
-    // Find strongest country
-    std::list<Node*>::iterator countryIter;
+    //Setting up some pointers for returning an attack response
+    std::pair<Player*,Node*> *attacker;
+    Node *defendingCountry;
 
-    Node* strongestCountry = *targetPlayer->getNodes().begin();
-    for (countryIter = targetPlayer->getNodes().begin(); countryIter != targetPlayer->getNodes().end(); ++countryIter)
-    {
-        if(strongestCountry->getPointerToCountry()->getNbrArmies()
-           < (*countryIter)->getPointerToCountry()->getNbrArmies())
-        {
-            strongestCountry = *countryIter;
-        }
-    }
-
-    // Find countries the Player can attack with its strongest country
-    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
-    for (auto const &node : strongestCountry->getAdjList()) {
-        if (!containsNode(targetPlayer, *node)) {
-            Node *toAttack;
-            for (int i = 0; i < map.getVectorOfNodes()->size(); i++) {
-                if ((map.getVectorOfNodes()->at(i))->getPointerToCountry()->getName()
-                    == node->getPointerToCountry()->getName()) {
-                    toAttack = map.getVectorOfNodes()->at(i);
-                    break;
+    //Finding an attack vector between the strongest node and an adjacent weak node
+    std::list<Node *>::iterator nodeIterator;
+    for (nodeIterator = strongestCountries.begin(); nodeIterator != strongestCountries.end(); nodeIterator++) {
+        Node *playerOwnedNode = *nodeIterator;
+        if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
+            std::vector<Node*> adjacentEnemyNodes = {};
+            for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
+                if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
+                    adjacentEnemyNodes.push_back(*adjacentNode);
                 }
             }
-            canAttack.insert(make_pair(strongestCountry, toAttack));
-        }
-    }
-
-    // Perform the attacks
-    std::map<Node *, Node *>::iterator iterator;
-    for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
-
-        // Find the defending player
-        Player *defendingPlayer;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.at(i)->getName() == targetPlayer->getName()) { //the player is this player
-                continue;
-            }
-            for (auto const &node : players.at(i)->getNodes()) {
-                if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
-                    defendingPlayer = &(*players.at(i));
-                    break;
+            if(!adjacentEnemyNodes.empty()){
+                Node *weakestNode = adjacentEnemyNodes.at(0);
+                for(auto const &adjacentNode : adjacentEnemyNodes){
+                    if(adjacentNode->getPointerToCountry()->getNbrArmies() < weakestNode->getPointerToCountry()->getNbrArmies()){
+                        weakestNode = adjacentNode;
+                    }
                 }
+                defendingCountry = weakestNode;
             }
         }
-        /* Commented out to compile correctly
-        bool wonBattle = this->attack(*targetPlayer, *defendingPlayer, *(iterator->first->getPointerToCountry()),
-                                      *(iterator->second->getPointerToCountry()));
-        if (wonBattle) {
-            std::cout << targetPlayer->getName() << ", you won!" << std::endl;
-
-            //Add the conquered country to the winner's list and removing from the loser's list
-            Node *n = (*iterator).second;
-            defendingPlayer->removeNode(n);
-            targetPlayer->getNodes().push_back(n);
-
-            //Sending one army from the victorious country to the conquered country
-            iterator->first->getPointerToCountry()->setNbrArmies(
-                    iterator->first->getPointerToCountry()->getNbrArmies() - 1);
-            iterator->second->getPointerToCountry()->setNbrArmies(1);
-
-            std::cout << "=============================================" <<
-                 "Here are your countries after the battle." << std::endl;
-            for (auto const &node : targetPlayer->getNodes()) {
-                std::cout << *node << std::endl;
-            }
-            std::cout << "=============================================" <<
-                 "Here are the defenders countries after the battle." << std::endl;
-            for (auto const &node : defendingPlayer->getNodes()) {
-                std::cout << *node << std::endl;
-            }
-        } else {
-            std::cout << "You lost this battle! Better luck next time." << std::endl;
-        }
-        */
     }
-    std::cout << "That concludes all your attacks, " << targetPlayer->getName() << "." << std::endl;
+
+    if(!defendingCountry){ //Checking if the pointer is NULL, ie. that no defending country was found
+        return nullptr;
+    }
+
+    //Determine who the defending player is for the chosen defending country
+    Player *defendingPlayer;
+    for (int i = 0; i < players.size(); i++) {
+        if (players.at(i)->getName() == targetPlayer->getName()) { //the player is this player
+            continue;
+        }
+        for (auto const &node : players.at(i)->getNodes()) {
+            if (node->getPointerToCountry()->getName() == defendingCountry->getPointerToCountry()->getName()) {
+                defendingPlayer = &(*players.at(i));
+                break;
+            }
+        }
+    }
+
+    std::pair<Player*, Node*> defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
+    return new AttackResponse(attacker, defender);
 }
 
 /**
