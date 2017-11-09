@@ -1,7 +1,8 @@
 //
 // Created by Emilio Assuncao on 2017-11-06.
 //
-
+#include <iostream>
+#include "../include/events.h"
 #include "../include/views.h"
 
 using namespace std;
@@ -23,5 +24,27 @@ void PhaseObserver::update() {
 }
 
 void PhaseObserver::display() {
-    //TODO: Implement how to display the information
+    //TODO: display other info here
+
+    //display info deppending on phase
+   if(typeid(model.currentEvent)== typeid(ReinforceEvent))
+        displayReinforceInfo();
+   else
+    if(typeid(getSubject().currentEvent)== typeid(AttackEvent))
+        displayAttackInfo();
+    else
+    if(typeid(model.currentEvent)== typeid(FortifyEvent))
+        displayFortifyInfo();
 }
+
+void PhaseObserver::displayReinforceInfo(){
+
+}
+void PhaseObserver::displayAttackInfo(){
+
+}
+void PhaseObserver::displayFortifyInfo(){
+    std:: cout << model.currentEvent.armiesMoved << " armies are being moved from " << model.currentEvent.source->getPointerToCountry()->getName()
+               << " to" << model.currentEvent.destination->getPointerToCountry()->getName() << std::endl;
+}
+

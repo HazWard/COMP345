@@ -28,3 +28,5 @@ Observer::Observer() {}
 Subject* Observer::getSubject() {
     return model;
 }
+
+void Observer::update(){}

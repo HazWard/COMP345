@@ -7,7 +7,10 @@
 
 #include "map.h"
 
-class ReinforceEvent{
+class Event{
+};
+
+class ReinforceEvent :Event{
     public:
         ReinforceEvent(vector<int> bonus,vector<int> armiesPlaced,vector<Node*> cuntTreesReinforced);
         vector<int> bonus;
@@ -15,7 +18,7 @@ class ReinforceEvent{
         vector<Node*> cuntTreesReinforced;
 };
 
-class AttackEvent{
+class AttackEvent :Event{
     public:
         AttackEvent(Node* attacker, Node* attacked, vector<int> attackerRolls, vector<int> attackedRolls);
         Node* attacker;
@@ -24,7 +27,7 @@ class AttackEvent{
         vector<int> attackedRolls;
 };
 
-class FortifyEvent{
+class FortifyEvent :Event{
     public:
         FortifyEvent(int armiesMoved, Node* source, Node* destination);
         int armiesMoved;
