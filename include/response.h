@@ -27,9 +27,9 @@ public:
 class AttackResponse
 {
 public:
-    std::pair<Player*, Node*> attacker;
-    std::pair<Player*, Node*> defender;
-    AttackResponse(std::pair<Player*,Node*> a, std::pair<Player*,Node*> d) : attacker(a), defender(d) {};
+    std::pair<Player*, Node*>* attacker;
+    std::pair<Player*, Node*>* defender;
+    AttackResponse(std::pair<Player*,Node*> *a, std::pair<Player*,Node*> *d) : attacker(a), defender(d) {};
 };
 
 class FortifyResponse

@@ -10,6 +10,11 @@ bool windows = false;
 
 class Game : public Subject {
 private:
+    //constants:
+    const string DEFAULT_MAP_NAME = "World.map";
+    const int DEFAULT_NUMBER_PLAYERS = 4;
+    string DEFAULT_PLAYER_NAMES[6] = {"player A", "player B", "player C", "player D", "player E", "player F"};
+
     //private members:
     string mapName;
     int nbrPlayers;
@@ -20,8 +25,10 @@ private:
     //Helper methods:
     list<string> getNameOfFiles(const char *path);
     void getMapUser(list<string> listOfMapFiles);
+    void getMapAutomatic();
     int getNbrPlayersUser();
-    vector<Player *> *getPlayersUser(int np);
+    vector<Player *>* getPlayersUser(int np);
+    vector<Player *>* getPlayersAutomatic(int np);
     bool verifyPlayerArmies(int nbrArmiesPerPlayer);
     bool armiesLeftToPlace(vector<int> nbrArmiesPlayers);
 public:
@@ -42,7 +49,7 @@ public:
     void determinePlayerTurn();
     void assignCountriesToPlayers();
     void placeArmies();
-
+    void performReinforce(Player &player, std::vector<ReinforceResponse*> responses);
     bool performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry);
+    void placeArmiesAutomatic();
 };
-
