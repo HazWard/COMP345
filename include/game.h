@@ -49,7 +49,7 @@ public:
     void determinePlayerTurn();
     void assignCountriesToPlayers();
     void placeArmies();
-    void performReinforce(Player &player, std::vector<ReinforceResponse*> responses);
+    void performReinforce(std::vector<ReinforceResponse*>* responses);
     bool performAttack(Player &attacker, Player &defender, Country &attackingCountry, Country &defendingCountry);
     void placeArmiesAutomatic();
 };

@@ -63,7 +63,8 @@ public:
 class BenevolentStrategy : public Strategy
 {
 public:
-    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
+    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, Graph& map, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
+    int computeResultingArmies(Country* targetCountry, std::vector<ReinforceResponse*>* responses);
 };

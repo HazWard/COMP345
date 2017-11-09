@@ -567,18 +567,13 @@ void mainGameLoopDriver()
         play[i]->printNodes();
     }
     riskGame.placeArmiesAutomatic();
-
-    cout << "TESTING";
-    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
-        cout << *node << endl;
-    }
     
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
 
     //We keep track of the winning player
     Player* winningPlayer;
-
+    int turns = 0;
     //Main game loop
     while(!playerWins)
     {
@@ -586,8 +581,8 @@ void mainGameLoopDriver()
         {
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
-            std::vector<ReinforceResponse*>* reinforceChanges = (*players)[i]->reinforce(continents);
-            //std::cout << "What is wrong M8 ?" << std::endl;
+            (*players)[i]->setStrategy(new BenevolentStrategy());
+            riskGame.performReinforce((*players)[i]->reinforce(continents));
             //AttackResponse* attackChanges = (*players)[i]->attack(*riskGame.getMapCountries(), play);
             //FortifyResponse* fortifyChanges = (*players)[i]->fortify(*riskGame.getMapCountries());
 
@@ -597,14 +592,28 @@ void mainGameLoopDriver()
                 winningPlayer = (*players)[i];
                 break;
             }
+            if(turns == 20) {
+                playerWins = true;
+                winningPlayer = (*players)[i];
+                break;
+            }
+            ++turns;
         }
+    }
+    cout << "===== GAME RESULTS =====" << endl;
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << *node << endl;
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 }
 
-void performReinforce(Player &player, std::vector<ReinforceResponse*> responses)
+void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 {
-
+    int tempTotal;
+    for(auto &response : *responses) {
+        tempTotal = response->country->getNbrArmies() + response->nbArmies;
+        response->country->setNbrArmies(tempTotal);
+    }
 }
 
 int main()
