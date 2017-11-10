@@ -18,7 +18,7 @@ void StatObserver::update() {
 }
 
 void StatObserver::display() {
-    //TODO: Implement how to display the information
+
 }
 
 PhaseObserver::PhaseObserver() :Observer() {}
@@ -49,11 +49,13 @@ void PhaseObserver::display() {
 }
 
 void PhaseObserver::displayReinforceInfo(){
-//TODO: Display reinforce info
+
 }
 
 void PhaseObserver::displayAttackInfo(){
-//TODO: Display attack info
+    std::cout << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->attacker->getName() <<
+     " is attacking " << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->defender->getName()
+              << ".\n The defender has ";
 }
 // Displays info when in fortify phase
 void PhaseObserver::displayFortifyInfo(){
