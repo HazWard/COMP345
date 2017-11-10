@@ -10,14 +10,11 @@ using namespace std;
 StatObserver::StatObserver() :Observer() {}
 
 void StatObserver::update() {
-    int gameTurn = static_cast<Game*>(this->model)->currentTurn;
-    if(gameTurn > this->turn){ //only displays at the end of every full turn
-        this->turn++;
         this->display();
         // pausing system
-        cout << '\n' << "Press a key to continue...";
-        cin.ignore();
-    }
+        cout << '\n' << "Press Enter to continue";
+        string x;
+        std::cin >> x;
 }
 
 void StatObserver::display()
@@ -29,7 +26,7 @@ void StatObserver::display()
     for(int i = 0; i < game->getNbrPlayers(); i++)
     {
         int thisPlayerPercentage = floor((players->at(i)->getNodes()->size()/ (double)game->getMapCountries()->getVectorOfNodes()->size() * 100));
-        cout << players->at(i)->getName() << " owns " << thisPlayerPercentage << "% : ";
+        cout << players->at(i)->getName() << " owns " << thisPlayerPercentage << "% of the map : ";
 
         for(int j = 0; j <= thisPlayerPercentage; j++)
         {
@@ -37,14 +34,16 @@ void StatObserver::display()
         }
         cout << std::endl;
     }
+    cout << endl << "-----------------------------------------" << endl;
 }
 
 PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
-    cout << std::endl;
-    cin.ignore();
+    cout << '\n' << "Press Enter to continue";
+    string x;
+    std::cin >> x;
 }
 
 void PhaseObserver::display() {
@@ -53,20 +52,26 @@ void PhaseObserver::display() {
     //display info depending on phase
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))
    {
-       std::cout << "We are entering the Reinforcement phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
+       std::cout << "--------Phase Observer--------"<< std::endl;
+       std::cout << "We are in the Reinforcement phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayReinforceInfo();
+       std::cout << "------------------------------"<< std::endl;
    }
 
    else if(dynamic_cast <AttackEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
-       std::cout << "We are entering the Attacking phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
+       std::cout << "--------Phase Observer--------"<< std::endl;
+       std::cout << "We are in the Attacking phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayAttackInfo();
+       std::cout << "------------------------------"<< std::endl;
    }
 
    else if(dynamic_cast <FortifyEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
-       std::cout << "We are entering the Fortification phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
+       std::cout << "--------Phase Observer--------"<< std::endl;
+       std::cout << "We are in the Fortification phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayFortifyInfo();
+       std::cout << "------------------------------"<< std::endl;
    }
 }
 
@@ -80,13 +85,19 @@ void PhaseObserver::displayReinforceInfo(){
 }
 
 void PhaseObserver::displayAttackInfo(){
-    std::cout << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->attacker->getName() <<
-     " is attacking " << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->defender->getName()
+    AttackEvent* event = dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent );
+    std::cout << event->attacker->getName() << " is using the coutry " << event->attacking->getCountry().getName() <<
+     " to attack " << event->defender->getName() << "'s country " << event->defending->getCountry().getName()
               << ".\n";
+    if (event->victory){
+        std::cout<<"Attack was successful\n";
+    }
+    else
+        std::cout<<"Attack failed\n";
 }
 
 void PhaseObserver::displayFortifyInfo(){
     FortifyEvent* event = dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent );
     std:: cout << event->armiesMoved << " armies are being moved from " << event->source->getPointerToCountry()->getName()
-               << " to" << event->destination->getPointerToCountry()->getName() << std::endl;
+               << " to " << event->destination->getPointerToCountry()->getName() << std::endl;
 }

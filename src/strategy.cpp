@@ -29,7 +29,6 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
 std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Perform actions to reinforce
-    std::cout << "== REINFORCEMENT PHASE for " << targetPlayer->getName() << " ==" << std::endl;
     unsigned long totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
     std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
@@ -88,6 +87,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                         {
                             responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
                         }
+                        targetNbArmies=0;
                     }
                 }
             }
@@ -187,7 +187,6 @@ static string trim(const string& str)
 }
 FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 {
-    cout << "========== Fortification ==========" << endl;
     std::string option;
     //return null if user does not want to fortify
     cout << targetPlayer->getName() << ", Would you like to fortify? (y/n)";
@@ -198,7 +197,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 
     string sourceStr;
     string destinationStr;
-    int armNum;
+    int armNum=0;
     bool validInput = false;
     Node* sourceCtr = nullptr;
     Node* destCtr = nullptr;

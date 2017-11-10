@@ -743,18 +743,17 @@ void mainGameLoopDriver()
     {
         for(int i = 0; i < players->size(); i++)
         {
-            // Each player gets to reinforce, attack and fortify
-            //(*players)[i]->setStrategy(new BenevolentStrategy());
+
+            //monitor current player
             riskGame.currentPlayer = (*players)[i];
+            // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse= (*players)[i]->reinforce(continents);
             if(reinforceResponse){
                 riskGame.performReinforce(reinforceResponse);
+                riskGame.notify();
             }
-            riskGame.notify();
-            if (!riskGame.currentEvent)
-            {
-                delete riskGame.currentEvent;
-            }
+
+
 
             AttackResponse *attackResponse;
             do{
@@ -764,21 +763,17 @@ void mainGameLoopDriver()
                     riskGame.notify();
                 }
             }while(attackResponse);
-            riskGame.notify();
-            if (!riskGame.currentEvent)
-            {
-                delete riskGame.currentEvent;
-            }
+
+
 
             FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
                 riskGame.performFortify(fortifyResponse);
+                riskGame.notify();
             }
-            riskGame.notify();
-            if (!riskGame.currentEvent)
-            {
-                delete riskGame.currentEvent;
-            }
+
+
+
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -791,10 +786,6 @@ void mainGameLoopDriver()
                 winningPlayer = (*players)[i];
                 break;
             }
-
-            //incrementing the current turn and letting the observers know
-            riskGame.currentTurn = riskGame.currentTurn + 1;
-            riskGame.notify();
         }
     }
     cout << "===== GAME RESULTS =====" << endl;
@@ -815,19 +806,15 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
         countriesReinforces.push_back(response->country);
         armiesPlaced.push_back(response->nbArmies);
     }
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
-    this->currentEvent = nullptr;
     this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
 }
 
 /**
  * Helper method to perform attacking phase
  */
-bool Game::performAttack(AttackResponse *response) {
-
+bool Game::performAttack(AttackResponse* response) {
+    if(!response )
+        return true;
     bool victory = false;
     int rounds = 1;
     std::vector<int> *totalAttackerRolls = new std::vector<int>();
@@ -888,11 +875,6 @@ bool Game::performAttack(AttackResponse *response) {
         defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
     }
 
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
-    this->currentEvent = nullptr;
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
     return true;
@@ -904,14 +886,8 @@ void Game::performFortify(FortifyResponse* response) {
     string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
     response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
-    std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
 
     //update currentEvent and return it
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
-    this->currentEvent = nullptr;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
 
 }
@@ -922,6 +898,7 @@ Event* Game::getCurrentEvent(){
 
 int main()
 {
+
     mainGameLoopDriver();
 
     std::getchar();
