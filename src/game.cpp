@@ -11,6 +11,11 @@ using namespace std;
 
 const string MAPS_FOLDER = "../maps/";
 
+bool windows = false;
+#ifdef OS_WINDOW1S
+windows = true;
+#endif
+
 //Constructor for the Game class
 //Uses the helper methods and checks that the number of players created is equal to the
 //private number nbrPlayers initialized by the user.

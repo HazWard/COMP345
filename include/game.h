@@ -4,12 +4,6 @@
 #include "../include/observer.h"
 #include "../include/events.h"
 
-
-bool windows = false;
-#ifdef OS_WINDOW1S
-    windows = true;
-#endif
-
 class Game : public Subject {
 private:
     //constants:

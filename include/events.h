@@ -10,7 +10,7 @@
 
 class Event {
 public:
-    virtual ~Event() = 0;
+    virtual ~Event() = default;
 };
 
 class ReinforceEvent : public Event {
@@ -18,6 +18,7 @@ class ReinforceEvent : public Event {
         ReinforceEvent(vector<int> armiesPlaced, vector<Node*> countriesReinforced) :armiesPlaced(armiesPlaced), countriesReinforced(countriesReinforced) {};
         vector<int> armiesPlaced;
         vector<Node*> countriesReinforced;
+        ~ReinforceEvent() = default;
 };
 
 class AttackEvent : public Event{
@@ -32,6 +33,7 @@ class AttackEvent : public Event{
         vector<int> *defenderRolls;
         bool victory;
         int armiesMoved;
+        ~AttackEvent() = default;
 };
 
 class FortifyEvent : public Event{
@@ -40,4 +42,5 @@ class FortifyEvent : public Event{
         int armiesMoved;
         Node* source;
         Node* destination;
+        ~FortifyEvent() = default;
 };
