@@ -15,10 +15,10 @@ class Event {
 class ReinforceEvent : public Event {
     public:
         ReinforceEvent();
-        ReinforceEvent(vector<int> bonus,vector<int> armiesPlaced,vector<Node*> cuntTreesReinforced);
+        ReinforceEvent(vector<int> armiesPlaced,vector<Node*> countriesReinforced);
         vector<int> bonus;
         vector<int> armiesPlaced;
-        vector<Node*> cuntTreesReinforced;
+        vector<Node*> countriesReinforced;
         std::string printEvent() = 0;
 };
 

@@ -54,8 +54,8 @@ public:
     void determinePlayerTurn();
     void assignCountriesToPlayers();
     void placeArmies();
-    void performReinforce(std::vector<ReinforceResponse*>* responses);
+    ReinforceEvent* performReinforce(std::vector<ReinforceResponse*>* responses);
     bool performAttack(AttackResponse *response);
-    bool performFortify(FortifyResponse* response);
+    FortifyEvent* performFortify(FortifyResponse* response);
     void placeArmiesAutomatic();
 };
