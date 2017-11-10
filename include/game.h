@@ -54,4 +54,5 @@ public:
     void placeArmiesAutomatic();
     Event* currentEvent;
     vector <Player*> players;
+    int currentTurn;
 };

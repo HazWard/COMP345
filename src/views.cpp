@@ -10,10 +10,14 @@ using namespace std;
 StatObserver::StatObserver() :Observer() {}
 
 void StatObserver::update() {
-    this->display();
-    // pausing system
-    cout << '\n' << "Press a key to continue...";
-    cin.ignore();
+    int gameTurn = static_cast<Game*>(this->model)->currentTurn;
+    if(gameTurn > this->turn){ //only displays at the end of every full turn
+        this->turn++;
+        this->display();
+        // pausing system
+        cout << '\n' << "Press a key to continue...";
+        cin.ignore();
+    }
 }
 
 void StatObserver::display()
@@ -39,13 +43,14 @@ PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
-    //cout << '\n' << "Press a key to continue...";
-    //cin.ignore();
+    cout << std::endl;
+    cin.ignore();
 }
 
 void PhaseObserver::display() {
            //TODO: display current phase and player turn
 
+    cout << endl;
     //display info depending on phase
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))
    {

@@ -29,7 +29,9 @@ class StatObserver : public Observer{
      */
 public:
     StatObserver();
-    StatObserver(Subject *subject) : Observer(subject) {};
+    StatObserver(Subject *subject, int turn) : Observer(subject), turn(turn) {};
     void update();
     void display();
+private:
+    int turn;
 };

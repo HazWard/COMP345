@@ -558,11 +558,11 @@ void mainGameLoopDriver()
 
     //We keep track of the winning player
     Player* winningPlayer;
-    int turns = 0;
+    riskGame.currentTurn = 1;
 
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
-    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame), riskGame.currentTurn);
 
     //Attaching observers
     riskGame.attach(phaseObserver);
@@ -603,12 +603,15 @@ void mainGameLoopDriver()
                 winningPlayer = (*players)[i];
                 break;
             }
-            if(turns == 20) {
+            if(riskGame.currentTurn == 20) {
                 playerWins = true;
                 winningPlayer = (*players)[i];
                 break;
             }
-            ++turns;
+
+            //incrementing the current turn and letting the observers know
+            riskGame.currentTurn = riskGame.currentTurn + 1;
+            riskGame.notify();
         }
     }
     cout << "===== GAME RESULTS =====" << endl;
@@ -635,7 +638,6 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
     }
     this->currentEvent = nullptr;
     this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
-    // TODO: Execute notify()
 }
 
 /**
@@ -670,7 +672,7 @@ bool Game::performAttack(AttackResponse *response) {
         std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
 
         //iterating through the dice rolls, until run our of descending dice
-        for(int i = 0; i < defenderDiceRolls.size(); i++){
+        for(int i = 0; i < std::min(defenderDiceRolls.size(), attackerDiceRolls.size()); i++){
             if(defenderDiceRolls[i] >= attackerDiceRolls[i]){
                 attackingCountry->getPointerToCountry()->setNbrArmies(attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
             }
@@ -725,7 +727,6 @@ void Game::performFortify(FortifyResponse* response) {
     }
     this->currentEvent = nullptr;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
-    // TODO: Execute notify()
 
 }
 
