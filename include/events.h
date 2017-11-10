@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "../include/player.h"
 #include "../include/map.h"
 
 class Event {
@@ -24,13 +25,16 @@ class ReinforceEvent : public Event {
 
 class AttackEvent : public Event{
     public:
-        AttackEvent();
-        AttackEvent(Node* attacker, Node* attacked, vector<int> attackerRolls, vector<int> attackedRolls);
-        Node* attacker;
-        Node* attaked;
-        vector<int> attackerRolls;
-        vector<int> attackedRolls;
-        std::string printEvent();
+        AttackEvent(Player* attacker, Player* defender, Node* attacking, Node* defending, vector<int> *attackerRolls, vector<int> *defenderRolls, bool victory, int armiesMoved)
+            : attacker(attacker), defender(defender), attacking(attacking), defending(defending), attackerRolls(attackerRolls), defenderRolls(defenderRolls), victory(victory), armiesMoved(armiesMoved) {};
+        Player* attacker;
+        Player* defender;
+        Node* attacking;
+        Node* defending;
+        vector<int> *attackerRolls;
+        vector<int> *defenderRolls;
+        bool victory;
+        int armiesMoved;
 };
 
 class FortifyEvent : public Event{

@@ -486,7 +486,7 @@ BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> con
 
 AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
-    return new AttackResponse(new std::pair<Player*, Node*>(), new std::pair<Player*, Node*>());
+    return nullptr;
 }
 FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 {

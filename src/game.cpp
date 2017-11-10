@@ -582,7 +582,7 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
             //(*players)[i]->setStrategy(new BenevolentStrategy());
-            ReinforceEvent* reinforceEvent = riskGame.performReinforce((*players)[i]->reinforce(continents));
+            //ReinforceEvent* reinforceEvent = riskGame.performReinforce((*players)[i]->reinforce(continents));
             AttackResponse *attackResponse;
             do{
                 attackResponse = (*players)[i]->attack(play);
@@ -590,8 +590,8 @@ void mainGameLoopDriver()
                     riskGame.performAttack(attackResponse);
                 }
             }while(attackResponse);
-            AttackResponse* attackChanges = (*players)[i]->attack(play);
-            FortifyEvent* fortifyEvent = riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
+            cout << players->at(i)->getNodes();
+            //FortifyEvent* fortifyEvent = riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -632,15 +632,28 @@ ReinforceEvent* Game::performReinforce(std::vector<ReinforceResponse*>* response
  * Helper method to perform attacking phase
  */
 bool Game::performAttack(AttackResponse *response) {
+
+    bool victory;
     int rounds = 1;
-    while(response->attacker->second->getPointerToCountry()->getNbrArmies() > 2 && response->defender->second->getPointerToCountry()->getNbrArmies() > 0){
-        cout << "Round " << rounds << "." << endl;
-        int attackerDice = response->attacker->second->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : response->attacker->second->getPointerToCountry()->getNbrArmies() - 1;
-        int defenderDice = response->defender->second->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
+    std::vector<int> *totalAttackerRolls = new std::vector<int>();
+    std::vector<int> *totalDefenderRolls = new std::vector<int>();
+    bool battleOver = false;
+    Node* attackingCountry = response->attacker->second;
+    Node* defendingCountry = response->defender->second;
+    Player* attackingPlayer = response->attacker->first;
+    Player* defendingPlayer = response->defender->first;
+
+    while(attackingCountry->getPointerToCountry()->getNbrArmies() > 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
+        int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
+        int defenderDice = defendingCountry->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
 
         //Getting vectors of dice rolls
         std::vector<int> attackerDiceRolls = response->attacker->first->getDice()->howManyDice(attackerDice);
         std::vector<int> defenderDiceRolls = response->defender->first->getDice()->howManyDice(defenderDice);
+
+        //Adding those dice rolls to the total dice rolls
+        totalAttackerRolls->insert(std::end(*totalAttackerRolls), std::begin(attackerDiceRolls), std::end(attackerDiceRolls));
+        totalDefenderRolls->insert(std::end(*totalDefenderRolls), std::begin(defenderDiceRolls), std::end(defenderDiceRolls));
 
         //Sorting the dice roll vectors in descending order
         std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
@@ -648,23 +661,39 @@ bool Game::performAttack(AttackResponse *response) {
 
         //iterating through the dice rolls, until run our of descending dice
         for(int i = 0; i < defenderDiceRolls.size(); i++){
-            cout << "You rolled " << attackerDiceRolls.at(i) << " and they rolled " << defenderDiceRolls.at(i) << endl;
             if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
-                response->attacker->second->getPointerToCountry()->setNbrArmies(response->attacker->second->getPointerToCountry()->getNbrArmies() - 1);
+                attackingCountry->getPointerToCountry()->setNbrArmies(attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
             }
             else{
-                response->defender->second->getPointerToCountry()->setNbrArmies(response->defender->second->getPointerToCountry()->getNbrArmies() - 1);
+                defendingCountry->getPointerToCountry()->setNbrArmies(defendingCountry->getPointerToCountry()->getNbrArmies() - 1);
             }
-            if(response->defender->second->getPointerToCountry()->getNbrArmies() == 0){
-                return true;
+            if(defendingCountry->getPointerToCountry()->getNbrArmies() == 0){
+                victory = true;
+                battleOver = true;
             }
-            else if(response->attacker->second->getPointerToCountry()->getNbrArmies() == 1){
-                return false;
+            else if(attackingCountry->getPointerToCountry()->getNbrArmies() == 1){
+                victory = false;
+                battleOver = true;
             }
         }
         rounds++;
     }
-    return false;
+
+    int armiesMoved = 0;
+    if(victory){// If the attacker won, the country changes hands and he moves armies
+        attackingPlayer->getNodes()->push_back(defendingCountry);
+        defendingPlayer->getNodes()->remove(defendingCountry);
+
+        armiesMoved = attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
+
+        attackingCountry->getPointerToCountry()->setNbrArmies(1);
+        defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
+    }
+
+    delete dynamic_cast<Event*>(this->currentEvent);
+    this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
+                                         response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
+    return true;
 }
 
 FortifyEvent* Game::performFortify(FortifyResponse* response) {
