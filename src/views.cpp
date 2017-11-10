@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../include/events.h"
 #include "../include/views.h"
+#include "../include/game.h"
 
 using namespace std;
 
@@ -24,33 +25,33 @@ void PhaseObserver::update() {
 }
 
 void PhaseObserver::display() {
-    //TODO: display other info here
+    //TODO: display current phase and player turn
 
-    //display info deppending on phase
-   if( dynamic_cast < FortifyEvent* > ( model->currentEvent )->type == 0 )
+    //display info depending on phase
+   if( dynamic_cast < ReinforceEvent* > ( dynamic_cast < Game* > (model)->currentEvent ))
    {
        displayReinforceInfo();
    }
-   else if(dynamic_cast < FortifyEvent* > ( model->currentEvent )->type == 1)
+   else if(dynamic_cast < AttackEvent* > ( dynamic_cast < Game* > (model)->currentEvent ))
    {
        displayAttackInfo();
    }
-   else if(dynamic_cast < FortifyEvent* > ( model->currentEvent )->type == 2)
+   else if(dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent ))
    {
        displayFortifyInfo();
    }
 }
 
 void PhaseObserver::displayReinforceInfo(){
-
+//TODO: Display reinforce info
 }
 
 void PhaseObserver::displayAttackInfo(){
-
+//TODO: Display attack info
 }
-
+// Displays info when in fortify phase
 void PhaseObserver::displayFortifyInfo(){
-    std:: cout << dynamic_cast < FortifyEvent* > ( model->currentEvent )->armiesMoved << " armies are being moved from " <<
-               dynamic_cast < FortifyEvent* > ( model->currentEvent )->source->getPointerToCountry()->getName()
-               << " to" << dynamic_cast < FortifyEvent* > ( model->currentEvent )->destination->getPointerToCountry()->getName() << std::endl;
+    std:: cout << dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent )->armiesMoved << " armies are being moved from " <<
+               dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent )->source->getPointerToCountry()->getName()
+               << " to" << dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent )->destination->getPointerToCountry()->getName() << std::endl;
 }

@@ -703,6 +703,7 @@ Event* Game::performFortify(FortifyResponse* response) {
     response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
     std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
+    //update currentEvent and return it
     currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
     return currentEvent;
 }

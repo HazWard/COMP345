@@ -24,7 +24,7 @@ private:
     Graph* mapCountries;
     vector<Continent*> continents;
     Deck mainDeck;
-    Event* currentEvent;
+
 
     //Helper methods:
     list<string> getNameOfFiles(const char *path);
@@ -58,4 +58,5 @@ public:
     bool performAttack(AttackResponse *response);
     Event* performFortify(FortifyResponse* response);
     void placeArmiesAutomatic();
+    Event* currentEvent;
 };

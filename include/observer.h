@@ -22,7 +22,6 @@ public:
     void attach(Observer *observer);
     void detach(Observer *observer);
     void notify();
-    Event* currentEvent;
 };
 
 class Observer {

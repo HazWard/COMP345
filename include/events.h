@@ -21,7 +21,6 @@ class ReinforceEvent : public Event {
         vector<int> armiesPlaced;
         vector<Node*> countriesReinforced;
         std::string printEvent() = 0;
-        const type = 0;
 };
 
 class AttackEvent : public Event{
@@ -46,5 +45,4 @@ class FortifyEvent : public Event{
         Node* source;
         Node* destination;
         std::string printEvent();
-        const type = 2;
 };
