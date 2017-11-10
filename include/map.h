@@ -19,7 +19,8 @@ public:
     Country(string n, string cont, int nbrArm);
     bool operator==(Country &rhs) const;
     bool operator==(Country rhs) const;
-    friend std::ostream &operator<<(std::ostream &stream, Country &c);
+	friend std::ostream &operator<<(std::ostream &stream, Country c);
+    //friend std::ostream &operator<<(std::ostream &stream, Country &c);
     string getName();
     string getContinent();
     int getNbrArmies();

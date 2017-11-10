@@ -35,6 +35,7 @@ class Player
         ~Player();
         int roll(int nbOfDice);
 
+        Strategy* getStrategy() { return strategy; };
         void setStrategy(Strategy *targetStrategy);
         std::vector<ReinforceResponse*>* reinforce(std::vector<Continent*> continents);
         AttackResponse* attack(std::vector<Player*> &players);
@@ -48,12 +49,11 @@ class Player
         void setNodes(std::list<Node*>* targetNodes);
         void setDice(Dice* targetDice);
         Dice* getDice();
-        void addCountry(Node* newCountry);
         void addNode(Node* newNode);
         vector<Continent*> getsContinentsOwned(vector<Continent*> continents);
         bool controlsAllCountriesInMap(Graph& map);
         void removeNode(Node *n);
-        void placeArmies(int nbArmies);
+        vector<Node*> sortByStrongest();
     private:
         Strategy *strategy;
         std::string name;

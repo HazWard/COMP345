@@ -20,16 +20,28 @@ bool Country::operator==(Country c)const
 	return this->name == c.name;
 }
 
-//The << operator is overloaded for Country to be able to print Country objects
+/*
 std::ostream& operator<< (std::ostream& stream, Country& c)
 {
-	/*
-	Overloading the << operator for use in printing Country objects, equivalent of toString in Java
-	*/
+
+	//Overloading the << operator for use in printing Country objects, equivalent of toString in Java
+
 	return stream << "\tInfo of country:" << endl <<
 		"\tName: " << c.getName() << endl <<
 		"\tContinent it belongs to: " << c.getContinent() << endl <<
 		"\tNumber of armies: " << c.getNbrArmies() << endl;
+}*/
+
+//The << operator is overloaded for Country to be able to print Country objects
+std::ostream& operator<< (std::ostream& stream, Country c)
+{
+    /*
+    Overloading the << operator for use in printing Country objects, equivalent of toString in Java
+    */
+    return stream << "\tInfo of country:" << endl <<
+                  "\tName: " << c.getName() << endl <<
+                  "\tContinent it belongs to: " << c.getContinent() << endl <<
+                  "\tNumber of armies: " << c.getNbrArmies() << endl;
 }
 
 //Default constructor, never used but necessary

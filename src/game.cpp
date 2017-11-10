@@ -613,11 +613,11 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy());
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy());
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                     case 5: (*players)[i]->setStrategy(new HumanStrategy());
                 }
             }
@@ -628,11 +628,11 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
                     case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
                 }
             }
@@ -643,11 +643,11 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 1: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 3: (*players)[i]->setStrategy(new HumanStrategy());
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
                     case 5: (*players)[i]->setStrategy(new HumanStrategy());
                 }
             }
@@ -658,11 +658,11 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                     case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
                 }
             }
@@ -673,16 +673,23 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy());
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy());
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy());
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                     case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
                 }
             }
         }
     }
+    //Testing the type of strategy of each player:
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        cout << (*players)[i]->getName() << ": ";
+        (*players)[i]->getStrategy()->printStrat();
+    }
+    cout << endl << endl;
 }
 
 void mainGameLoopDriver()
@@ -830,6 +837,9 @@ bool Game::performAttack(AttackResponse *response) {
     Node* defendingCountry = response->defender->second;
     Player* attackingPlayer = response->attacker->first;
     Player* defendingPlayer = response->defender->first;
+
+    if(attackingCountry->getPointerToCountry() == defendingCountry->getPointerToCountry())
+        return false;
 
     while(attackingCountry->getPointerToCountry()->getNbrArmies() >= 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
         int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : attackingCountry->getPointerToCountry()->getNbrArmies() - 1;

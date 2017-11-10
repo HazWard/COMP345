@@ -354,9 +354,9 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
  */
 AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Player*> &players)
 {
+    cout << targetPlayer->getNodes()->size() << endl;
     // Sort the players countries by strongest
-    std::vector<Node*> strongestCountries { targetPlayer->getNodes()->begin(), targetPlayer->getNodes()->end()}; //creates a vector from the adjacency list
-    std::sort(std::begin(strongestCountries), std::end(strongestCountries)); //Sorting the list with a lambda
+    std::vector<Node*> strongestCountries = targetPlayer->sortByStrongest();
 
     //Setting up some pointers for returning an attack response
     std::pair<Player*,Node*> *attacker;
@@ -392,15 +392,19 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
     //Determine who the defending player is for the chosen defending country
     Player *defendingPlayer;
     for (int i = 0; i < players.size(); i++) {
+        bool validDefendingPlayer = false;
         if (players.at(i)->getName() == targetPlayer->getName()) { //the player is this player
             continue;
         }
         for (auto const &node : *(players.at(i)->getNodes())) {
             if (node->getPointerToCountry()->getName() == defendingCountry->getPointerToCountry()->getName()) {
                 defendingPlayer = &(*players.at(i));
+                validDefendingPlayer = true;
                 break;
             }
         }
+        if(validDefendingPlayer)
+            break;
     }
 
     std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
@@ -548,3 +552,15 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     return new FortifyResponse(total, secondWeakestCountry, weakestCountry);
 }
 
+void Strategy::printStrat() {
+    cout << "I am an abstract strategy." << endl;
+}
+void HumanStrategy::printStrat() {
+    cout << "I am a human strategy." << endl;
+}
+void AggressiveStrategy::printStrat() {
+    cout << "I am an aggressive strategy." << endl;
+}
+void BenevolentStrategy::printStrat() {
+    cout << "I am a benevolent strategy." << endl;
+}

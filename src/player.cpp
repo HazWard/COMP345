@@ -31,9 +31,7 @@ static const int ARTILLERY_BONUS = 10;
 // Constructors
 Player::Player() : name(""), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
 Player::Player(string n) : name(n), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice)
-{
-    this->setStrategy(new HumanStrategy());
-}
+{ }
 Player::Player(string n, Strategy* s) : name(n), strategy(s) { }
 Player::Player(string n, Hand* playerHand, std::list<Node*>* playerNodes)
 {
@@ -201,4 +199,23 @@ void Player::printNodes()
         cout << c.getName() << "; ";
     }
     cout << endl << endl;
+}
+vector<Node*> Player::sortByStrongest() {
+    std::vector<Node*> strongestCountries;
+    list<Node*>::const_iterator countryIterator;
+    for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
+        strongestCountries.push_back(*countryIterator);
+
+    for (int i = 0; i < strongestCountries.size(); i++) {
+        for (int j = 0; j < strongestCountries.size() - i - 1; j++) {
+            int a = strongestCountries[j]->getCountry().getNbrArmies();
+            int b = strongestCountries[j+1]->getCountry().getNbrArmies();
+            if (a < b) {
+                Node *temp = strongestCountries[j];
+                strongestCountries[j] = strongestCountries[j + 1];
+                strongestCountries[j + 1] = temp;
+            }
+        }
+    }
+    return strongestCountries;
 }
