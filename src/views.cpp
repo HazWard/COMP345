@@ -64,7 +64,7 @@ void PhaseObserver::displayAttackInfo(){
 }
 // Displays info when in fortify phase
 void PhaseObserver::displayFortifyInfo(){
-    std:: cout << dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent )->armiesMoved << " armies are being moved from " <<
-               dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent )->source->getPointerToCountry()->getName()
-               << " to" << dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent )->destination->getPointerToCountry()->getName() << std::endl;
+    FortifyEvent* event = dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent );
+    std:: cout << event->armiesMoved << " armies are being moved from " << event->source->getPointerToCountry()->getName()
+               << " to" << event->destination->getPointerToCountry()->getName() << std::endl;
 }
