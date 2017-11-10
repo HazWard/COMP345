@@ -738,6 +738,7 @@ void mainGameLoopDriver()
         {
             // Each player gets to reinforce, attack and fortify
             //(*players)[i]->setStrategy(new BenevolentStrategy());
+            riskGame.currentPlayer = (*players)[i];
             std::vector<ReinforceResponse*>* reinforceResponse= (*players)[i]->reinforce(continents);
             if(reinforceResponse){
                 riskGame.performReinforce(reinforceResponse);

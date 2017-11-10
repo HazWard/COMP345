@@ -54,5 +54,6 @@ public:
     Event* currentEvent;
     vector <Player*> players;
     int currentTurn;
+    Player* currentPlayer;
     void chooseGameScenario(vector<Player*>* players);
 };

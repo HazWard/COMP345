@@ -48,20 +48,24 @@ void PhaseObserver::update() {
 }
 
 void PhaseObserver::display() {
-           //TODO: display current phase and player turn
 
     cout << endl;
     //display info depending on phase
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))
    {
+       std::cout << "We are entering the Reinforcement phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayReinforceInfo();
    }
+
    else if(dynamic_cast <AttackEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
+       std::cout << "We are entering the Attacking phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayAttackInfo();
    }
+
    else if(dynamic_cast <FortifyEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
+       std::cout << "We are entering the Fortification phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayFortifyInfo();
    }
 }
@@ -80,7 +84,7 @@ void PhaseObserver::displayAttackInfo(){
      " is attacking " << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->defender->getName()
               << ".\n";
 }
-// Displays info when in fortify phase
+
 void PhaseObserver::displayFortifyInfo(){
     FortifyEvent* event = dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent );
     std:: cout << event->armiesMoved << " armies are being moved from " << event->source->getPointerToCountry()->getName()
