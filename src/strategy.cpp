@@ -81,7 +81,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                         bool updatedExistingResponse = false;
                         for (int i = 0; i < responses->size(); i++)
                         {
-                            if (responses->at(i)->country->getName()
+                            if (responses->at(i)->country->getPointerToCountry()->getName()
                                 == currentNode->getPointerToCountry()->getName())
                             {
                                 responses->at(i)->nbArmies = responses->at(i)->nbArmies + targetNbArmies;
@@ -90,7 +90,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                         }
                         if(!updatedExistingResponse)
                         {
-                            responses->push_back(new ReinforceResponse(targetNbArmies, currentNode->getPointerToCountry()));
+                            responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
                         }
                     }
                 }
@@ -307,7 +307,7 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
         // Placing all new armies
         // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total << std::endl;
         // strongestCountry->getPointerToCountry()->setNbrArmies(total);
-        responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry->getPointerToCountry()));
+        responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
     }
     else
     {
@@ -478,9 +478,8 @@ BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> con
         }
 
         int targetNbArmies = (totalNbArmies % 2 == 0) ? totalNbArmies / 2 : (totalNbArmies + 1) / 2;
-        responses->push_back(new ReinforceResponse(totalNbArmies - targetNbArmies, weakestCountry->getPointerToCountry()));
-        responses->push_back(new ReinforceResponse(targetNbArmies,
-                                                   secondWeakestCountry->getPointerToCountry()));
+        responses->push_back(new ReinforceResponse(totalNbArmies - targetNbArmies, weakestCountry));
+        responses->push_back(new ReinforceResponse(targetNbArmies, secondWeakestCountry));
     }
     return responses;
 }

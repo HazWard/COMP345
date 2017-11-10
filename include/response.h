@@ -20,8 +20,8 @@ class ReinforceResponse
 {
 public:
     int nbArmies;
-    Country* country;
-    ReinforceResponse(int n, Country *c) : nbArmies(n), country(c) {};
+    Node* country;
+    ReinforceResponse(int n, Node *c) : nbArmies(n), country(c) {};
 };
 
 class AttackResponse
