@@ -26,8 +26,8 @@ class StatObserver : public Observer{
      * to the winning conditions of the game (battles and map domination).
      * TODO: Write implementation 
      */
-public:
-    StatObserver();
-    void update();
-    void display();
+    public:
+        StatObserver();
+        void update();
+        void display();
 };

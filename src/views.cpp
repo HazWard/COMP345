@@ -13,8 +13,18 @@ void StatObserver::update() {
     this->display();
 }
 
-void StatObserver::display() {
-    //TODO: Implement how to display the information
+void StatObserver::display()
+{
+    int countriesOwned = Player::get
+    cout << "--------------------Game statistics--------------------";
+    for(int i = 1; i <= Game::getNbrPlayers(); i++)
+    {
+        cout << "Player " << i << " : ";
+        for(int j = i; j < 0; j++)
+        {
+            cout << "*";
+        }
+    }
 }
 
 PhaseObserver::PhaseObserver() :Observer() {}
