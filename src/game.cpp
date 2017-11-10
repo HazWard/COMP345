@@ -715,6 +715,7 @@ void Game::performFortify(FortifyResponse* response) {
     delete this->currentEvent;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
     // TODO: Execute notify()
+
 }
 
 Event* Game::getCurrentEvent(){

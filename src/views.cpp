@@ -64,14 +64,14 @@ void PhaseObserver::displayReinforceInfo(){
     std::cout << "These reinforcements are being processed: " << std::endl;
     for (unsigned int i = 0; i < event->countriesReinforced.size(); i++)
     {
-        std::cout << "==> " <<event->armiesPlaced.at(i) << " armies are being add to " << event->countriesReinforced.at(i) << std::endl;
+        std::cout << "==> " <<event->armiesPlaced.at(i) << " armies are being added to " << event->countriesReinforced.at(i) << std::endl;
     }
 }
 
 void PhaseObserver::displayAttackInfo(){
     std::cout << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->attacker->getName() <<
      " is attacking " << dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent )->defender->getName()
-              << ".\n The defender has ";
+              << ".\n";
 }
 // Displays info when in fortify phase
 void PhaseObserver::displayFortifyInfo(){
