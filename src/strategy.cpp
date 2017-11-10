@@ -123,11 +123,7 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
         }
     }
 
-    //If no possible attacks were found
-    if(canAttack.empty()){
-        return nullptr;
-    }
-    else { //Some possible attacks were found
+    if(!canAttack.empty()) { //Some possible attacks were found
         std::map<Node *, Node *>::iterator iterator;
         for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
             //For every attack in the map, prompt the user if he wishes to perform the attack
@@ -140,6 +136,10 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
             cin >> answer;
             if (answer != "y") {
                 continue;
+            }
+            else if(answer != "y" && ((iterator != canAttack.end()) && (next(iterator) == canAttack.end()))){
+                //Player didn't want to attack, and it was his last possible attack
+                break;
             }
 
             //Determining who the defending player will be for this particular attack vector
@@ -162,6 +162,7 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
             return new AttackResponse(attacker, defender);
         }
     }
+    return nullptr; //either no attacks were found or the user broke out of the loop by not selecting an attack
 }
 
 FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)

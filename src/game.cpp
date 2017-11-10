@@ -595,7 +595,6 @@ void mainGameLoopDriver()
                     riskGame.performAttack(attackResponse);
                 }
             }while(attackResponse);
-            cout << players->at(i)->getNodes();
             //FortifyEvent* fortifyEvent = riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
 
             //After each player's turn, we check if one player owns all the countries in the map
@@ -648,7 +647,7 @@ bool Game::performAttack(AttackResponse *response) {
     Player* attackingPlayer = response->attacker->first;
     Player* defendingPlayer = response->defender->first;
 
-    while(attackingCountry->getPointerToCountry()->getNbrArmies() > 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
+    while(attackingCountry->getPointerToCountry()->getNbrArmies() >= 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
         int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
         int defenderDice = defendingCountry->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
 
@@ -695,7 +694,7 @@ bool Game::performAttack(AttackResponse *response) {
         defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
     }
 
-    delete dynamic_cast<Event*>(this->currentEvent);
+    delete this->currentEvent;
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
     return true;
