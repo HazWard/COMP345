@@ -1,6 +1,7 @@
 #include "../include/game.h"
 #include <dirent.h>
 #include "../include/events.h"
+#include "../include/views.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -580,6 +581,15 @@ void mainGameLoopDriver()
     //We keep track of the winning player
     Player* winningPlayer;
     int turns = 0;
+
+    //creating observers
+    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+
+    //Attaching observers
+    riskGame.attach(phaseObserver);
+    riskGame.attach(statObserver);
+
     //Main game loop
     while(!playerWins)
     {
@@ -588,7 +598,12 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
             //(*players)[i]->setStrategy(new BenevolentStrategy());
-            riskGame.performReinforce((*players)[i]->reinforce(continents));
+            std::vector<ReinforceResponse*>* reinforceResponse= (*players)[i]->reinforce(continents);
+            if(reinforceResponse){
+                riskGame.performReinforce(reinforceResponse);
+            }
+            riskGame.notify();
+
             AttackResponse *attackResponse;
             do{
                 attackResponse = (*players)[i]->attack(play);
@@ -596,7 +611,13 @@ void mainGameLoopDriver()
                     riskGame.performAttack(attackResponse);
                 }
             }while(attackResponse);
-            riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
+            riskGame.notify();
+
+            FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
+            if(fortifyResponse){
+                riskGame.performFortify(fortifyResponse);
+            }
+            riskGame.notify();
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {

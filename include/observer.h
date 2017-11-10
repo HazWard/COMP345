@@ -34,6 +34,7 @@ class Observer {
 public:
     Subject *model;
     Observer();
+    Observer(Subject *subject) : model(subject) {};
     virtual void update() {};
 protected:
     Subject *getSubject();
