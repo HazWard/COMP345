@@ -744,21 +744,34 @@ void mainGameLoopDriver()
                 riskGame.performReinforce(reinforceResponse);
             }
             riskGame.notify();
+            if (!riskGame.currentEvent)
+            {
+                delete riskGame.currentEvent;
+            }
 
             AttackResponse *attackResponse;
             do{
                 attackResponse = (*players)[i]->attack(play);
                 if(attackResponse){
                     riskGame.performAttack(attackResponse);
+                    riskGame.notify();
                 }
             }while(attackResponse);
             riskGame.notify();
+            if (!riskGame.currentEvent)
+            {
+                delete riskGame.currentEvent;
+            }
 
             FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
                 riskGame.performFortify(fortifyResponse);
             }
             riskGame.notify();
+            if (!riskGame.currentEvent)
+            {
+                delete riskGame.currentEvent;
+            }
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
