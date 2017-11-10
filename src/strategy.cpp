@@ -164,7 +164,28 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
     }
     return nullptr; //either no attacks were found or the user broke out of the loop by not selecting an attack
 }
-
+//The 2 following functions are used in the method fortify from the HumanStrategy class
+//TODO: use them in fortify
+//They are used to allow more flexibility when reading user input
+static string tolower(string& str)
+{
+    for(int i = 0; i < str.size(); i++)
+    {
+        str[i] = (char)tolower(str[i]);
+    }
+    return str;
+}
+//Function taken from: https://stackoverflow.com/questions/25829143/trim-whitespace-from-a-string
+static string trim(const string& str)
+{
+    size_t first = str.find_first_not_of(' ');
+    if (string::npos == first)
+    {
+        return str;
+    }
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+}
 FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     cout << "========== Fortification ==========" << endl;
@@ -182,6 +203,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
     bool validInput = false;
     Node* sourceCtr = nullptr;
     Node* destCtr = nullptr;
+    std::set<Node*> destinations = std::set<Node*>();
 
     cout << targetPlayer->getName() << ", here are the countries you own: " << endl;
     for(auto const &node : *(targetPlayer->getNodes())){
@@ -191,27 +213,24 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
     //this while loop asks for source and loops if not owned
     do {
         std::cout << "Please enter the source country: ";
+        cin.ignore();
         getline(cin, sourceStr);
+        sourceStr = trim(tolower(sourceStr));
 
         list<Node*>::const_iterator sourceCountryIterator;
         for (sourceCountryIterator = targetPlayer->getNodes()->begin(); sourceCountryIterator != targetPlayer->getNodes()->end(); ++sourceCountryIterator)
         {
-            if (sourceStr == (*sourceCountryIterator)->getCountry().getName() && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
+            string currentNameCountry = (*sourceCountryIterator)->getCountry().getName();
+            currentNameCountry = tolower(currentNameCountry);
+            if (sourceStr == currentNameCountry && (*sourceCountryIterator)->getCountry().getNbrArmies() > 1) {
                 sourceCtr = *sourceCountryIterator;
-                validInput=true;
+                validInput = true;
                 break;
             }
         }
         if(!validInput)
             std::cout << "Invalid entry. You must own the country and it must have more than 1 armies." << std::endl;
-    }   while(!validInput);
-
-    validInput=false;
-
-    //this while loop asks for destination and loops if not owned or if not connected to source
-    do {
-        cout << "Here are the valid destinations for this country." << endl;
-        std::set<Node*> destinations = std::set<Node*>();
+        //Creating the list of destination countries:
         for(auto const &node : *(targetPlayer->getNodes())){
             for(auto const &node2 : sourceCtr->getAdjList()){
                 if(node->getPointerToCountry()->getName() == node2->getPointerToCountry()->getName()){
@@ -219,18 +238,35 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
                 }
             }
         }
+        if(destinations.size() == 0)
+        {
+            cout << sourceCtr->getCountry().getName() << " does not have any valid destination country. Please choose a different source country." << endl;
+            destinations.clear();
+            validInput = false;
+        }
+    }   while(!validInput);
+
+    validInput = false;
+
+    //this while loop asks for destination and loops if not owned or if not connected to source
+    do {
+        cout << "Here are the valid destinations for this country." << endl;
         for(auto const &node : destinations){
             cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
         }
 
     //Get destination and check if valid
         std::cout << "Please enter the destination country: ";
+        cin.ignore();
         getline(cin, destinationStr);
+        destinationStr = trim(tolower(destinationStr));
 
         list<Node*>::const_iterator destinationCountryIterator;
         for (destinationCountryIterator = targetPlayer->getNodes()->begin(); destinationCountryIterator != targetPlayer->getNodes()->end(); ++destinationCountryIterator)
         {
-            if (destinationStr==(*destinationCountryIterator)->getCountry().getName())
+            string currentNameCountry = (*destinationCountryIterator)->getCountry().getName();
+            currentNameCountry = tolower(currentNameCountry);
+            if (destinationStr == currentNameCountry)
             {
                 destCtr = *destinationCountryIterator;
                 validInput=true;

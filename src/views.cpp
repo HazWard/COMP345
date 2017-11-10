@@ -41,8 +41,8 @@ void PhaseObserver::update() {
     cin;
 }
 
-       void PhaseObserver::display() {
-           //TODO: display current phase and player turn
+void PhaseObserver::display() {
+    //TODO: display current phase and player turn
 
     //display info depending on phase
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))

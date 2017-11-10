@@ -280,28 +280,6 @@ void Game::assignCountriesToPlayers()
             }
         }
 }
-//The 2 following functions are used in the method:
-//TODO: use them in fortify
-//They are used to allow more flexibility when reading user input
-static string tolower(string& str)
-{
-    for(int i = 0; i < str.size(); i++)
-    {
-        str[i] = (char)tolower(str[i]);
-    }
-    return str;
-}
-//Function taken from: https://stackoverflow.com/questions/25829143/trim-whitespace-from-a-string
-string trim(const string& str)
-{
-    size_t first = str.find_first_not_of(' ');
-    if (string::npos == first)
-    {
-        return str;
-    }
-    size_t last = str.find_last_not_of(' ');
-    return str.substr(first, (last - first + 1));
-}
 
 bool Game::armiesLeftToPlace(vector<int> nbrArmiesPlayers){
     for(int i = 0; i < nbrArmiesPlayers.size(); i++)
@@ -562,7 +540,7 @@ void mainGameLoopDriver()
     vector<Player*> play = *(riskGame.getArrayPlayers());
     *players = play;
 
-    //Displaying all the countries in the graph
+    //Displaying all the continents in the graph
     for(int i = 0; i < continents.size(); i++)
     {
         cout << *(continents[i]);
@@ -634,6 +612,7 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
     {
         delete this->currentEvent;
     }
+    this->currentEvent = nullptr;
     this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
     // TODO: Execute notify()
 }
@@ -643,7 +622,7 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
  */
 bool Game::performAttack(AttackResponse *response) {
 
-    bool victory;
+    bool victory = false;
     int rounds = 1;
     std::vector<int> *totalAttackerRolls = new std::vector<int>();
     std::vector<int> *totalDefenderRolls = new std::vector<int>();
@@ -671,7 +650,7 @@ bool Game::performAttack(AttackResponse *response) {
 
         //iterating through the dice rolls, until run our of descending dice
         for(int i = 0; i < defenderDiceRolls.size(); i++){
-            if(defenderDiceRolls.at(i) >= attackerDiceRolls.at(i)){
+            if(defenderDiceRolls[i] >= attackerDiceRolls[i]){
                 attackingCountry->getPointerToCountry()->setNbrArmies(attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
             }
             else{
@@ -704,6 +683,7 @@ bool Game::performAttack(AttackResponse *response) {
     {
         delete this->currentEvent;
     }
+    this->currentEvent = nullptr;
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
     return true;
@@ -722,6 +702,7 @@ void Game::performFortify(FortifyResponse* response) {
     {
         delete this->currentEvent;
     }
+    this->currentEvent = nullptr;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
     // TODO: Execute notify()
 
