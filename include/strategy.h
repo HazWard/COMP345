@@ -4,6 +4,7 @@
 #include <vector>
 #include "../include/player.h"
 #include "../include/response.h"
+#include <climits>
 
 class Player; // Forward declaration
 
