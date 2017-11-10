@@ -13,22 +13,25 @@ void StatObserver::update() {
     this->display();
     // pausing system
     cout << '\n' << "Press a key to continue...";
-    cin;
+    cin.ignore();
 }
 
 void StatObserver::display()
 {
-    cout << "-------------Game Statistics-------------";
+    cout << endl << "-------------Game Statistics-------------" << endl;
     Game* game = static_cast <Game*> (model);
     vector<Player*>* players = game->getArrayPlayers();
 
     for(int i = 0; i < game->getNbrPlayers(); i++)
     {
-        cout << game->players[i]->getName() << " : ";
-        for(int j = 0; j <= floor ((players->at(i)->getNodes()->size()/game->getMapCountries()->getVectorOfNodes()->size()) * 10); j++)
+        int thisPlayerPercentage = floor((players->at(i)->getNodes()->size()/ (double)game->getMapCountries()->getVectorOfNodes()->size() * 100));
+        cout << players->at(i)->getName() << " owns " << thisPlayerPercentage << "% : ";
+
+        for(int j = 0; j <= thisPlayerPercentage; j++)
         {
             cout << "*";
         }
+        cout << std::endl;
     }
 }
 
@@ -36,13 +39,12 @@ PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
-    // pausing system
-    cout << '\n' << "Press a key to continue...";
-    cin;
+    //cout << '\n' << "Press a key to continue...";
+    //cin.ignore();
 }
 
 void PhaseObserver::display() {
-    //TODO: display current phase and player turn
+           //TODO: display current phase and player turn
 
     //display info depending on phase
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))
