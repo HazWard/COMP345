@@ -9,18 +9,13 @@
 #include "../include/map.h"
 
 class Event {
-    public:
-        virtual std::string printEvent() = 0;
 };
 
 class ReinforceEvent : public Event {
     public:
-        ReinforceEvent();
-        ReinforceEvent(vector<int> armiesPlaced,vector<Node*> countriesReinforced);
-        vector<int> bonus;
+        ReinforceEvent(vector<int> armiesPlaced, vector<Node*> countriesReinforced) :armiesPlaced(armiesPlaced), countriesReinforced(countriesReinforced) {};
         vector<int> armiesPlaced;
         vector<Node*> countriesReinforced;
-        std::string printEvent() = 0;
 };
 
 class AttackEvent : public Event{
@@ -39,10 +34,8 @@ class AttackEvent : public Event{
 
 class FortifyEvent : public Event{
     public:
-        FortifyEvent();
-        FortifyEvent(int armiesMoved, Node* source, Node* destination);
+        FortifyEvent(int armiesMoved, Node* source, Node* destination) :armiesMoved(armiesMoved), source(source), destination(destination) {};
         int armiesMoved;
         Node* source;
         Node* destination;
-        std::string printEvent();
 };
