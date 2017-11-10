@@ -13,6 +13,7 @@ class PhaseObserver : public Observer{
      */
 public:
     PhaseObserver();
+    PhaseObserver(Subject *subject) : Observer(subject) {};
     void update();
     void display();
     void displayReinforceInfo();
@@ -28,6 +29,7 @@ class StatObserver : public Observer{
      */
 public:
     StatObserver();
+    StatObserver(Subject *subject) : Observer(subject) {};
     void update();
     void display();
 };

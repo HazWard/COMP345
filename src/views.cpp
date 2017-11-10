@@ -64,7 +64,7 @@ void PhaseObserver::displayReinforceInfo(){
     std::cout << "These reinforcements are being processed: " << std::endl;
     for (unsigned int i = 0; i < event->countriesReinforced.size(); i++)
     {
-        std::cout << "==> " <<event->armiesPlaced.at(i) << " armies are being added to " << event->countriesReinforced.at(i) << std::endl;
+        std::cout << "==> " <<event->armiesPlaced.at(i) << " armies are being added to " << event->countriesReinforced.at(i)->getPointerToCountry()->getName() << std::endl;
     }
 }
 
