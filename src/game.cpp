@@ -696,14 +696,15 @@ bool Game::performAttack(AttackResponse *response) {
     return true;
 }
 
-FortifyEvent* Game::performFortify(FortifyResponse* response) {
+Event* Game::performFortify(FortifyResponse* response) {
     //Apply changes
     string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
     string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
     response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
     std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
-    return new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+    currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+    return currentEvent;
 }
 
 Event* Game::getCurrentEvent(){

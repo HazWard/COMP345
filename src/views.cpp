@@ -27,15 +27,15 @@ void PhaseObserver::display() {
     //TODO: display other info here
 
     //display info deppending on phase
-   if(typeid(getSubject()->event)== typeid(ReinforceEvent))
+   if( dynamic_cast < FortifyEvent* > ( model->currentEvent )->type == 0 )
    {
        displayReinforceInfo();
    }
-   else if(typeid(getSubject()->event)== typeid(AttackEvent))
+   else if(dynamic_cast < FortifyEvent* > ( model->currentEvent )->type == 1)
    {
        displayAttackInfo();
    }
-   else if(typeid(getSubject()->event)== typeid(FortifyEvent))
+   else if(dynamic_cast < FortifyEvent* > ( model->currentEvent )->type == 2)
    {
        displayFortifyInfo();
    }
@@ -44,10 +44,13 @@ void PhaseObserver::display() {
 void PhaseObserver::displayReinforceInfo(){
 
 }
+
 void PhaseObserver::displayAttackInfo(){
 
 }
+
 void PhaseObserver::displayFortifyInfo(){
-    std:: cout << getSubject()->event.armiesMoved << " armies are being moved from " << getSubject()->event.source->getPointerToCountry()->getName()
-               << " to" << getSubject()->event.destination->getPointerToCountry()->getName() << std::endl;
+    std:: cout << dynamic_cast < FortifyEvent* > ( model->currentEvent )->armiesMoved << " armies are being moved from " <<
+               dynamic_cast < FortifyEvent* > ( model->currentEvent )->source->getPointerToCountry()->getName()
+               << " to" << dynamic_cast < FortifyEvent* > ( model->currentEvent )->destination->getPointerToCountry()->getName() << std::endl;
 }

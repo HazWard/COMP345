@@ -22,6 +22,7 @@ public:
     void attach(Observer *observer);
     void detach(Observer *observer);
     void notify();
+    Event* currentEvent;
 };
 
 class Observer {
@@ -30,8 +31,9 @@ class Observer {
      * observing. All classes that inherit from this class must define what they will
      * do when update() is invoked.
      */
-    Subject *model;
+
 public:
+    Subject *model;
     Observer();
     virtual void update() {};
 protected:
