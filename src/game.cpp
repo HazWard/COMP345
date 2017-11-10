@@ -560,6 +560,7 @@ void mainGameLoopDriver()
     riskGame.assignCountriesToPlayers();
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
+    *players = play;
 
     //Displaying all the countries in the graph
     for(int i = 0; i < continents.size(); i++)
