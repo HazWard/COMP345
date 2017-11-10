@@ -237,7 +237,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
                 }
             }
         }
-        if(destinations.size() == 0)
+        if(destinations.empty())
         {
             cout << sourceCtr->getCountry().getName() << " does not have any valid destination country. Please choose a different source country." << endl;
             destinations.clear();

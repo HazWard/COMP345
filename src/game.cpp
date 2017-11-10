@@ -525,6 +525,166 @@ bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
     return true;
 }
 
+void Game::chooseGameScenario(vector<Player*>* players)
+{
+    cout << "Please choose a game scenario: " << endl;
+    cout << "Scenario 1:" << endl;
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        switch(i)
+        {
+            case 0: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 1: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 2: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 3: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 4: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is human.\n";
+        }
+    }
+    cout << "Scenario 2:" << endl;
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        switch(i)
+        {
+            case 0: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 1: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 2: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 3: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 4: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n";
+        }
+    }
+    cout << "Scenario 3:" << endl;
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        switch(i)
+        {
+            case 0: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 1: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 2: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 3: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 4: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is human.\n";
+        }
+    }
+    cout << "Scenario 4:" << endl;
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        switch(i)
+        {
+            case 0: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 1: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 2: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 3: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 4: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n";
+        }
+    }
+    cout << "Scenario 5:" << endl;
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        switch(i)
+        {
+            case 0: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 1: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 2: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 3: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 4: cout << "\t" << (*players)[i]->getName() << " is aggressive.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n";
+        }
+    }
+
+    int scenarioChosen;
+    bool validScenario = false;
+    while(!validScenario) {
+        cout << "\n What shall you choose? ";
+        cin >> scenarioChosen;
+        if(scenarioChosen <= 0 || scenarioChosen >= 6)
+        {
+            cout << "Please enter a scenario from 1 to 5." << endl;
+            validScenario = false;
+        } else validScenario = true;
+    }
+    switch(scenarioChosen)
+    {
+        case 1:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy());
+                }
+            }
+        } break;
+        case 2:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
+                }
+            }
+        } break;
+        case 3:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 1: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 3: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy());
+                }
+            }
+        } break;
+        case 4:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
+                }
+            }
+        } break;
+        case 5:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                }
+            }
+        }
+    }
+}
+
 void mainGameLoopDriver()
 {
     /*The constructor verifies that the map loaded is valid.
@@ -552,7 +712,10 @@ void mainGameLoopDriver()
         play[i]->printNodes();
     }
     riskGame.placeArmiesAutomatic();
-    
+
+    //Setting player strategy according to our 5 scenarios
+    riskGame.chooseGameScenario(players);
+
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
 
