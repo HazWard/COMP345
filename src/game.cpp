@@ -574,7 +574,6 @@ void mainGameLoopDriver()
         for(int i = 0; i < players->size(); i++)
         {
             // Each player gets to reinforce, attack and fortify
-            // TODO: Add Game method to perform concrete changes for each phase
             //(*players)[i]->setStrategy(new BenevolentStrategy());
             std::vector<ReinforceResponse*>* reinforceResponse= (*players)[i]->reinforce(continents);
             if(reinforceResponse){
@@ -725,7 +724,6 @@ void Game::performFortify(FortifyResponse* response) {
     }
     this->currentEvent = nullptr;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
-    // TODO: Execute notify()
 
 }
 

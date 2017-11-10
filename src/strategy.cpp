@@ -165,7 +165,6 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
     return nullptr; //either no attacks were found or the user broke out of the loop by not selecting an attack
 }
 //The 2 following functions are used in the method fortify from the HumanStrategy class
-//TODO: use them in fortify
 //They are used to allow more flexibility when reading user input
 static string tolower(string& str)
 {
@@ -337,9 +336,6 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
 
-        // Placing all new armies
-        // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total << std::endl;
-        // strongestCountry->getPointerToCountry()->setNbrArmies(total);
         responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
     }
     else
@@ -443,9 +439,6 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total==0)
         return nullptr;
-    // secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
-    // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
-    // strongestCountry->getPointerToCountry()->setNbrArmies(total);
     return new FortifyResponse(total, secondStrongestCountry, strongestCountry);
 }
 
@@ -550,9 +543,6 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = secondWeakestCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total==0)
         return nullptr;
-    // secondWeakestCountry->getPointerToCountry()->setNbrArmies(1);
-    // std::cout << "Setting number of armies on " << weakestCountry->getCountry().getName() << " to " << total<< std::endl;
-    // weakestCountry->getPointerToCountry()->setNbrArmies(total);
     return new FortifyResponse(total, secondWeakestCountry, weakestCountry);
 }
 
