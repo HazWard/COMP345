@@ -560,6 +560,7 @@ void mainGameLoopDriver()
     riskGame.assignCountriesToPlayers();
 
     vector<Player*> play = *(riskGame.getArrayPlayers());
+    *players = play;
 
     //Displaying all the countries in the graph
     for(int i = 0; i < continents.size(); i++)
@@ -723,6 +724,7 @@ void Game::performFortify(FortifyResponse* response) {
     }
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
     // TODO: Execute notify()
+
 }
 
 Event* Game::getCurrentEvent(){
