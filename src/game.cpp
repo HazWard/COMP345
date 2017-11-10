@@ -674,15 +674,12 @@ bool Game::performFortify(FortifyResponse* response) {
     std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
     //update currentEvent
     this->currentEvent = new FortifyEvent(0,NULL,NULL);
-    this.currentEvent.armiesMoved = response.nbArmies;
-    this.curtrentEvent.source = response.sourceCountry;
-    this.currentEvent.destination = response.destinationCountry;
+    dynamic_cast < FortifyEvent* > ( this->currentEvent )->armiesMoved = response->nbArmies;
+    dynamic_cast < FortifyEvent* > ( this->currentEvent )->source = response->sourceCountry;
+    dynamic_cast < FortifyEvent* > ( this->currentEvent )->destination = response->destinationCountry;
     return true;
 }
 
-Event* Game::getCurrentEvent(){
-    return this.currentEvent();
-}
 
 int main()
 {
