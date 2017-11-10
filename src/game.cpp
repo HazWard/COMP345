@@ -587,7 +587,7 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             // TODO: Add Game method to perform concrete changes for each phase
             //(*players)[i]->setStrategy(new BenevolentStrategy());
-            //ReinforceEvent* reinforceEvent = riskGame.performReinforce((*players)[i]->reinforce(continents));
+            riskGame.performReinforce((*players)[i]->reinforce(continents));
             AttackResponse *attackResponse;
             do{
                 attackResponse = (*players)[i]->attack(play);
@@ -595,7 +595,7 @@ void mainGameLoopDriver()
                     riskGame.performAttack(attackResponse);
                 }
             }while(attackResponse);
-            //FortifyEvent* fortifyEvent = riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
+            riskGame.performFortify((*players)[i]->fortify(*riskGame.getMapCountries()));
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -618,7 +618,7 @@ void mainGameLoopDriver()
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 }
 
-ReinforceEvent* Game::performReinforce(std::vector<ReinforceResponse*>* responses)
+void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 {
     int tempTotal;
     std::vector<Node*> countriesReinforces;
@@ -629,7 +629,9 @@ ReinforceEvent* Game::performReinforce(std::vector<ReinforceResponse*>* response
         countriesReinforces.push_back(response->country);
         armiesPlaced.push_back(response->nbArmies);
     }
-    return new ReinforceEvent(armiesPlaced, countriesReinforces);
+    delete this->currentEvent;
+    this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
+    // TODO: Execute notify()
 }
 
 /**
@@ -700,7 +702,7 @@ bool Game::performAttack(AttackResponse *response) {
     return true;
 }
 
-Event* Game::performFortify(FortifyResponse* response) {
+void Game::performFortify(FortifyResponse* response) {
     //Apply changes
     string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
     string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
@@ -708,8 +710,9 @@ Event* Game::performFortify(FortifyResponse* response) {
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
     std::cout << response->nbArmies << " armies have been moved from "<<sourceStr<<" to "<<destinationStr << std::endl;
     //update currentEvent and return it
-    currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
-    return currentEvent;
+    delete this->currentEvent;
+    this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+    // TODO: Execute notify()
 }
 
 Event* Game::getCurrentEvent(){

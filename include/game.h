@@ -48,9 +48,9 @@ public:
     void determinePlayerTurn();
     void assignCountriesToPlayers();
     void placeArmies();
-    ReinforceEvent* performReinforce(std::vector<ReinforceResponse*>* responses);
+    void performReinforce(std::vector<ReinforceResponse*>* responses);
     bool performAttack(AttackResponse *response);
-    Event* performFortify(FortifyResponse* response);
+    void performFortify(FortifyResponse* response);
     void placeArmiesAutomatic();
     Event* currentEvent;
 };
