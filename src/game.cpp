@@ -631,6 +631,7 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
         armiesPlaced.push_back(response->nbArmies);
     }
     delete this->currentEvent;
+    this->currentEvent = nullptr;
     this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
     // TODO: Execute notify()
 }
@@ -698,6 +699,7 @@ bool Game::performAttack(AttackResponse *response) {
     }
 
     delete this->currentEvent;
+    this->currentEvent = nullptr;
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
     return true;
@@ -713,6 +715,7 @@ void Game::performFortify(FortifyResponse* response) {
 
     //update currentEvent and return it
     delete this->currentEvent;
+    this->currentEvent = nullptr;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
     // TODO: Execute notify()
 
