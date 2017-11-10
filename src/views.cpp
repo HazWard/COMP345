@@ -4,6 +4,7 @@
 #include <iostream>
 #include "../include/events.h"
 #include "../include/views.h"
+#include "../include/game.h"
 
 using namespace std;
 
