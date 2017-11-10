@@ -19,12 +19,8 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
 {
     std::list<Node*>::iterator nodeIterator;
     for(nodeIterator = player->getNodes()->begin(); nodeIterator != player->getNodes()->end(); nodeIterator++){
-        //TODO: Uncomment this once and remove other if statement the adjacency list contains pointers not copies
-        //if(*nodeIterator == &node){
-        //  return true;
-        //}
-        if((*nodeIterator)->getPointerToCountry()->getName() == targetNode.getPointerToCountry()->getName()){
-            return true;
+        if(*nodeIterator == &targetNode){
+          return true;
         }
     }
     return false;

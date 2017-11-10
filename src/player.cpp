@@ -142,12 +142,8 @@ void Player::removeNode(Node* n)
 bool Player::containsNode(Node &node){
     std::list<Node*>::iterator nodeIterator;
     for(nodeIterator = this->nodes.begin(); nodeIterator != this->nodes.end(); nodeIterator++){
-        //TODO: Uncomment this once and remove other if statement the adjacency list contains pointers not copies
-//        if(*nodeIterator == &node){
-//            return true;
-//        }
-        if((*nodeIterator)->getPointerToCountry()->getName() == node.getPointerToCountry()->getName()){
-            return true;
+        if(*nodeIterator == &node){
+           return true;
         }
     }
     return false;
