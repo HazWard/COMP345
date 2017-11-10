@@ -19,7 +19,6 @@ private:
     vector<Continent*> continents;
     Deck mainDeck;
 
-
     //Helper methods:
     list<string> getNameOfFiles(const char *path);
     void getMapUser(list<string> listOfMapFiles);
@@ -54,4 +53,5 @@ public:
     void placeArmiesAutomatic();
     Event* currentEvent;
     vector <Player*> players;
+    void chooseGameScenario(vector<Player*>* players);
 };
