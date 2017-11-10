@@ -19,6 +19,7 @@ bool Country::operator==(Country c)const
     //Overloading the == operator for Country objects, equivalent of .equals() in Java
 	return this->name == c.name;
 }
+
 //The << operator is overloaded for Country to be able to print Country objects
 std::ostream& operator<< (std::ostream& stream, Country& c)
 {

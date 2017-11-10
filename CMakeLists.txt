@@ -23,6 +23,7 @@ set(SOURCE_FILES
         src/game.cpp
         src/strategy.cpp
         src/observer.cpp
-        src/views.cpp)
+        src/views.cpp
+        src/events.cpp)
 
 add_executable(COMP345 ${SOURCE_FILES})

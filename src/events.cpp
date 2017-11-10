@@ -3,10 +3,10 @@
 //
 
 #pragma once
-#include"..include/events.h"
+#include"../include/events.h"
 
 
-void FortifyEvent::FortifyEvent(){};
+FortifyEvent::FortifyEvent(){};
 
 void FortifyEvent::setArmiesMoved(int armiesMoved)
 {
@@ -36,4 +36,11 @@ Node* FortifyEvent::getSource()
 Node* FortifyEvent::getDestination()
 {
     return this.destination;
+}
+
+std::string FortifyEvent::printEvent()
+{
+    return this->armiesMoved + " armies are being moved from "
+                         + this->source->getPointerToCountry()->getName()
+                         + " to "+ this->destination->getPointerToCountry()->getName();
 }

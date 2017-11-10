@@ -4,6 +4,7 @@
 #pragma once
 
 #include <list>
+#include "../include/events.h"
 
 //Forward declaration of Observer
 class Observer;
@@ -21,6 +22,7 @@ public:
     void attach(Observer *observer);
     void detach(Observer *observer);
     void notify();
+    Event event;
 };
 
 class Observer {
