@@ -12,6 +12,9 @@ StatObserver::StatObserver() :Observer() {}
 
 void StatObserver::update() {
     this->display();
+    // pausing system
+    cout << '\n' << "Press a key to continue...";
+    cin;
 }
 
 void StatObserver::display() {
@@ -22,6 +25,9 @@ PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
+    // pausing system
+    cout << '\n' << "Press a key to continue...";
+    cin;
 }
 
 void PhaseObserver::display() {
