@@ -5,7 +5,6 @@
 #include "../include/events.h"
 #include "../include/views.h"
 #include "../include/game.h"
-
 using namespace std;
 
 StatObserver::StatObserver() :Observer() {}
@@ -17,8 +16,20 @@ void StatObserver::update() {
     cin;
 }
 
-void StatObserver::display() {
-    //TODO: Implement how to display the information
+void StatObserver::display()
+{
+    cout << "-------------Game Statistics-------------";
+    Game* game = static_cast <Game*> (model);
+    vector<Player*>* players = game->getArrayPlayers();
+
+    for(int i = 0; i < game->getNbrPlayers(); i++)
+    {
+        cout << game->players[i]->getName() << " : ";
+        for(int j = 0; j <= floor ((players->at(i)->getNodes()->size()/game->getMapCountries()->getVectorOfNodes()->size()) * 10); j++)
+        {
+            cout << "*";
+        }
+    }
 }
 
 PhaseObserver::PhaseObserver() :Observer() {}
@@ -30,8 +41,8 @@ void PhaseObserver::update() {
     cin;
 }
 
-void PhaseObserver::display() {
-    //TODO: display current phase and player turn
+       void PhaseObserver::display() {
+           //TODO: display current phase and player turn
 
     //display info depending on phase
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))

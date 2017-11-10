@@ -53,4 +53,5 @@ public:
     void performFortify(FortifyResponse* response);
     void placeArmiesAutomatic();
     Event* currentEvent;
+    vector <Player*> players;
 };
