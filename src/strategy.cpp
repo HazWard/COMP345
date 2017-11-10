@@ -165,7 +165,6 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
     return nullptr; //either no attacks were found or the user broke out of the loop by not selecting an attack
 }
 //The 2 following functions are used in the method fortify from the HumanStrategy class
-//TODO: use them in fortify
 //They are used to allow more flexibility when reading user input
 static string tolower(string& str)
 {
@@ -210,12 +209,12 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
         cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
     }
 
+    //cin.ignore(INT_MAX);
     //this while loop asks for source and loops if not owned
     do {
         std::cout << "Please enter the source country: ";
-        cin.ignore();
         getline(cin, sourceStr);
-        sourceStr = trim(tolower(sourceStr));
+        sourceStr = tolower(sourceStr);
 
         list<Node*>::const_iterator sourceCountryIterator;
         for (sourceCountryIterator = targetPlayer->getNodes()->begin(); sourceCountryIterator != targetPlayer->getNodes()->end(); ++sourceCountryIterator)
@@ -230,19 +229,22 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
         }
         if(!validInput)
             std::cout << "Invalid entry. You must own the country and it must have more than 1 armies." << std::endl;
-        //Creating the list of destination countries:
-        for(auto const &node : *(targetPlayer->getNodes())){
-            for(auto const &node2 : sourceCtr->getAdjList()){
-                if(node->getPointerToCountry()->getName() == node2->getPointerToCountry()->getName()){
-                    destinations.insert(node);
+        else {
+            //Creating the list of destination countries:
+            for (auto const &node : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : sourceCtr->getAdjList()) {
+                    if (node->getPointerToCountry()->getName() == node2->getPointerToCountry()->getName()) {
+                        destinations.insert(node);
+                    }
                 }
             }
-        }
-        if(destinations.size() == 0)
-        {
-            cout << sourceCtr->getCountry().getName() << " does not have any valid destination country. Please choose a different source country." << endl;
-            destinations.clear();
-            validInput = false;
+            if (destinations.empty()) {
+                cout << sourceCtr->getCountry().getName()
+                     << " does not have any valid destination country. Please choose a different source country."
+                     << endl;
+                destinations.clear();
+                validInput = false;
+            }
         }
     }   while(!validInput);
 
@@ -257,19 +259,19 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 
     //Get destination and check if valid
         std::cout << "Please enter the destination country: ";
-        cin.ignore();
         getline(cin, destinationStr);
-        destinationStr = trim(tolower(destinationStr));
+        destinationStr = tolower(destinationStr);
 
         list<Node*>::const_iterator destinationCountryIterator;
         for (destinationCountryIterator = targetPlayer->getNodes()->begin(); destinationCountryIterator != targetPlayer->getNodes()->end(); ++destinationCountryIterator)
         {
             string currentNameCountry = (*destinationCountryIterator)->getCountry().getName();
             currentNameCountry = tolower(currentNameCountry);
+            cout << destinationStr << "    " << currentNameCountry << endl;
             if (destinationStr == currentNameCountry)
             {
                 destCtr = *destinationCountryIterator;
-                validInput=true;
+                validInput = true;
                 break;
             }
         }
@@ -337,9 +339,6 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
 
-        // Placing all new armies
-        // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total << std::endl;
-        // strongestCountry->getPointerToCountry()->setNbrArmies(total);
         responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
     }
     else
@@ -443,9 +442,6 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total==0)
         return nullptr;
-    // secondStrongestCountry->getPointerToCountry()->setNbrArmies(1);
-    // std::cout << "Setting number of armies on " << strongestCountry->getCountry().getName() << " to " << total<< std::endl;
-    // strongestCountry->getPointerToCountry()->setNbrArmies(total);
     return new FortifyResponse(total, secondStrongestCountry, strongestCountry);
 }
 
@@ -550,9 +546,6 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = secondWeakestCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total==0)
         return nullptr;
-    // secondWeakestCountry->getPointerToCountry()->setNbrArmies(1);
-    // std::cout << "Setting number of armies on " << weakestCountry->getCountry().getName() << " to " << total<< std::endl;
-    // weakestCountry->getPointerToCountry()->setNbrArmies(total);
     return new FortifyResponse(total, secondWeakestCountry, weakestCountry);
 }
 
