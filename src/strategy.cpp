@@ -354,7 +354,6 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
  */
 AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Player*> &players)
 {
-    cout << targetPlayer->getNodes()->size() << endl;
     // Sort the players countries by strongest
     std::vector<Node*> strongestCountries = targetPlayer->sortByStrongest();
 
