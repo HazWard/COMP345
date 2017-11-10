@@ -9,6 +9,8 @@
 #include "../include/map.h"
 
 class Event {
+public:
+    virtual ~Event() = 0;
 };
 
 class ReinforceEvent : public Event {

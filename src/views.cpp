@@ -28,15 +28,15 @@ void PhaseObserver::display() {
     //TODO: display current phase and player turn
 
     //display info depending on phase
-   if( dynamic_cast < ReinforceEvent* > ( dynamic_cast < Game* > (model)->currentEvent ))
+   if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))
    {
        displayReinforceInfo();
    }
-   else if(dynamic_cast < AttackEvent* > ( dynamic_cast < Game* > (model)->currentEvent ))
+   else if(dynamic_cast <AttackEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
        displayAttackInfo();
    }
-   else if(dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent ))
+   else if(dynamic_cast <FortifyEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
        displayFortifyInfo();
    }
@@ -51,7 +51,7 @@ void PhaseObserver::displayAttackInfo(){
 }
 // Displays info when in fortify phase
 void PhaseObserver::displayFortifyInfo(){
-    std:: cout << dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent )->armiesMoved << " armies are being moved from " <<
-               dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent )->source->getPointerToCountry()->getName()
-               << " to" << dynamic_cast < FortifyEvent* > ( dynamic_cast < Game* > (model)->currentEvent )->destination->getPointerToCountry()->getName() << std::endl;
+    std:: cout << dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent )->armiesMoved << " armies are being moved from " <<
+               dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent )->source->getPointerToCountry()->getName()
+               << " to" << dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent )->destination->getPointerToCountry()->getName() << std::endl;
 }
