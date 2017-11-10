@@ -267,7 +267,6 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
         {
             string currentNameCountry = (*destinationCountryIterator)->getCountry().getName();
             currentNameCountry = tolower(currentNameCountry);
-            cout << destinationStr << "    " << currentNameCountry << endl;
             if (destinationStr == currentNameCountry)
             {
                 destCtr = *destinationCountryIterator;
