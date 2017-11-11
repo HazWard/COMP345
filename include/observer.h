@@ -4,6 +4,10 @@
 #pragma once
 
 #include <list>
+#include "../include/events.h"
+
+//Forward declaration of Observer
+class Observer;
 
 class Subject {
     /**
@@ -14,6 +18,7 @@ class Subject {
      */
     std::list<Observer*> views;
 public:
+    Subject();
     void attach(Observer *observer);
     void detach(Observer *observer);
     void notify();
@@ -25,9 +30,12 @@ class Observer {
      * observing. All classes that inherit from this class must define what they will
      * do when update() is invoked.
      */
-    Subject *model;
+
 public:
-    virtual void update();
+    Subject *model;
+    Observer();
+    Observer(Subject *subject) : model(subject) {};
+    virtual void update() {};
 protected:
     Subject *getSubject();
 };

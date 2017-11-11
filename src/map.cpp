@@ -19,16 +19,29 @@ bool Country::operator==(Country c)const
     //Overloading the == operator for Country objects, equivalent of .equals() in Java
 	return this->name == c.name;
 }
-//The << operator is overloaded for Country to be able to print Country objects
+
+/*
 std::ostream& operator<< (std::ostream& stream, Country& c)
 {
-	/*
-	Overloading the << operator for use in printing Country objects, equivalent of toString in Java
-	*/
+
+	//Overloading the << operator for use in printing Country objects, equivalent of toString in Java
+
 	return stream << "\tInfo of country:" << endl <<
 		"\tName: " << c.getName() << endl <<
 		"\tContinent it belongs to: " << c.getContinent() << endl <<
 		"\tNumber of armies: " << c.getNbrArmies() << endl;
+}*/
+
+//The << operator is overloaded for Country to be able to print Country objects
+std::ostream& operator<< (std::ostream& stream, Country c)
+{
+    /*
+    Overloading the << operator for use in printing Country objects, equivalent of toString in Java
+    */
+    return stream << "\tInfo of country:" << endl <<
+                  "\tName: " << c.getName() << endl <<
+                  "\tContinent it belongs to: " << c.getContinent() << endl <<
+                  "\tNumber of armies: " << c.getNbrArmies() << endl;
 }
 
 //Default constructor, never used but necessary
@@ -48,7 +61,7 @@ string Country::getContinent() { return continent; }
 int Country::getNbrArmies() { return nbrArmies; }
 
 //-- MUTATOR METHODS --
-void Country::setNbrArmies(int na) { nbrArmies = na; }
+void Country::setNbrArmies(int na) { this->nbrArmies = na; }
 
 //Default constructor for Node class
 Node::Node() : country(), adjList(vector<Node *>()), visited(false) {}
@@ -66,7 +79,7 @@ vector<Node *> Node::getAdjList() { return adjList; }
 
 bool Node::isVisited() { return visited; }
 
-Country *Node::getPointerToCountry() { return &country; }
+Country* Node::getPointerToCountry() const { return const_cast<Country*>(&country); }
 
 //-- MUTATOR METHODS --
 void Node::setAdjList(vector<Node *> newAdjList) {
@@ -89,6 +102,10 @@ void Node::addNode(Node *n)
 			return;
 	}
 	this->adjList.push_back(n);
+}
+
+bool operator<(const Node &lhs, const Node &rhs){
+	return lhs.getPointerToCountry()->getNbrArmies() < rhs.getPointerToCountry()->getNbrArmies();
 }
 
 //The << operator is overloaded for Country to be able to print Country objects
@@ -158,7 +175,15 @@ void Graph::addEdge(Node *n1, Node *n2)
 }
 
 //--ACCESSOR METHODS--
-vector<Node>* Graph::getVectorOfNodes() { return &vectorOfNodes; }
+vector<Node*>* Graph::getVectorOfNodes()
+{
+	vector<Node*>* nodes = new vector<Node*>();
+	for(int i = 0; i < nbrVert; i++)
+	{
+		nodes->push_back(&vectorOfNodes[i]);
+	}
+	return nodes;
+}
 
 int Graph::getNbrCountries() { return nbrVert; };
 
@@ -194,10 +219,11 @@ bool Graph::isGraphConnected()
     if(vectorOfNodes.empty())
         return false;
     vector<Node *> initialAdjListNode = vectorOfNodes[0].getAdjList();
-    visitAdjacentNodes(initialAdjListNode);
 
     if (initialAdjListNode.empty())
         return false;
+
+	visitAdjacentNodes(initialAdjListNode);
 
     for (size_t i = 0; i < vectorOfNodes.size(); i++) {
         //If any vector has not been visited, it means it is not connected to at least one node, so the graph is not strongly connected
@@ -249,4 +275,29 @@ bool Graph::areConnectedByEdge(Node* n1, Node* n2) {
             return true;
     }
     return false;
+}
+
+Continent::Continent(): name(""), bonus(0), nodesInContinent(vector<Node*>())
+{ }
+Continent::Continent(string n, int b): name(n), bonus(b), nodesInContinent(vector<Node*>())
+{ }
+void Continent::addNode(Node* n)
+{
+	nodesInContinent.push_back(n);
+}
+
+std::ostream& operator << (std::ostream& stream, Continent& c)
+{
+	/*
+	Overloading << operator to print out Continent objects.
+	*/
+	stream << c.getName() << ":\n";
+	stream << "Bonus: " << c.getBonus() << endl;
+	stream << "Number of countries: " << c.getNodesInContinent()->size() << endl;
+	stream << "List of countries:\n";
+	for (size_t i = 0; i < c.getNodesInContinent()->size(); i++) {
+		stream << "\t" << (*c.getNodesInContinent())[i]->getCountry().getName() << endl;
+	}
+	stream << endl;
+	return stream;
 }

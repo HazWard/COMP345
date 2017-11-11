@@ -7,10 +7,7 @@
 #include <iostream>
 using namespace std;
 
-
-Subject* Observer::getSubject() {
-    return model;
-}
+Subject::Subject() {}
 
 void Subject::attach(Observer *observer) {
     views.push_back(observer);
@@ -24,4 +21,10 @@ void Subject::notify() {
     for(list<Observer*>::iterator iter = views.begin(); iter != views.end(); iter++){
         (*iter)->update();
     }
+}
+
+Observer::Observer() {}
+
+Subject* Observer::getSubject() {
+    return model;
 }

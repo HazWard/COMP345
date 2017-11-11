@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <iterator>
 #include "../include/reader.h"
-#include "../include/exception.h"
 
 using namespace std;
 
@@ -66,11 +65,13 @@ Parser::Parser(string fileName) {
 	Opener mapFile(fileName);
 
 	nodes = new vector<Node>;
-	continents = new map<string,Graph>;
+	continents = new vector<Continent*>;
+
+	tempContinents = new map<string,Graph>;
 
     vector<string> lines = mapFile.readLines();
 
-	error = lines.empty() ? true : false;
+	error = lines.empty();
 	if (!error) {
 		int territoryStart = -1;
 		int continentStart = -1;
@@ -93,10 +94,15 @@ Parser::Parser(string fileName) {
 			if (lines[i].find("[Territories]") != std::string::npos)
 			{
 				territoryStart = (i + 1);
+				nodes->reserve(lines.size() - territoryStart); //We now know the maximum number of countries inside the graph so we allocate the appropriate memory to it
 				break;
 			}
 			vector<string> lineData = split(lines[i], '='); //splitting current line on '='
-			continents->insert(std::pair<string, Graph>(lineData[0], Graph()));
+			string nameContinent = lineData[0];
+			int bonusContinent = stoi(lineData[1]);
+			continents->push_back(new Continent(nameContinent, bonusContinent));
+
+			tempContinents->insert(std::pair<string, Graph>(lineData[0], Graph()));
 		}
 		//If we didn't find [Territories] within any lines, then the file is invalid
 		if (territoryStart == -1)
@@ -104,14 +110,15 @@ Parser::Parser(string fileName) {
 			cout << "The file " << fileName << " is not a valid .map file. We cannot create a Parser object." << endl;
 		}
 
+		//We add every node from the file to our vector of nodes
 		for (int i = territoryStart; i < lines.size(); i++)
 		{
 			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
 			nodes->push_back(Node(Country(lineData[0], lineData[3], 0)));
 
-            //Adding this territory to the continents
+			//Adding this territory to the continents
 			map<string, Graph>::reverse_iterator rit;
-			for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+			for (rit = tempContinents->rbegin(); rit != tempContinents->rend(); ++rit)
 			{
 				if (lineData[3] == rit->first)
 				{
@@ -122,75 +129,79 @@ Parser::Parser(string fileName) {
 			}
 		}
 
+		//we create the graph from the number of nodes and the content of the vector of nodes.
 		graph = new Graph(nodes->size(), *nodes);
 
+		//We have to assign each node to a continent, and create each node's adjacency list.
+		//That requires to loop againj through the territories inside the file.
 		for (int i = territoryStart; i < lines.size(); i++) {
-			Node* currentNode = new Node();
+			Node *currentNode = new Node();
 			vector<string> lineData = split(lines[i], ','); //splitting current line on ','
 
-			for (int k = 0; k < nodes->size(); k++) {
-                //I don't know what this is doing, whoever wrote this please explain what is going on - Emilio
-				if ((*nodes)[k].getCountry().getName() == lineData[0]) {
-					currentNode = &(*nodes)[k];
+			//Getting a pointer to the node on the current line. We will create its adjacency list.
+			for (int k = 0; k < (*graph->getVectorOfNodes()).size(); k++) {
+				if ((*graph->getVectorOfNodes())[k]->getCountry().getName() == lineData[0]) {
+					currentNode = (*graph->getVectorOfNodes())[k];
 					break;
 				}
 			}
-			if (currentNode->getCountry().getName() != "")
-			{
-				Graph* currentContinent = NULL;
-				string currentContinentName = "";
+			if (!currentNode->getCountry().getName().empty()) {
+				Graph* tempCont = nullptr;
+				string tempContName;
 				map<string, Graph>::reverse_iterator rit;
-				for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+				for (rit = tempContinents->rbegin(); rit != tempContinents->rend(); ++rit)
 				{
 					if (currentNode->getCountry().getContinent() == rit->first)
 					{
-						currentContinent = &(rit->second);
-						currentContinentName = rit->first;
+						tempCont = &(rit->second);
+						tempContName = rit->first;
 					}
 				}
 
-				bool currentContinentIsValid = currentContinent != NULL && currentContinentName != "";
-				for (int j = 4; j < lineData.size(); j++)
-				{
-					for (int k = 0; k < nodes->size(); k++)
-					{
-						if ((*nodes)[k].getCountry().getName() == lineData[j])
-						{
-							Node *add = &(*nodes)[k];
+				bool currentContinentIsValid = (tempCont != nullptr && !tempContName.empty());
+				for (int j = 4; j < lineData.size(); j++) {
+					for (int k = 0; k < (*graph->getVectorOfNodes()).size(); k++) {
+						if ((*graph->getVectorOfNodes())[k]->getCountry().getName() == lineData[j]) {
+							Node *add = (*graph->getVectorOfNodes())[k];
 							graph->addEdge(currentNode, add);
 						}
 					}
 					if (currentContinentIsValid)
 					{
-						vector<Node>* nodesInCurrentContinent = currentContinent->getVectorOfNodes();
+						vector<Node*>* nodesInCurrentContinent = tempCont->getVectorOfNodes();
 						for (int k = 0; k < nodesInCurrentContinent->size(); k++)
 						{
-							if ((*nodesInCurrentContinent)[k].getCountry().getName() == lineData[j])
+							if ((*nodesInCurrentContinent)[k]->getCountry().getName() == lineData[j])
 							{
-								Node* add = &((*nodesInCurrentContinent)[k]);
-								currentContinent->addEdge(currentNode, add);
+								Node* add = (*nodesInCurrentContinent)[k];
+								tempCont->addEdge(currentNode, add);
 							}
 						}
 					}
+				}
+				//Getting a pointer to the continent of the node on the current line. We will add it to that continent's vector of pointers to nodes.
+				Continent *currentContinent = nullptr;
+				for (int j = 0; j < (*graph->getVectorOfNodes()).size(); j++) {
+					if (currentNode->getCountry().getContinent() == (*continents)[j]->getName()) {
+						currentContinent = (*continents)[j];
+						break;
+					}
+				}
+				if (currentContinent != nullptr) {
+					//We add the current node to the corresponding continent
+					currentContinent->addNode(currentNode);
 				}
 			}
 		}
 	}
 }
-/*
-//Destructor for the Parser class
-//Makes sure to delete all of the members that are pointers to containers
-Parser::~Parser()
-{
-	delete nodes;
-	delete graph;
-	delete continents;
-}*/
 
 //-- ACCESSOR METHODS --
-Graph* Parser::getGraph() { return graph; }
+Graph* Parser::getGraph() {
+	return graph;
+}
 
-map<string, Graph>* Parser::getContinents() { return continents; }
+vector<Continent*>* Parser::getContinents() { return continents; }
 
 //Both the following methods are helper methods that are useful to determine whether or not the map is valid
 //This method checks if the graph is strongly connected
@@ -202,7 +213,7 @@ bool Parser::graphIsConnected()
 bool Parser::continentsAreConnected()
 {
 	map<string, Graph>::reverse_iterator rit;
-	for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+	for (rit = tempContinents->rbegin(); rit != tempContinents->rend(); ++rit)
 	{
 		//If at least one continent is not completely connected, it will return false
 		if (rit->second.isGraphConnected() == false)
@@ -223,67 +234,8 @@ bool Parser::mapIsValid()
 //Method used to display all of the continents within a given map
 void Parser::displayContinents()
 {
-	map<string, Graph>::reverse_iterator rit;
-	for (rit = continents->rbegin(); rit != continents->rend(); ++rit)
+	for(int i = 0; i < continents->size(); i++)
 	{
-		cout << rit->first << endl;
-		cout << rit->second;
+		cout << (*continents)[i];
 	}
 }
-/*
-//Main for part 2 of assignment 1 (not needed for assignment 2)
-int main() {
-
-	Parser parse1(MAPS_FOLDER + "World.map");
-
-	cout << "Is parse1 a valid map ? : ";
-	if (parse1.mapIsValid())
-		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-	else
-		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-
-	Parser parse2(MAPS_FOLDER + "_49_ City Nights.map");
-	Graph g2 = *(parse2.getGraph());
-	map<string, Graph>* continents2 = parse2.getContinents();
-	cout << "Is parse2 a valid map ? : ";
-	if (parse2.mapIsValid())
-		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-	else
-		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-
-	Parser parse3(MAPS_FOLDER + "_H_Counterweight  World.map");
-	Graph g3 = *(parse3.getGraph());
-	map<string, Graph>* continents3 = parse3.getContinents();
-	cout << "Is parse3 a valid map ? : ";
-	if (parse3.mapIsValid())
-		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-	else
-		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-
-	Parser parse4(MAPS_FOLDER + "invalidMap.txt");
-	cout << "Is parse4 a valid map ? : ";
-
-	if (parse4.mapIsValid())
-		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-	else
-		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-
-	Parser parse5(MAPS_FOLDER + "Bubble Plane.map");
-	Graph g5 = *(parse5.getGraph());
-	map<string, Graph>* continents5 = parse5.getContinents();
-	cout << "Is parse5 a valid map ? : ";
-	cout << parse5.continentsAreConnected() << parse5.graphIsConnected();
-	if (parse5.mapIsValid())
-		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-	else
-		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-
-	Parser parse6(MAPS_FOLDER + "invalidMap2.java");
-	cout << "Is parse6 a valid map ? : ";
-	if (parse6.mapIsValid())
-		cout << "Yes, both the entire map as a whole and each continent are connected.\n";
-	else
-		cout << "No, the graph and/or some of the continents are not strongly connected.\n";
-	
-	return 0;
-}*/

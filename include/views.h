@@ -13,8 +13,12 @@ class PhaseObserver : public Observer{
      */
 public:
     PhaseObserver();
+    PhaseObserver(Subject *subject) : Observer(subject) {};
     void update();
     void display();
+    void displayReinforceInfo();
+    void displayAttackInfo();
+    void displayFortifyInfo();
 };
 
 class StatObserver : public Observer{
@@ -25,6 +29,9 @@ class StatObserver : public Observer{
      */
 public:
     StatObserver();
+    StatObserver(Subject *subject, int turn) : Observer(subject), turn(turn) {};
     void update();
     void display();
+private:
+    int turn;
 };
