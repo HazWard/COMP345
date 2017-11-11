@@ -450,8 +450,7 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
  * Benovolent Player Strategy Implementation
  */
 
-std::vector<ReinforceResponse *> *
-BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> continents)
+std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPlayer, std::vector<Continent *> continents)
 {
     // Reinforce the weakest country
     std::vector<ReinforceResponse *> *responses = new std::vector<ReinforceResponse *>();
