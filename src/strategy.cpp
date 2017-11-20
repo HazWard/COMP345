@@ -92,11 +92,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                 }
             }
         }
-    }/*
-    else
-    {
-        std::cout << "Not enough armies to reinforce troops. We cannot initialize the reinforcement phase." << std::endl;
-    }*/
+    }
     return responses;
 }
 
@@ -376,11 +372,7 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
 
         responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
-    }/*
-    else
-    {
-        std::cout << "Not enough armies to reinforce troops. We cannot initialize the reinforcement phase." << std::endl;
-    }*/
+    }
     return responses;
 }
 
@@ -589,10 +581,7 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
         int targetNbArmies = (totalNbArmies % 2 == 0) ? totalNbArmies / 2 : (totalNbArmies + 1) / 2;
         responses->push_back(new ReinforceResponse(totalNbArmies - targetNbArmies, weakestCountry));
         responses->push_back(new ReinforceResponse(targetNbArmies, secondWeakestCountry));
-    } /*else
-    {
-        cout << "Not enough armies to reinforce troops. We cannot initialize the reinforcement phase." << std::endl;
-    }*/
+    }
     return responses;
 }
 
