@@ -103,3 +103,5 @@ public:
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
     void printStrat();
 };
+
+string trim(const string& str);

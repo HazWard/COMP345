@@ -26,6 +26,15 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
     return false;
 }
 
+//TODO: Define those CheaterStrategy methods (TEMPORARILY empty)
+std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer, std::vector<Continent*> continents){}
+AttackResponse* CheaterStrategy::attack(Player* targetPlayer, std::vector<Player*> &players){}
+FortifyResponse* CheaterStrategy::fortify(Player* targetPlayer, Graph& map){}
+
+//TODO: Define those RandomStrategy methods (TEMPORARILY empty)
+std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player* targetPlayer, std::vector<Continent*> continents){}
+FortifyResponse* RandomStrategy::fortify(Player* targetPlayer, Graph& map){}
+
 AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
     std::random_device rd;
@@ -209,7 +218,7 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
 }
 //The 2 following functions are used in the method fortify from the HumanStrategy class
 //They are used to allow more flexibility when reading user input
-static string tolower(string& str)
+string tolower(string& str)
 {
     for(int i = 0; i < str.size(); i++)
     {
@@ -218,7 +227,7 @@ static string tolower(string& str)
     return str;
 }
 //Function taken from: https://stackoverflow.com/questions/25829143/trim-whitespace-from-a-string
-static string trim(const string& str)
+string trim(const string& str)
 {
     size_t first = str.find_first_not_of(' ');
     if (string::npos == first)

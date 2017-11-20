@@ -24,6 +24,6 @@ set(SOURCE_FILES
         src/strategy.cpp
         src/observer.cpp
         src/views.cpp
-        )
+        include/tournament.h src/tournament.cpp)
 
 add_executable(COMP345 ${SOURCE_FILES})

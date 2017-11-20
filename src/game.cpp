@@ -10,14 +10,12 @@
 
 using namespace std;
 
-const string MAPS_FOLDER = "../maps/";
-
 bool windows = false;
 #ifdef OS_WINDOW1S
 windows = true;
 #endif
 
-//forward declaration
+//forward declarations
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses);
 
 //Constructor for the Game class
@@ -82,7 +80,7 @@ void Game::setArrayPlayers(vector<Player*>& newArrayPl)
 
 //Function to read all files from a given folder taken from:
 //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-list<string> Game::getNameOfFiles(const char *path)
+list<string> getNameOfFiles(const char *path)
 {
     list<string> listOfMapFiles;
     struct dirent *entry;
@@ -629,12 +627,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy);
                 }
             }
         } break;
@@ -644,12 +642,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy);
                 }
             }
         } break;
@@ -659,12 +657,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy);
                 }
             }
         } break;
@@ -674,12 +672,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy);
                 }
             }
         } break;
@@ -689,12 +687,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy);
                 }
             }
         } break;
@@ -704,12 +702,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy);
                 }
             }
         }
@@ -947,7 +945,7 @@ void Game::performFortify(FortifyResponse* response) {
 Event* Game::getCurrentEvent(){
     return this->currentEvent;
 }
-
+/*
 int main()
 {
 
@@ -956,4 +954,4 @@ int main()
     std::getchar();
     system("pause");
     return 0;
-}
+}*/
