@@ -26,6 +26,53 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
     return false;
 }
 
+AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    //Creating a map of possible attack vectors between nodes this player owns and ones that are adjacent and not owned
+    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
+    std::list<Node *>::iterator nodeIterator;
+    for (nodeIterator = targetPlayer->getNodes()->begin(); nodeIterator != targetPlayer->getNodes()->end(); nodeIterator++) {
+        Node *playerOwnedNode = *nodeIterator;
+        if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
+            for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
+                if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
+                    canAttack.insert(make_pair(playerOwnedNode, adjacentNode));
+                }
+            }
+        }
+    }
+
+    if(!canAttack.empty()) { //Some possible attacks were found
+            std::uniform_int_distribution<int> dist(0, canAttack.size()-1);
+            int chosenCountryInd = dist(mt);
+            int i = 0;
+            std::map<Node *, Node *>::iterator iterator;
+            for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
+            //Determining who the defending player will be for this particular attack vector
+            Player *defendingPlayer;
+            for (int i = 0; i < players.size(); i++) {
+                if (players.at(i) == targetPlayer) { //This player is our current player
+                    continue;
+                }
+                for (auto const &node : *(players.at(i)->getNodes())) {
+                    if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
+                        defendingPlayer = &(*players.at(i));
+                        break;
+                    }
+                }
+            }
+            //return the first possible attack that the user approved
+            std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
+            std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
+            return new AttackResponse(attacker, defender);
+        }
+    }
+    return nullptr; //no attacks were found
+}
+
 std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Perform actions to reinforce
@@ -681,4 +728,10 @@ void AggressiveStrategy::printStrat() {
 }
 void BenevolentStrategy::printStrat() {
     cout << "I am a benevolent strategy." << endl;
+}
+void RandomStrategy::printStrat() {
+    cout << "I am a random strategy." << endl;
+}
+void CheaterStrategy::printStrat() {
+    cout << "I am a cheater strategy." << endl;
 }

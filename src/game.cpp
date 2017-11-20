@@ -615,9 +615,9 @@ void Game::chooseGameScenario(vector<Player*>* players)
     while(!validScenario) {
         cout << "\n What shall you choose? ";
         cin >> scenarioChosen;
-        if(scenarioChosen <= 0 || scenarioChosen >= 7)
+        if(scenarioChosen <= 0 || scenarioChosen >= 8)
         {
-            cout << "Please enter a scenario from 1 to 6." << endl;
+            cout << "Please enter a scenario from 1 to 7." << endl;
             validScenario = false;
         } else validScenario = true;
     }
@@ -713,6 +713,22 @@ void Game::chooseGameScenario(vector<Player*>* players)
                 }
             }
         }
+        /*
+        case 7:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new CheaterStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                }
+            }
+        }*/
 }
     //Testing the type of strategy of each player:
     for(int i = 0; i < nbrPlayers; i++)
