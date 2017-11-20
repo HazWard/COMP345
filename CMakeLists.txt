@@ -24,6 +24,6 @@ set(SOURCE_FILES
         src/strategy.cpp
         src/observer.cpp
         src/views.cpp
-        )
+        src/decorators.cpp include/decorators.h)
 
-add_executable(COMP345 ${SOURCE_FILES})
+add_executable(COMP345 ${SOURCE_FILES} src/decorators.cpp include/decorators.h)
