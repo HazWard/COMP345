@@ -12,9 +12,9 @@ StatObserver::StatObserver() :Observer() {}
 void StatObserver::update() {
         this->display();
         // pausing system
-        cout << '\n' << "Press Enter to continue";
-        string x;
-        std::cin >> x;
+        cin.ignore(INT_MAX);
+        std::cout << '\n' << "Press Enter to continue";
+        cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
 }
 
 void StatObserver::display()
@@ -41,9 +41,9 @@ PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
+    cin.ignore(INT_MAX);
     cout << '\n' << "Press Enter to continue";
-    string x;
-    std::cin >> x;
+    cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
 }
 
 void PhaseObserver::display() {
@@ -77,6 +77,11 @@ void PhaseObserver::display() {
 
 void PhaseObserver::displayReinforceInfo(){
     ReinforceEvent* event = dynamic_cast < ReinforceEvent* > ( static_cast < Game* > (model)->currentEvent );
+    if(event->countriesReinforced.size() == 0)
+    {
+        cout << "No reinforcements were made." << std::endl;
+        return;
+    }
     std::cout << "These reinforcements are being processed: " << std::endl;
     for (unsigned int i = 0; i < event->countriesReinforced.size(); i++)
     {
@@ -86,7 +91,7 @@ void PhaseObserver::displayReinforceInfo(){
 
 void PhaseObserver::displayAttackInfo(){
     AttackEvent* event = dynamic_cast< AttackEvent* > ( static_cast < Game* > (model)->currentEvent );
-    std::cout << event->attacker->getName() << " is using the coutry " << event->attacking->getCountry().getName() <<
+    std::cout << event->attacker->getName() << " is using the country " << event->attacking->getCountry().getName() <<
      " to attack " << event->defender->getName() << "'s country " << event->defending->getCountry().getName()
               << ".\n";
     if (event->victory){
@@ -97,7 +102,11 @@ void PhaseObserver::displayAttackInfo(){
 }
 
 void PhaseObserver::displayFortifyInfo(){
-    FortifyEvent* event = dynamic_cast < FortifyEvent* > ( static_cast < Game* > (model)->currentEvent );
+    FortifyEvent* event = dynamic_cast < FortifyEvent* > (static_cast < Game* > (model)->currentEvent);
+    if(event->armiesMoved == 0) {
+        cout << "No fortifications were made." << std::endl;
+        return;
+    }
     std:: cout << event->armiesMoved << " armies are being moved from " << event->source->getPointerToCountry()->getName()
                << " to " << event->destination->getPointerToCountry()->getName() << std::endl;
 }

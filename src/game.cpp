@@ -17,6 +17,9 @@ bool windows = false;
 windows = true;
 #endif
 
+//forward declaration
+static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses);
+
 //Constructor for the Game class
 //Uses the helper methods and checks that the number of players created is equal to the
 //private number nbrPlayers initialized by the user.
@@ -593,15 +596,28 @@ void Game::chooseGameScenario(vector<Player*>* players)
             case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n";
         }
     }
+    cout << "Scenario 6:" << endl;
+    for(int i = 0; i < nbrPlayers; i++)
+    {
+        switch(i)
+        {
+            case 0: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 1: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 2: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 3: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 4: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n";
+        }
+    }
 
     int scenarioChosen;
     bool validScenario = false;
     while(!validScenario) {
         cout << "\n What shall you choose? ";
         cin >> scenarioChosen;
-        if(scenarioChosen <= 0 || scenarioChosen >= 6)
+        if(scenarioChosen <= 0 || scenarioChosen >= 7)
         {
-            cout << "Please enter a scenario from 1 to 5." << endl;
+            cout << "Please enter a scenario from 1 to 6." << endl;
             validScenario = false;
         } else validScenario = true;
     }
@@ -681,8 +697,23 @@ void Game::chooseGameScenario(vector<Player*>* players)
                     case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
                 }
             }
+        } break;
+        case 6:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                }
+            }
         }
-    }
+}
     //Testing the type of strategy of each player:
     for(int i = 0; i < nbrPlayers; i++)
     {
@@ -743,17 +774,17 @@ void mainGameLoopDriver()
     {
         for(int i = 0; i < players->size(); i++)
         {
-
+            cout << "***************** " << (*players)[i]->getName() << "'s turn *****************" << std::endl;
             //monitor current player
             riskGame.currentPlayer = (*players)[i];
             // Each player gets to reinforce, attack and fortify
-            std::vector<ReinforceResponse*>* reinforceResponse= (*players)[i]->reinforce(continents);
-            if(reinforceResponse){
+            std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
+            bool reinforcements_were_made = reinforcementsMade(reinforceResponse);
+            if(reinforcements_were_made){
                 riskGame.performReinforce(reinforceResponse);
                 riskGame.notify();
             }
-
-
+            delete reinforceResponse;
 
             AttackResponse *attackResponse;
             do{
@@ -763,17 +794,14 @@ void mainGameLoopDriver()
                     riskGame.notify();
                 }
             }while(attackResponse);
-
-
+            delete attackResponse;
 
             FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
                 riskGame.performFortify(fortifyResponse);
                 riskGame.notify();
             }
-
-
-
+            delete fortifyResponse;
 
             //After each player's turn, we check if one player owns all the countries in the map
             if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
@@ -794,7 +822,15 @@ void mainGameLoopDriver()
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 }
-
+static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)
+{
+    //If we can go through this loop, that means some reinforcements were made.
+    for(auto &response : *responses)
+    {
+        return true;
+    }
+    return false;
+}
 void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 {
     int tempTotal;
@@ -813,7 +849,7 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
  * Helper method to perform attacking phase
  */
 bool Game::performAttack(AttackResponse* response) {
-    if(!response )
+    if(!response)
         return true;
     bool victory = false;
     int rounds = 1;

@@ -92,11 +92,11 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                 }
             }
         }
-    }
+    }/*
     else
     {
-        std::cout << "Not enough armies to reinforce troops." << std::endl;
-    }
+        std::cout << "Not enough armies to reinforce troops. We cannot initialize the reinforcement phase." << std::endl;
+    }*/
     return responses;
 }
 
@@ -187,6 +187,29 @@ static string trim(const string& str)
 }
 FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
 {
+    bool fortify_can_be_done = false;
+    for(auto const &node : *(targetPlayer->getNodes())) {
+        bool valid_source_node = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1) {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : node->getAdjList()) {
+                    //If the current node has any destination countries for fortification, it is a valid node from which to fortify
+                    if (node3->getCountry().getName() == node2->getCountry().getName()) {
+                        valid_source_node = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if(valid_source_node) {
+            fortify_can_be_done = true;
+            break;
+        }
+    }
+    if(!fortify_can_be_done)
+        return nullptr;
+
     std::string option;
     //return null if user does not want to fortify
     cout << targetPlayer->getName() << ", Would you like to fortify? (y/n)";
@@ -203,9 +226,24 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
     Node* destCtr = nullptr;
     std::set<Node*> destinations = std::set<Node*>();
 
-    cout << targetPlayer->getName() << ", here are the countries you own: " << endl;
-    for(auto const &node : *(targetPlayer->getNodes())){
-        cout << node->getPointerToCountry()->getName() << " -- Armies: " << node->getPointerToCountry()->getNbrArmies() << endl;
+    cout << targetPlayer->getName() << ", here are the countries you own from which fortification can be done: " << endl;
+    for(auto const &node : *(targetPlayer->getNodes())) {
+        bool valid_source_node = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1) {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : node->getAdjList()) {
+                    if (node3->getCountry().getName() == node2->getCountry().getName()) {
+                        valid_source_node = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if(valid_source_node) {
+            cout << node->getPointerToCountry()->getName() << " -- Armies: "
+                 << node->getPointerToCountry()->getNbrArmies() << endl;
+        }
     }
 
     //cin.ignore(INT_MAX);
@@ -338,11 +376,11 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
 
         responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
-    }
+    }/*
     else
     {
-        std::cout << "Not enough armies to reinforce troops." << std::endl;
-    }
+        std::cout << "Not enough armies to reinforce troops. We cannot initialize the reinforcement phase." << std::endl;
+    }*/
     return responses;
 }
 
@@ -416,6 +454,52 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
  */
 FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
 {
+    bool fortify_can_be_done = false;
+    for(auto const &node : *(targetPlayer->getNodes())) {
+        bool valid_source_node = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1) {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : node->getAdjList()) {
+                    //If the current node has any destination countries for fortification, it is a valid node from which to fortify
+                    if (node3->getCountry().getName() == node2->getCountry().getName()) {
+                        valid_source_node = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if(valid_source_node) {
+            fortify_can_be_done = true;
+            break;
+        }
+    }
+    if(!fortify_can_be_done)
+        return nullptr;
+
+    std::set<Node*> destinations = std::set<Node*>();
+    for(auto const &node : *(targetPlayer->getNodes())) {
+        bool current_node_valid_source = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1) {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : node->getAdjList()) {
+                    if (node3->getCountry().getName() == node2->getCountry().getName()) {
+                        current_node_valid_source = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (current_node_valid_source) {
+            destinations.insert(node);
+        }
+    }
+    //return null if fortification cannot be done (there are no matching source/destination countries for fortification)
+    if(destinations.empty()) {
+        return nullptr;
+    }
+
     // Find strongest country
     std::list<Node*>::iterator countryIter;
     Node* strongestCountry = *targetPlayer->getNodes()->begin();
@@ -427,6 +511,9 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
             strongestCountry = *countryIter;
         }
     }
+    //If all of the player's countries contain at most one army, then we cannot fortify.
+    if(strongestCountry->getPointerToCountry()->getNbrArmies() <= 1)
+        return nullptr;
 
     // Find second strongest country
     Node* secondStrongestCountry = strongestCountry->getAdjList()[0];
@@ -456,12 +543,10 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
     std::vector<ReinforceResponse *> *responses = new std::vector<ReinforceResponse *>();
     int totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
 
-    if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
-    {
+    if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES) {
         // Get continent bonuses
         std::vector<Continent *> continentsOwned = targetPlayer->getsContinentsOwned(continents);
-        for (unsigned int i = 0; i < continentsOwned.size(); i++)
-        {
+        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
             totalNbArmies += continentsOwned[i]->getBonus();
         }
 
@@ -472,7 +557,7 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
                                                                              : totalNbArmies;
         totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies
                                                                            : totalNbArmies;
-        
+
         std::list<Node *>::iterator countryIter;
 
         Node *weakestCountry;
@@ -482,25 +567,20 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
 
         // Find weakest country
         for (countryIter = targetPlayer->getNodes()->begin();
-             countryIter != targetPlayer->getNodes()->end(); ++countryIter)
-        {
+             countryIter != targetPlayer->getNodes()->end(); ++countryIter) {
             if (weakestCountry->getPointerToCountry()->getNbrArmies()
-                > (*countryIter)->getPointerToCountry()->getNbrArmies())
-            {
+                > (*countryIter)->getPointerToCountry()->getNbrArmies()) {
                 weakestCountry = *countryIter;
             }
         }
 
         // Find second weakest country
         for (countryIter = targetPlayer->getNodes()->begin();
-             countryIter != targetPlayer->getNodes()->end(); ++countryIter)
-        {
+             countryIter != targetPlayer->getNodes()->end(); ++countryIter) {
             if ((*countryIter)->getPointerToCountry()->getName()
-                != weakestCountry->getPointerToCountry()->getName())
-            {
+                != weakestCountry->getPointerToCountry()->getName()) {
                 if (secondWeakestCountry->getPointerToCountry()->getNbrArmies()
-                    > (*countryIter)->getPointerToCountry()->getNbrArmies())
-                {
+                    > (*countryIter)->getPointerToCountry()->getNbrArmies()) {
                     secondWeakestCountry = *countryIter;
                 }
             }
@@ -509,7 +589,10 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
         int targetNbArmies = (totalNbArmies % 2 == 0) ? totalNbArmies / 2 : (totalNbArmies + 1) / 2;
         responses->push_back(new ReinforceResponse(totalNbArmies - targetNbArmies, weakestCountry));
         responses->push_back(new ReinforceResponse(targetNbArmies, secondWeakestCountry));
-    }
+    } /*else
+    {
+        cout << "Not enough armies to reinforce troops. We cannot initialize the reinforcement phase." << std::endl;
+    }*/
     return responses;
 }
 
@@ -519,6 +602,51 @@ AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, std::vector<Pla
 }
 FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
 {
+    bool fortify_can_be_done = false;
+    for(auto const &node : *(targetPlayer->getNodes())) {
+        bool valid_source_node = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1) {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : node->getAdjList()) {
+                    //If the current node has any destination countries for fortification, it is a valid node from which to fortify
+                    if (node3->getCountry().getName() == node2->getCountry().getName()) {
+                        valid_source_node = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if(valid_source_node) {
+            fortify_can_be_done = true;
+            break;
+        }
+    }
+    if(!fortify_can_be_done)
+        return nullptr;
+
+    std::set<Node*> destinations = std::set<Node*>();
+    for(auto const &node : *(targetPlayer->getNodes())) {
+        bool current_node_valid_source = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1) {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes())) {
+                for (auto const &node2 : node->getAdjList()) {
+                    if (node3->getCountry().getName() == node2->getCountry().getName()) {
+                        current_node_valid_source = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (current_node_valid_source) {
+            destinations.insert(node);
+        }
+    }
+    //return null if fortification cannot be done (there are no matching source/destination countries for fortification)
+    if(destinations.empty()) {
+        return nullptr;
+    }
     // Find weakest country
     std::list<Node*>::iterator countryIter;
     Node* weakestCountry = *targetPlayer->getNodes()->begin();
@@ -531,22 +659,26 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
         }
     }
 
-    // Find second weakest country
-    Node* secondWeakestCountry = weakestCountry->getAdjList()[0];
+    // Find the strongest adjacent country to the weakest country
+    Node* strongestAdjacentCountry = weakestCountry->getAdjList()[0];
     for (size_t i = 1; i < weakestCountry->getAdjList().size(); i++)
     {
-        if (secondWeakestCountry->getPointerToCountry()->getNbrArmies()
+        if (strongestAdjacentCountry->getPointerToCountry()->getNbrArmies()
             > weakestCountry->getAdjList()[i]->getPointerToCountry()->getNbrArmies())
         {
-            secondWeakestCountry = weakestCountry->getAdjList()[i];
+            strongestAdjacentCountry = weakestCountry->getAdjList()[i];
         }
     }
 
-    // Aggregate armies to strongest country
-    int total = secondWeakestCountry->getPointerToCountry()->getNbrArmies() - 1;
-    if (total==0)
+    //If the adjacent countries to the weakest country contain at most one army, then we cannot fortify.
+    if(strongestAdjacentCountry->getPointerToCountry()->getNbrArmies() <= 1)
         return nullptr;
-    return new FortifyResponse(total, secondWeakestCountry, weakestCountry);
+
+    // Aggregate armies to strongest country
+    int total = strongestAdjacentCountry->getPointerToCountry()->getNbrArmies() - 1;
+    if (total == 0)
+        return nullptr;
+    return new FortifyResponse(total, strongestAdjacentCountry, weakestCountry);
 }
 
 void Strategy::printStrat() {
