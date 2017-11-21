@@ -26,53 +26,6 @@ bool Strategy::containsNode(Player *player, Node &targetNode)
     return false;
 }
 
-AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
-{
-    std::random_device rd;
-    std::mt19937 mt(rd());
-
-    //Creating a map of possible attack vectors between nodes this player owns and ones that are adjacent and not owned
-    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
-    std::list<Node *>::iterator nodeIterator;
-    for (nodeIterator = targetPlayer->getNodes()->begin(); nodeIterator != targetPlayer->getNodes()->end(); nodeIterator++) {
-        Node *playerOwnedNode = *nodeIterator;
-        if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
-            for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
-                if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
-                    canAttack.insert(make_pair(playerOwnedNode, adjacentNode));
-                }
-            }
-        }
-    }
-
-    if(!canAttack.empty()) { //Some possible attacks were found
-            std::uniform_int_distribution<int> dist(0, canAttack.size()-1);
-            int chosenCountryInd = dist(mt);
-            int i = 0;
-            std::map<Node *, Node *>::iterator iterator;
-            for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
-            //Determining who the defending player will be for this particular attack vector
-            Player *defendingPlayer;
-            for (int i = 0; i < players.size(); i++) {
-                if (players.at(i) == targetPlayer) { //This player is our current player
-                    continue;
-                }
-                for (auto const &node : *(players.at(i)->getNodes())) {
-                    if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
-                        defendingPlayer = &(*players.at(i));
-                        break;
-                    }
-                }
-            }
-            //return the first possible attack that the user approved
-            std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
-            std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
-            return new AttackResponse(attacker, defender);
-        }
-    }
-    return nullptr; //no attacks were found
-}
-
 std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
 {
     // Perform actions to reinforce
@@ -134,7 +87,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                         {
                             responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
                         }
-                        targetNbArmies=0;
+                        targetNbArmies = 0; // Resets the value
                     }
                 }
             }
@@ -715,6 +668,285 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     if (total == 0)
         return nullptr;
     return new FortifyResponse(total, strongestAdjacentCountry, weakestCountry);
+}
+
+/**
+ * Random Player Strategy Implementation
+ */
+
+/**
+ * Reinforcement phase for Random Player
+ * - Reinforces random country
+ * @param graph Graph of continents
+ */
+std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player *targetPlayer, std::vector<Continent*> continents)
+{
+    // Random generator
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    // Perform actions to reinforce
+    unsigned long totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
+    std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
+    if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
+    {
+        std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
+
+        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
+            totalNbArmies += continentsOwned[i]->getBonus();
+        }
+
+        // Exchange process
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
+        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+
+        // Army placement
+        std::string answer;
+        int targetNbArmies = 0;
+        std::list<Node*>::iterator countryIter;
+        Node* currentNode;
+        while (totalNbArmies > 0)
+        {
+            for (countryIter = targetPlayer->getNodes()->begin(); countryIter != targetPlayer->getNodes()->end(); ++countryIter)
+            {
+                std::uniform_int_distribution<int> dist(0, totalNbArmies);
+                if (totalNbArmies >= 1)
+                {
+                    currentNode = (*countryIter);
+                    while(targetNbArmies <= 0 || targetNbArmies > totalNbArmies)
+                    {
+                        targetNbArmies = dist(mt);
+                    }
+                    totalNbArmies -= targetNbArmies;
+                    // Check if the country has already been added to the response list
+                    // if so, simply update the number of armies to add
+                    bool updatedExistingResponse = false;
+                    for (int i = 0; i < responses->size(); i++)
+                    {
+                        if (responses->at(i)->country->getPointerToCountry()->getName()
+                            == currentNode->getPointerToCountry()->getName())
+                        {
+                            responses->at(i)->nbArmies = responses->at(i)->nbArmies + targetNbArmies;
+                            updatedExistingResponse = true;
+                        }
+                    }
+                    if(!updatedExistingResponse)
+                    {
+                        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
+                    }
+                    targetNbArmies = 0; // Resets the value
+                }
+            }
+        }
+    }
+    return responses;
+}
+
+/**
+ * Attack phase for Random Player
+ * - Selects a random country to attack
+ * @param targetPlayer Player executing the phase
+ * @param players List of players
+ * @return
+ */
+AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    //Creating a map of possible attack vectors between nodes this player owns and ones that are adjacent and not owned
+    std::map<Node *, Node *> canAttack = std::map<Node *, Node *>();
+    std::list<Node *>::iterator nodeIterator;
+    for (nodeIterator = targetPlayer->getNodes()->begin(); nodeIterator != targetPlayer->getNodes()->end(); nodeIterator++) {
+        Node *playerOwnedNode = *nodeIterator;
+        if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
+            for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
+                if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
+                    canAttack.insert(make_pair(playerOwnedNode, adjacentNode));
+                }
+            }
+        }
+    }
+
+    if(!canAttack.empty()) { //Some possible attacks were found
+        std::uniform_int_distribution<int> dist(0, canAttack.size()-1);
+        int chosenCountryInd = dist(mt);
+        int counter = 0;
+        std::map<Node *, Node *>::iterator iterator;
+        for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
+
+            if (counter == chosenCountryInd)
+            {
+                //Determining who the defending player will be for this particular attack vector
+                Player *defendingPlayer;
+                for (int i = 0; i < players.size(); i++) {
+                    if (players.at(i) == targetPlayer) { //This player is our current player
+                        continue;
+                    }
+                    for (auto const &node : *(players.at(i)->getNodes())) {
+                        if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
+                            defendingPlayer = &(*players.at(i));
+                            break;
+                        }
+                    }
+                }
+                //return the first possible attack that the user approved
+                std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
+                std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
+                return new AttackResponse(attacker, defender);
+            }
+            ++counter;
+        }
+    }
+    return nullptr; //no attacks were found
+}
+
+/**
+ * Fortification phase for Random Player
+ * - Fortifies a random country
+ * @param map Game map
+ */
+FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
+{
+    // Random generator
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    bool fortify_can_be_done = false;
+    for(auto const &node : *(targetPlayer->getNodes()))
+    {
+        bool valid_source_node = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1)
+        {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes()))
+            {
+                for (auto const &node2 : node->getAdjList()) {
+                    //If the current node has any destination countries for fortification, it is a valid node from which to fortify
+                    if (node3->getCountry().getName() == node2->getCountry().getName())
+                    {
+                        valid_source_node = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if(valid_source_node)
+        {
+            fortify_can_be_done = true;
+            break;
+        }
+    }
+    if(!fortify_can_be_done)
+    {
+        return nullptr;
+    }
+
+    string sourceStr;
+    string destinationStr;
+    int armNum=0;
+    bool validInput = false;
+    Node* sourceCtr = nullptr;
+    Node* destCtr = nullptr;
+    std::set<Node*> destinations = std::set<Node*>();
+
+    for(auto const &node : *(targetPlayer->getNodes()))
+    {
+        bool valid_source_node = false;
+        if (node->getPointerToCountry()->getNbrArmies() > 1)
+        {
+            //Creating the list of destination countries:
+            for (auto const &node3 : *(targetPlayer->getNodes()))
+            {
+                for (auto const &node2 : node->getAdjList())
+                {
+                    if (node3->getCountry().getName() == node2->getCountry().getName())
+                    {
+                        valid_source_node = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    //cin.ignore(INT_MAX);
+    //this while loop asks for source and loops if not owned
+    do
+    {
+        std::uniform_int_distribution<int> sourceCountryRNG(0, targetPlayer->getNodes()->size() - 1);
+
+        int counter = 0;
+        int sourceCountryIndex = sourceCountryRNG(mt);
+
+        list<Node*>::const_iterator sourceCountryIterator;
+        for (sourceCountryIterator = targetPlayer->getNodes()->begin(); sourceCountryIterator != targetPlayer->getNodes()->end(); ++sourceCountryIterator)
+        {
+            if (counter == sourceCountryIndex)
+            {
+                sourceCtr = *sourceCountryIterator;
+                validInput = true;
+                break;
+            }
+            ++counter;
+        }
+        if(validInput)
+        {
+            //Creating the list of destination countries:
+            for (auto const &node : *(targetPlayer->getNodes()))
+            {
+                for (auto const &node2 : sourceCtr->getAdjList())
+                {
+                    if (node->getPointerToCountry()->getName() == node2->getPointerToCountry()->getName())
+                    {
+                        destinations.insert(node);
+                    }
+                }
+            }
+            if (destinations.empty())
+            {
+                destinations.clear();
+                validInput = false;
+            }
+        }
+    }   while(!validInput);
+
+    validInput = false;
+
+    //this while loop asks for destination and loops if not owned or if not connected to source
+    do
+    {
+        std::uniform_int_distribution<int> destinationCountryRNG(0, destinations.size() - 1);
+        int counter = 0;
+        int destinationCountryIndex = destinationCountryRNG(mt);
+
+        //Get destination and check if valid
+
+        list<Node*>::const_iterator destinationCountryIterator;
+        for (destinationCountryIterator = targetPlayer->getNodes()->begin(); destinationCountryIterator != targetPlayer->getNodes()->end(); ++destinationCountryIterator)
+        {
+            if (counter == destinationCountryIndex)
+            {
+                destCtr = *destinationCountryIterator;
+                validInput = true;
+                break;
+            }
+        }
+    }   while(!validInput);
+
+    validInput=false;
+
+
+    //Get number of armies to move and check if valid
+    std::uniform_int_distribution<int> randomArmies(0, sourceCtr->getCountry().getNbrArmies() - 1);
+    while(armNum >= sourceCtr->getCountry().getNbrArmies() || armNum <= 0)
+    {
+        armNum = randomArmies(mt);
+        validInput=true;
+    }
+    validInput=false;
+    return new FortifyResponse(armNum,sourceCtr,destCtr);
 }
 
 void Strategy::printStrat() {
