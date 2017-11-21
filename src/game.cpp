@@ -734,7 +734,17 @@ void Game::chooseGameScenario(vector<Player*>* players)
     for(int i = 0; i < nbrPlayers; i++)
     {
         cout << (*players)[i]->getName() << ": ";
-        (*players)[i]->getStrategy()->printStrat();
+
+        Strategy::StrategyType strategyType = (*players)[i]->getStrategy()->getType();
+        switch(strategyType)
+        {
+            case Strategy::ABSTRACT  : std::cout << "Abstract Strategy";   break;
+            case Strategy::AGGRESSIVE: std::cout << "Aggressive Strategy";   break;
+            case Strategy::BENEVOLENT: std::cout << "Benevolent Strategy";   break;
+            case Strategy::HUMAN: std::cout << "Human Strategy";   break;
+            case Strategy::CHEATER  : std::cout << "Cheater Strategy";   break;
+            case Strategy::RANDOM: std::cout << "Random Strategy";   break;
+        }
     }
     cout << endl << endl;
 }
@@ -803,14 +813,21 @@ void mainGameLoopDriver()
             delete reinforceResponse;
 
             AttackResponse *attackResponse;
-            do{
-                attackResponse = (*players)[i]->attack(play);
-                if(attackResponse){
-                    riskGame.performAttack(attackResponse);
-                    riskGame.notify();
-                }
-            }while(attackResponse);
-            delete attackResponse;
+            if ((*players)[i]->getStrategy()->getType() != Strategy::CHEATER)
+            {
+                do{
+                    attackResponse = (*players)[i]->attack(play);
+                    if(attackResponse){
+                        riskGame.performAttack(attackResponse);
+                        riskGame.notify();
+                    }
+                }while(attackResponse);
+                delete attackResponse;
+            }
+            else
+            {
+                // TODO: Call special attack for cheater
+            }
 
             FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
@@ -825,11 +842,11 @@ void mainGameLoopDriver()
                 winningPlayer = (*players)[i];
                 break;
             }
-            if(riskGame.currentTurn == 20) {
-                playerWins = true;
-                winningPlayer = (*players)[i];
-                break;
-            }
+            // if(riskGame.currentTurn == 20) {
+            //    playerWins = true;
+            //    winningPlayer = (*players)[i];
+            //    break;
+            //}
         }
     }
     cout << "===== GAME RESULTS =====" << endl;

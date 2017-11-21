@@ -949,21 +949,76 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
     return new FortifyResponse(armNum,sourceCtr,destCtr);
 }
 
-void Strategy::printStrat() {
-    cout << "I am an abstract strategy." << endl;
+/**
+ * Cheater Player Strategy Implementation
+ */
+
+/**
+ * Reinforcement phase for Cheater Player
+ * - Doubles the number of armies to place
+ *   on each country owned
+ * @param targetPlayer
+ * @param continents
+ * @return
+ */
+std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer, std::vector<Continent*> continents)
+{
+    // Perform actions to reinforce
+    std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
+    // Army placement
+    Node* currentNode;
+    std::list<Node*>::iterator countryIter;
+    for (countryIter = targetPlayer->getNodes()->begin(); countryIter != targetPlayer->getNodes()->end(); ++countryIter)
+    {
+        currentNode = *(countryIter);
+        int targetNbArmies = currentNode->getPointerToCountry()->getNbrArmies();
+        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
+    }
+    return responses;
 }
-void HumanStrategy::printStrat() {
-    cout << "I am a human strategy." << endl;
+
+/**
+ * Attack phase for Cheater Player
+ * - Automatically conquers all the
+ *   neighbors of all its countries
+ * @param targetPlayer
+ * @param players List of players
+ * @return
+ */
+AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+{
+    return nullptr;
 }
-void AggressiveStrategy::printStrat() {
-    cout << "I am an aggressive strategy." << endl;
+
+FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
+{
+    return nullptr;
 }
-void BenevolentStrategy::printStrat() {
-    cout << "I am a benevolent strategy." << endl;
+
+Strategy::StrategyType Strategy::getType()
+{
+    return Strategy::ABSTRACT;
 }
-void RandomStrategy::printStrat() {
-    cout << "I am a random strategy." << endl;
+
+Strategy::StrategyType HumanStrategy::getType()
+{
+    return Strategy::HUMAN;
 }
-void CheaterStrategy::printStrat() {
-    cout << "I am a cheater strategy." << endl;
+Strategy::StrategyType AggressiveStrategy::getType()
+{
+    return Strategy::AGGRESSIVE;
+}
+Strategy::StrategyType BenevolentStrategy::getType()
+{
+    return Strategy::BENEVOLENT;
+}
+
+Strategy::StrategyType RandomStrategy::getType()
+{
+    return Strategy::RANDOM;
+}
+
+Strategy::StrategyType CheaterStrategy::getType()
+{
+    return Strategy::CHEATER;
 }
