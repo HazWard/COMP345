@@ -37,7 +37,7 @@ private:
     StatObserver statObserver;
 };
 
-class CuntinentDecorator : public Decorator{
+class ContinentDecorator : public Decorator{
 
 public:
     void update();
