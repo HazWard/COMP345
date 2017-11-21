@@ -8,7 +8,7 @@ class StatObserverDecorator : public Observer {
      * Abstract Decorator type for the three StatObserver decorators.
      */
 public:
-    virtual void update() = 0;
+    virtual void update(int code) = 0;
     virtual void display() = 0;
 
 private:
@@ -20,7 +20,7 @@ class DominationDecorator : public StatObserverDecorator {
 
 public:
     DominationDecorator(StatObserver *so) : statObserver(so) {};
-    void update();
+    void update(int code);
     void display();
 
 private:
@@ -31,7 +31,7 @@ class PlayerHandDecorator : public StatObserverDecorator {
 
 public:
     PlayerHandDecorator(StatObserver *so) : statObserver(so) {};
-    void update();
+    void update(int code);
     void display();
 
 private:
@@ -42,7 +42,7 @@ class ContinentDecorator : public StatObserverDecorator {
 
 public:
     ContinentDecorator(StatObserver *so) : statObserver(so) {};
-    void update();
+    void update(int code);
     void display();
 
 private:

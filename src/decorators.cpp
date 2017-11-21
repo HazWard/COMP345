@@ -2,7 +2,7 @@
 #include "../include/decorators.h"
 #include "../include/game.h"
 
-void DominationDecorator::update()
+void DominationDecorator::update(int code)
 {
     this->display();
     // pausing system
@@ -13,7 +13,7 @@ void DominationDecorator::update()
 
 void DominationDecorator::display()
 {
-    statObserver.display();
+    statObserver->display();
     Game* game = static_cast <Game*> (model);
     vector<Player*>* players = game->getArrayPlayers();
 
@@ -30,7 +30,7 @@ void DominationDecorator::display()
     }
 }
 
-void PlayerHandDecorator::update()
+void PlayerHandDecorator::update(int code)
 {
     this->display();
     // pausing system
@@ -41,13 +41,13 @@ void PlayerHandDecorator::update()
 
 void PlayerHandDecorator::display()
 {
-    statObserver.display();
+    statObserver->display();
     //TODO Add player hand behaviour to stat observer
 
 
 }
 
-void ContinentDecorator::update()
+void ContinentDecorator::update(int code)
 {
     this->display();
     // pausing system
@@ -58,6 +58,6 @@ void ContinentDecorator::update()
 
 void ContinentDecorator::display()
 {
-    statObserver.display();
+    statObserver->display();
     //TODO Add Continent behaviour to stat observer
 }

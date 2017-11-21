@@ -21,7 +21,7 @@ public:
     Subject();
     void attach(Observer *observer);
     void detach(Observer *observer);
-    void notify();
+    void notify(int code);
 };
 
 class Observer {
@@ -35,7 +35,7 @@ public:
     Subject *model;
     Observer();
     Observer(Subject *subject) : model(subject) {};
-    virtual void update() {};
+    virtual void update(int code) {};
 protected:
     Subject *getSubject();
 };

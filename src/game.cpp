@@ -765,9 +765,10 @@ void mainGameLoopDriver()
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
     Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)););
-    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)););
-    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)););
+    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
 
     //Attaching observers
     riskGame.attach(phaseObserver);
@@ -789,7 +790,7 @@ void mainGameLoopDriver()
             bool reinforcements_were_made = reinforcementsMade(reinforceResponse);
             if(reinforcements_were_made){
                 riskGame.performReinforce(reinforceResponse);
-                riskGame.notify();
+                riskGame.notify(0);
             }
             delete reinforceResponse;
 
@@ -798,7 +799,7 @@ void mainGameLoopDriver()
                 attackResponse = (*players)[i]->attack(play);
                 if(attackResponse){
                     riskGame.performAttack(attackResponse);
-                    riskGame.notify();
+                    riskGame.notify(0);
                 }
             }while(attackResponse);
             delete attackResponse;
@@ -806,7 +807,7 @@ void mainGameLoopDriver()
             FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
                 riskGame.performFortify(fortifyResponse);
-                riskGame.notify();
+                riskGame.notify(0);
             }
             delete fortifyResponse;
 
@@ -849,6 +850,7 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
         countriesReinforces.push_back(response->country);
         armiesPlaced.push_back(response->nbArmies);
     }
+    delete this->currentEvent;
     this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
 }
 
@@ -918,6 +920,7 @@ bool Game::performAttack(AttackResponse* response) {
         defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
     }
 
+    delete this->currentEvent;
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
     return true;
@@ -931,6 +934,7 @@ void Game::performFortify(FortifyResponse* response) {
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
 
     //update currentEvent and return it
+    delete this->currentEvent;
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
 
 }
