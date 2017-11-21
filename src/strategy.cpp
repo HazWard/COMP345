@@ -31,6 +31,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
     // Perform actions to reinforce
     unsigned long totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
     std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
+    bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
         std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
@@ -40,9 +41,22 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
         }
 
         // Exchange process
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+        if (targetPlayer->getHand()->exchange(Card::INFANTRY))
+        {
+            totalNbArmies += Player::INFANTRY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::ARTILLERY))
+        {
+            totalNbArmies += Player::ARTILLERY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::CAVALRY))
+        {
+            totalNbArmies += Player::CAVALRY_BONUS;
+            exchangeOccured = true;
+        }
+
 
         // Army placement
         std::string answer;
@@ -85,7 +99,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
                         }
                         if(!updatedExistingResponse)
                         {
-                            responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
+                            responses->push_back(new ReinforceResponse(targetNbArmies, currentNode, exchangeOccured));
                         }
                         targetNbArmies = 0; // Resets the value
                     }
@@ -155,7 +169,7 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
             //return the first possible attack that the user approved
             std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
             std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
-            return new AttackResponse(attacker, defender);
+            return new AttackResponse(attacker, defender, false);
         }
     }
     return nullptr; //either no attacks were found or the user broke out of the loop by not selecting an attack
@@ -358,6 +372,7 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
     // Reinforce the strongest country
     std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
     int totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
+    bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
         // Get continent bonuses
@@ -366,12 +381,25 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
             totalNbArmies += continentsOwned[i]->getBonus();
         }
 
-        // Exchange process
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
 
-        responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry));
+        // Exchange process
+        if (targetPlayer->getHand()->exchange(Card::INFANTRY))
+        {
+            totalNbArmies += Player::INFANTRY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::ARTILLERY))
+        {
+            totalNbArmies += Player::ARTILLERY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::CAVALRY))
+        {
+            totalNbArmies += Player::CAVALRY_BONUS;
+            exchangeOccured = true;
+        }
+
+        responses->push_back(new ReinforceResponse(totalNbArmies, strongestCountry, exchangeOccured));
     }
     return responses;
 }
@@ -436,7 +464,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
     }
 
     std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
-    return new AttackResponse(attacker, defender);
+    return new AttackResponse(attacker, defender, false);
 }
 
 /**
@@ -535,6 +563,7 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
     std::vector<ReinforceResponse *> *responses = new std::vector<ReinforceResponse *>();
     int totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
 
+    bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES) {
         // Get continent bonuses
         std::vector<Continent *> continentsOwned = targetPlayer->getsContinentsOwned(continents);
@@ -543,12 +572,21 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
         }
 
         // Exchange process
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies
-                                                                            : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies
-                                                                             : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies
-                                                                           : totalNbArmies;
+        if (targetPlayer->getHand()->exchange(Card::INFANTRY))
+        {
+            totalNbArmies += Player::INFANTRY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::ARTILLERY))
+        {
+            totalNbArmies += Player::ARTILLERY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::CAVALRY))
+        {
+            totalNbArmies += Player::CAVALRY_BONUS;
+            exchangeOccured = true;
+        }
 
         std::list<Node *>::iterator countryIter;
 
@@ -579,8 +617,8 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
         }
 
         int targetNbArmies = (totalNbArmies % 2 == 0) ? totalNbArmies / 2 : (totalNbArmies + 1) / 2;
-        responses->push_back(new ReinforceResponse(totalNbArmies - targetNbArmies, weakestCountry));
-        responses->push_back(new ReinforceResponse(targetNbArmies, secondWeakestCountry));
+        responses->push_back(new ReinforceResponse(totalNbArmies - targetNbArmies, weakestCountry, exchangeOccured));
+        responses->push_back(new ReinforceResponse(targetNbArmies, secondWeakestCountry, exchangeOccured));
     }
     return responses;
 }
@@ -688,6 +726,7 @@ std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player *targetPlayer,
     // Perform actions to reinforce
     unsigned long totalNbArmies = targetPlayer->getNodes()->size() / Player::MIN_NUMBER_OF_ARMIES;
     std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
+    bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
         std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
@@ -697,9 +736,22 @@ std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player *targetPlayer,
         }
 
         // Exchange process
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::INFANTRY)) ? Player::INFANTRY_BONUS + totalNbArmies : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::ARTILLERY)) ? Player::ARTILLERY_BONUS + totalNbArmies : totalNbArmies;
-        totalNbArmies = (targetPlayer->getHand()->exchange(Card::CAVALRY)) ? Player::CAVALRY_BONUS + totalNbArmies : totalNbArmies;
+        if (targetPlayer->getHand()->exchange(Card::INFANTRY))
+        {
+            totalNbArmies += Player::INFANTRY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::ARTILLERY))
+        {
+            totalNbArmies += Player::ARTILLERY_BONUS;
+            exchangeOccured = true;
+        }
+        if (targetPlayer->getHand()->exchange(Card::CAVALRY))
+        {
+            totalNbArmies += Player::CAVALRY_BONUS;
+            exchangeOccured = true;
+        }
+
 
         // Army placement
         std::string answer;
@@ -733,7 +785,7 @@ std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player *targetPlayer,
                     }
                     if(!updatedExistingResponse)
                     {
-                        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
+                        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode, exchangeOccured));
                     }
                     targetNbArmies = 0; // Resets the value
                 }
@@ -794,7 +846,7 @@ AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player 
                 //return the first possible attack that the user approved
                 std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
                 std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
-                return new AttackResponse(attacker, defender);
+                return new AttackResponse(attacker, defender, false);
             }
             ++counter;
         }
@@ -972,7 +1024,7 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
     {
         currentNode = *(countryIter);
         int targetNbArmies = currentNode->getPointerToCountry()->getNbrArmies();
-        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode));
+        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode, true));
     }
     return responses;
 }
@@ -987,13 +1039,25 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
  */
 AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
-    return nullptr;
+    // Custom response with Cheater flag enabled
+    return new AttackResponse(nullptr, nullptr, true);
 }
 
+/**
+ * Fortification phase for Cheater Player
+ * - doubles the number of armies on its countries
+ *   that have neighbors that belong to other players
+ * @param targetPlayer
+ * @param map Game map
+ * @return
+ */
 FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     return nullptr;
 }
+
+
+// Methods to get Strategy Type
 
 Strategy::StrategyType Strategy::getType()
 {

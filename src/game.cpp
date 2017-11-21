@@ -813,21 +813,14 @@ void mainGameLoopDriver()
             delete reinforceResponse;
 
             AttackResponse *attackResponse;
-            if ((*players)[i]->getStrategy()->getType() != Strategy::CHEATER)
-            {
-                do{
-                    attackResponse = (*players)[i]->attack(play);
-                    if(attackResponse){
-                        riskGame.performAttack(attackResponse);
-                        riskGame.notify();
-                    }
-                }while(attackResponse);
-                delete attackResponse;
-            }
-            else
-            {
-                // TODO: Call special attack for cheater
-            }
+            do{
+                attackResponse = (*players)[i]->attack(play);
+                if(attackResponse){
+                    riskGame.performAttack(attackResponse);
+                    riskGame.notify();
+                }
+            }while(attackResponse);
+            delete attackResponse;
 
             FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
@@ -884,6 +877,14 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 bool Game::performAttack(AttackResponse* response) {
     if(!response)
         return true;
+
+    if (response->isCheater)
+    {
+        // Conquers all the neighbors of all its countries
+        // TODO: Write implementation
+        return true;
+    }
+
     bool victory = false;
     int rounds = 1;
     std::vector<int> *totalAttackerRolls = new std::vector<int>();
