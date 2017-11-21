@@ -9,14 +9,12 @@ using namespace std;
 
 StatObserver::StatObserver() :Observer() {}
 
-void StatObserver::update(int code) {
-    if(code == NEW_TURN) {
-        this->display();
-        // pausing system
-        cin.ignore(INT_MAX);
-        std::cout << '\n' << "Press Enter to continue";
-        cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
-    }
+void StatObserver::update() {
+    this->display();
+    // Pausing System
+    cout << '\n' << "Press Enter to continue";
+    cin.ignore();
+    cin.get();
 }
 
 void StatObserver::display()
@@ -27,13 +25,12 @@ void StatObserver::display()
 
 PhaseObserver::PhaseObserver() :Observer() {}
 
-void PhaseObserver::update(int code) {
-    if(code != NEW_TURN) {
-        this->display();
-        cin.ignore(INT_MAX);
-        cout << '\n' << "Press Enter to continue";
-        cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
-    }
+void PhaseObserver::update() {
+    this->display();
+    // Pausing System
+    cout << '\n' << "Press Enter to continue";
+    cin.ignore();
+    cin.get();
 }
 
 void PhaseObserver::display() {
