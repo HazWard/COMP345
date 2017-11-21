@@ -10,11 +10,11 @@ using namespace std;
 StatObserver::StatObserver() :Observer() {}
 
 void StatObserver::update() {
-        this->display();
-        // pausing system
-        cin.ignore(INT_MAX);
-        std::cout << '\n' << "Press Enter to continue";
-        cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+    this->display();
+    // Pausing System
+    cout << '\n' << "Press Enter to continue";
+    cin.ignore();
+    cin.get();
 }
 
 void StatObserver::display()
@@ -41,9 +41,10 @@ PhaseObserver::PhaseObserver() :Observer() {}
 
 void PhaseObserver::update() {
     this->display();
-    cin.ignore(INT_MAX);
+    // Pausing System
     cout << '\n' << "Press Enter to continue";
-    cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+    cin.ignore();
+    cin.get();
 }
 
 void PhaseObserver::display() {
