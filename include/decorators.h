@@ -6,7 +6,8 @@
 #include "../include/observer.h"
 #include "../include/views.h"
 
-class Decorator : public Observer{
+class Decorator : public Observer
+{
 
 public:
     void update();
@@ -17,7 +18,8 @@ private:
 
 };
 
-class DominationDecorator : public Decorator{
+class DominationDecorator : public Decorator
+{
 
 public:
     void update();
@@ -27,7 +29,8 @@ private:
     StatObserver statObserver;
 };
 
-class PlayerHandDecorator : public Decorator{
+class PlayerHandDecorator : public Decorator
+{
 
 public:
     void update();
@@ -37,7 +40,8 @@ private:
     StatObserver statObserver;
 };
 
-class ContinentDecorator : public Decorator{
+class ContinentDecorator : public Decorator
+{
 
 public:
     void update();
