@@ -835,11 +835,12 @@ void mainGameLoopDriver()
                 winningPlayer = (*players)[i];
                 break;
             }
-            // if(riskGame.currentTurn == 20) {
-            //    playerWins = true;
-            //    winningPlayer = (*players)[i];
-            //    break;
-            //}
+            if (riskGame.currentTurn == 20)
+            {
+                playerWins = true;
+                winningPlayer = (*players)[i];
+                break;
+            }
         }
     }
     cout << "===== GAME RESULTS =====" << endl;
