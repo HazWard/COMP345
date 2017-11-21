@@ -4,7 +4,7 @@
 
 void DominationDecorator::update(int code)
 {
-    if(code == NEW_CONQUEST) {
+    if(code == NEW_CONQUEST || code == CONTINENT_CONTROL) {
         this->display();
         // pausing system
         cin.ignore(INT_MAX);
