@@ -1,52 +1,50 @@
-//
-// Created by hanna on 2017-11-20.
-//
-#pragma once;
+#pragma once
 
 #include "../include/observer.h"
 #include "../include/views.h"
 
-class Decorator : public Observer
-{
-
+class StatObserverDecorator : public Observer {
+    /**
+     * Abstract Decorator type for the three StatObserver decorators.
+     */
 public:
-    void update();
-    void display();
+    virtual void update() = 0;
+    virtual void display() = 0;
 
 private:
     StatObserver statObserver;
 
 };
 
-class DominationDecorator : public Decorator
-{
+class DominationDecorator : public StatObserverDecorator {
 
 public:
+    DominationDecorator(StatObserver *so) : statObserver(so) {};
     void update();
     void display();
 
 private:
-    StatObserver statObserver;
+    StatObserver *statObserver;
 };
 
-class PlayerHandDecorator : public Decorator
-{
+class PlayerHandDecorator : public StatObserverDecorator {
 
 public:
+    PlayerHandDecorator(StatObserver *so) : statObserver(so) {};
     void update();
     void display();
 
 private:
-    StatObserver statObserver;
+    StatObserver *statObserver;
 };
 
-class ContinentDecorator : public Decorator
-{
+class ContinentDecorator : public StatObserverDecorator {
 
 public:
+    ContinentDecorator(StatObserver *so) : statObserver(so) {};
     void update();
     void display();
 
 private:
-    StatObserver statObserver;
+    StatObserver *statObserver;
 };

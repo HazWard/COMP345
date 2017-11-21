@@ -1,7 +1,5 @@
-#pragma once;
-
-#include "../include/decorators.h"
 #include <iostream>
+#include "../include/decorators.h"
 #include "../include/game.h"
 
 void DominationDecorator::update()
@@ -45,6 +43,8 @@ void PlayerHandDecorator::display()
 {
     statObserver.display();
     //TODO Add player hand behaviour to stat observer
+
+
 }
 
 void ContinentDecorator::update()

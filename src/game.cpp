@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include "../include/events.h"
 #include "../include/views.h"
+#include "../include/decorators.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -763,11 +764,17 @@ void mainGameLoopDriver()
 
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
-    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame), riskGame.currentTurn);
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)););
+    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)););
+    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)););
 
     //Attaching observers
     riskGame.attach(phaseObserver);
     riskGame.attach(statObserver);
+    riskGame.attach(domObserver);
+    riskGame.attach(handObserver);
+    riskGame.attach(continentObserver);
 
     //Main game loop
     while(!playerWins)

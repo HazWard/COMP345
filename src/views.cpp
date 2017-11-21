@@ -19,22 +19,8 @@ void StatObserver::update() {
 
 void StatObserver::display()
 {
-    cout << endl << "-------------Game Statistics-------------" << endl;
     Game* game = static_cast <Game*> (model);
-    vector<Player*>* players = game->getArrayPlayers();
-
-    for(int i = 0; i < game->getNbrPlayers(); i++)
-    {
-        int thisPlayerPercentage = floor((players->at(i)->getNodes()->size()/ (double)game->getMapCountries()->getVectorOfNodes()->size() * 100));
-        cout << players->at(i)->getName() << " owns " << thisPlayerPercentage << "% of the map : ";
-
-        for(int j = 0; j <= thisPlayerPercentage; j++)
-        {
-            cout << "*";
-        }
-        cout << std::endl;
-    }
-    cout << endl << "-----------------------------------------" << endl;
+    cout << "================== Current Turn: " << game->currentTurn << " ==================";
 }
 
 PhaseObserver::PhaseObserver() :Observer() {}
