@@ -4,11 +4,13 @@
 
 void DominationDecorator::update(int code)
 {
-    this->display();
-    // pausing system
-    cin.ignore(INT_MAX);
-    std::cout << '\n' << "Press Enter to continue";
-    cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+    if(code == NEW_CONQUEST) {
+        this->display();
+        // pausing system
+        cin.ignore(INT_MAX);
+        std::cout << '\n' << "Press Enter to continue";
+        cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+    }
 }
 
 void DominationDecorator::display()
@@ -32,11 +34,13 @@ void DominationDecorator::display()
 
 void PlayerHandDecorator::update(int code)
 {
-    this->display();
-    // pausing system
-    cin.ignore(INT_MAX);
-    std::cout << '\n' << "Press Enter to continue";
-    cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+    if(code == HAND_CHANGE) {
+        this->display();
+        // pausing system
+        cin.ignore(INT_MAX);
+        std::cout << '\n' << "Press Enter to continue";
+        cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+    }
 }
 
 void PlayerHandDecorator::display()
@@ -49,11 +53,13 @@ void PlayerHandDecorator::display()
 
 void ContinentDecorator::update(int code)
 {
-    this->display();
-    // pausing system
-    cin.ignore(INT_MAX);
-    std::cout << '\n' << "Press Enter to continue";
-    cin.ignore(std::numeric_limits<streamsize>::max(),'\n');
+    if(code == CONTINENT_CONTROL) {
+        this->display();
+        // pausing system
+        cin.ignore(INT_MAX);
+        std::cout << '\n' << "Press Enter to continue";
+        cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
+    }
 }
 
 void ContinentDecorator::display()

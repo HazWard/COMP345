@@ -782,14 +782,16 @@ void mainGameLoopDriver()
     {
         for(int i = 0; i < players->size(); i++)
         {
+            riskGame.notify(NEW_TURN);
             cout << "***************** " << (*players)[i]->getName() << "'s turn *****************" << std::endl;
             //monitor current player
             riskGame.currentPlayer = (*players)[i];
             // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
-            bool reinforcements_were_made = reinforcementsMade(reinforceResponse);
-            if(reinforcements_were_made){
+
+            if(reinforcementsMade(reinforceResponse)){
                 riskGame.performReinforce(reinforceResponse);
+                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
                 riskGame.notify(0);
             }
             delete reinforceResponse;
@@ -798,7 +800,10 @@ void mainGameLoopDriver()
             do{
                 attackResponse = (*players)[i]->attack(play);
                 if(attackResponse){
-                    riskGame.performAttack(attackResponse);
+                    bool conquest = riskGame.performAttack(attackResponse);
+                    if(conquest)
+                        riskGame.notify(NEW_CONQUEST);
+                    //TODO: Send the code CONTINENT_CONTROL to notify() when a player gains/loses control of a continent
                     riskGame.notify(0);
                 }
             }while(attackResponse);
@@ -830,6 +835,7 @@ void mainGameLoopDriver()
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 }
+
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)
 {
     //If we can go through this loop, that means some reinforcements were made.
@@ -839,6 +845,7 @@ static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)
     }
     return false;
 }
+
 void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 {
     int tempTotal;
@@ -856,10 +863,12 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 
 /**
  * Helper method to perform attacking phase
+ * returns true when a battle resulted in a new conquest for a player, and false otherwise
  */
 bool Game::performAttack(AttackResponse* response) {
-    if(!response)
-        return true;
+    if(!response) //response object is empty return false
+        return false;
+
     bool victory = false;
     int rounds = 1;
     std::vector<int> *totalAttackerRolls = new std::vector<int>();
@@ -923,7 +932,8 @@ bool Game::performAttack(AttackResponse* response) {
     delete this->currentEvent;
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
-    return true;
+
+    return victory ? true : false; //returns true if victory false otherwise
 }
 
 void Game::performFortify(FortifyResponse* response) {

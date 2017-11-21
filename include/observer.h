@@ -6,6 +6,11 @@
 #include <list>
 #include "../include/events.h"
 
+static const int NEW_TURN = 10;
+static const int NEW_CONQUEST = 20;
+static const int HAND_CHANGE = 30;
+static const int CONTINENT_CONTROL = 40;
+
 //Forward declaration of Observer
 class Observer;
 
