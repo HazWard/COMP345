@@ -9,6 +9,7 @@
 #include <set>
 #include <map>
 #include "../include/player.h"
+#include "../include/strategy.h"
 
 
 /*
@@ -115,7 +116,7 @@ std::vector<ReinforceResponse*>* Player::reinforce(vector<Continent*> continents
     return this->strategy->reinforce(this, continents);
 }
 
-AttackResponse* Player::attack(std::vector<Player *> &players)
+AttackResponse* Player::attack(std::vector<Player *> *players)
 {
     return this->strategy->attack(this, players);
 }
@@ -199,23 +200,4 @@ void Player::printNodes()
         cout << c.getName() << "; ";
     }
     cout << endl << endl;
-}
-vector<Node*> Player::sortByStrongest() {
-    std::vector<Node*> strongestCountries;
-    list<Node*>::const_iterator countryIterator;
-    for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
-        strongestCountries.push_back(*countryIterator);
-
-    for (int i = 0; i < strongestCountries.size(); i++) {
-        for (int j = 0; j < strongestCountries.size() - i - 1; j++) {
-            int a = strongestCountries[j]->getCountry().getNbrArmies();
-            int b = strongestCountries[j+1]->getCountry().getNbrArmies();
-            if (a < b) {
-                Node *temp = strongestCountries[j];
-                strongestCountries[j] = strongestCountries[j + 1];
-                strongestCountries[j + 1] = temp;
-            }
-        }
-    }
-    return strongestCountries;
 }

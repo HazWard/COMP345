@@ -24,10 +24,11 @@ class Strategy
 {
 public:
     virtual std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents) = 0;
-    virtual AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players) = 0;
+    virtual AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players) = 0;
     virtual FortifyResponse* fortify(Player* targetPlayer, Graph& map) = 0;
     bool containsNode(Player* targetPlayer, Node &node);
     virtual void printStrat();
+    vector<Node*>* sortByStrongest(list<Node*> *nodes);
 };
 
 /**
@@ -38,7 +39,7 @@ class HumanStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
     void printStrat();
 };
@@ -53,7 +54,7 @@ class AggressiveStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
     void printStrat();
 };
@@ -68,7 +69,7 @@ class BenevolentStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
     void printStrat();
 };

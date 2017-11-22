@@ -737,8 +737,7 @@ void mainGameLoopDriver()
 
     riskGame.assignCountriesToPlayers();
 
-    vector<Player*> play = *(riskGame.getArrayPlayers());
-    *players = play;
+    players = riskGame.getArrayPlayers();
 
     //Displaying all the continents in the graph
     for(int i = 0; i < continents.size(); i++)
@@ -748,7 +747,7 @@ void mainGameLoopDriver()
 
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
-        play[i]->printNodes();
+        players->at(i)->printNodes();
     }
     riskGame.placeArmiesAutomatic();
 
@@ -783,9 +782,9 @@ void mainGameLoopDriver()
         for(int i = 0; i < players->size(); i++)
         {
             riskGame.notify(NEW_TURN);
-            cout << "***************** " << (*players)[i]->getName() << "'s turn *****************" << std::endl;
+            cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
             //monitor current player
-            riskGame.currentPlayer = (*players)[i];
+            riskGame.currentPlayer = players->at(i);
             // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
 
@@ -798,7 +797,7 @@ void mainGameLoopDriver()
 
             AttackResponse *attackResponse;
             do{
-                attackResponse = (*players)[i]->attack(play);
+                attackResponse = players->at(i)->attack(players);
                 if(attackResponse){
                     //Counting how many continents the attacker and defender have before the attack is done
                     int attackerCont = attackResponse->attacker->first->getsContinentsOwned(*riskGame.getContinents()).size();
@@ -819,7 +818,7 @@ void mainGameLoopDriver()
             }while(attackResponse);
             delete attackResponse;
 
-            FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
+            FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
                 riskGame.performFortify(fortifyResponse);
                 riskGame.notify(0);
@@ -827,14 +826,14 @@ void mainGameLoopDriver()
             delete fortifyResponse;
 
             //After each player's turn, we check if one player owns all the countries in the map
-            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
+            if(players->at(i)->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
                 playerWins = true;
-                winningPlayer = (*players)[i];
+                winningPlayer = players->at(i);
                 break;
             }
             if(riskGame.currentTurn == 20) {
                 playerWins = true;
-                winningPlayer = (*players)[i];
+                winningPlayer = players->at(i);
                 break;
             }
         }

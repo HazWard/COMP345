@@ -8,7 +8,7 @@ void DominationDecorator::update(int code)
         this->display();
         // pausing system
         cin.ignore(INT_MAX);
-        std::cout << '\n' << "Press Enter to continue";
+        std::cout << '\n' << "Press Enter to continue" << endl;
         cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
     }
 }
@@ -38,7 +38,7 @@ void PlayerHandDecorator::update(int code)
         this->display();
         // pausing system
         cin.ignore(INT_MAX);
-        std::cout << '\n' << "Press Enter to continue";
+        std::cout << '\n' << "Press Enter to continue" << endl;
         cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
     }
 }
@@ -57,7 +57,7 @@ void ContinentDecorator::update(int code)
         this->display();
         // pausing system
         cin.ignore(INT_MAX);
-        std::cout << '\n' << "Press Enter to continue";
+        std::cout << '\n' << "Press Enter to continue" << endl;
         cin.ignore(std::numeric_limits<streamsize>::max(), '\n');
     }
 }

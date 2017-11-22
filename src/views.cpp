@@ -9,12 +9,14 @@ using namespace std;
 
 StatObserver::StatObserver() :Observer() {}
 
-void StatObserver::update() {
-    this->display();
-    // Pausing System
-    cout << '\n' << "Press Enter to continue";
-    cin.ignore();
-    cin.get();
+void StatObserver::update(int code) {
+    if(code == NEW_TURN) {
+        this->display();
+        // Pausing System
+        cout << '\n' << "Press Enter to continue";
+        cin.ignore();
+        cin.get();
+    }
 }
 
 void StatObserver::display()
@@ -25,12 +27,14 @@ void StatObserver::display()
 
 PhaseObserver::PhaseObserver() :Observer() {}
 
-void PhaseObserver::update() {
-    this->display();
-    // Pausing System
-    cout << '\n' << "Press Enter to continue";
-    cin.ignore();
-    cin.get();
+void PhaseObserver::update(int code) {
+    if(code != NEW_TURN) {
+        this->display();
+        // Pausing System
+        cout << '\n' << "Press Enter to continue";
+        cin.ignore();
+        cin.get();
+    }
 }
 
 void PhaseObserver::display() {
