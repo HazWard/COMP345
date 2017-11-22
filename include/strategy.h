@@ -27,8 +27,9 @@ public:
     virtual AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players) = 0;
     virtual FortifyResponse* fortify(Player* targetPlayer, Graph& map) = 0;
     bool containsNode(Player* targetPlayer, Node &node);
-    virtual void printStrat();
     vector<Node*>* sortByStrongest(list<Node*> *nodes);
+    enum StrategyType { ABSTRACT = 0, HUMAN = 1, AGGRESSIVE = 2, BENEVOLENT = 3, RANDOM = 4, CHEATER = 5 };
+    virtual StrategyType getType();
 };
 
 /**
@@ -41,7 +42,7 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    void printStrat();
+    StrategyType getType();
 };
 
 /**
@@ -56,7 +57,7 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    void printStrat();
+    StrategyType getType();
 };
 
 /**
@@ -71,5 +72,36 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    void printStrat();
+    StrategyType getType();
+};
+
+/**
+ * Random Computer Player Strategy
+ * - Reinforces a random country
+ * - Attacks a random number of times a random country
+ * - Fortifies a random country
+ */
+class RandomStrategy : public Strategy
+{
+public:
+    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    FortifyResponse* fortify(Player* targetPlayer, Graph& map);
+    StrategyType getType();
+};
+
+/**
+ * Cheater Computer Player Strategy
+ * - When he reinforces, the number of armies of each of its countries is doubled
+ * - When he attacks, all of the neighboring countries of the attacking country are conquered by the Cheater
+ * - When he fortifies, the number of armies of all of its countries that have
+ *   neighbors belonging to other players doubles.
+ */
+class CheaterStrategy : public Strategy
+{
+public:
+    std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    FortifyResponse* fortify(Player* targetPlayer, Graph& map);
+    StrategyType getType();
 };

@@ -173,7 +173,7 @@ vector<Continent*> Player::getsContinentsOwned(vector<Continent*> continents) {
             list<Node *>::const_iterator countryIterator;
             //We iterate through all the countries the player owns and see if he owns the current country from the continent we are checking
             for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator) {
-                if (nodesInCurrentContinent[j]->getCountry() == (*countryIterator)->getCountry()) {
+                if (nodesInCurrentContinent[j]->getPointerToCountry() == (*countryIterator)->getPointerToCountry()) {
                     countryOwned = true;
                     break;
                 }

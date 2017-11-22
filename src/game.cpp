@@ -607,7 +607,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
             case 2: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
             case 3: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
             case 4: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
-            case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n";
+            case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
         }
     }
 
@@ -616,9 +616,9 @@ void Game::chooseGameScenario(vector<Player*>* players)
     while(!validScenario) {
         cout << "\n What shall you choose? ";
         cin >> scenarioChosen;
-        if(scenarioChosen <= 0 || scenarioChosen >= 7)
+        if(scenarioChosen <= 0 || scenarioChosen >= 8)
         {
-            cout << "Please enter a scenario from 1 to 6." << endl;
+            cout << "Please enter a scenario from 1 to 7." << endl;
             validScenario = false;
         } else validScenario = true;
     }
@@ -635,7 +635,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
                     case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
                     case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
                     case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy()); break;
                 }
             }
         } break;
@@ -650,7 +650,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
                     case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
                     case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                     case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                 }
             }
         } break;
@@ -665,7 +665,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
                     case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
                     case 3: (*players)[i]->setStrategy(new HumanStrategy()); break;
                     case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy());
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy()); break;
                 }
             }
         } break;
@@ -680,7 +680,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
                     case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                     case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                     case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy());
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
                 }
             }
         } break;
@@ -714,12 +714,38 @@ void Game::chooseGameScenario(vector<Player*>* players)
                 }
             }
         }
+        /*
+        case 7:
+        {
+            for(int i = 0; i < nbrPlayers; i++)
+            {
+                switch(i)
+                {
+                    case 0: (*players)[i]->setStrategy(new CheaterStrategy()); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                }
+            }
+        }*/
 }
     //Testing the type of strategy of each player:
     for(int i = 0; i < nbrPlayers; i++)
     {
         cout << (*players)[i]->getName() << ": ";
-        (*players)[i]->getStrategy()->printStrat();
+
+        Strategy::StrategyType strategyType = (*players)[i]->getStrategy()->getType();
+        switch(strategyType)
+        {
+            case Strategy::ABSTRACT  : std::cout << "Abstract Strategy";   break;
+            case Strategy::AGGRESSIVE: std::cout << "Aggressive Strategy";   break;
+            case Strategy::BENEVOLENT: std::cout << "Benevolent Strategy";   break;
+            case Strategy::HUMAN: std::cout << "Human Strategy";   break;
+            case Strategy::CHEATER  : std::cout << "Cheater Strategy";   break;
+            case Strategy::RANDOM: std::cout << "Random Strategy";   break;
+        }
     }
     cout << endl << endl;
 }
@@ -831,7 +857,8 @@ void mainGameLoopDriver()
                 winningPlayer = players->at(i);
                 break;
             }
-            if(riskGame.currentTurn == 20) {
+            if (riskGame.currentTurn == 20)
+            {
                 playerWins = true;
                 winningPlayer = players->at(i);
                 break;
@@ -878,8 +905,15 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
  * returns true when a battle resulted in a new conquest for a player, and false otherwise
  */
 bool Game::performAttack(AttackResponse* response) {
-    if(!response) //response object is empty return false
-        return false;
+    if(!response)
+        return true;
+
+    if (response->isCheater)
+    {
+        // Conquers all the neighbors of all its countries
+        // TODO: Write implementation
+        return true;
+    }
 
     bool victory = false;
     int rounds = 1;
