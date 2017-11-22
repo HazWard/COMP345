@@ -1,3 +1,4 @@
+#include "../include/player.h"
 #include <iostream>
 #include <list>
 #include <algorithm>
@@ -110,7 +111,7 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
     return responses;
 }
 
-AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *> *players)
 {
     cout << targetPlayer->getName() << ", do you wish to attack? (y/n)";
     std::string willAttack;
@@ -154,13 +155,13 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
 
             //Determining who the defending player will be for this particular attack vector
             Player *defendingPlayer;
-            for (int i = 0; i < players.size(); i++) {
-                if (players.at(i) == targetPlayer) { //This player is our current player
+            for (int i = 0; i < players->size(); i++) {
+                if (players->at(i) == targetPlayer) { //This player is our current player
                     continue;
                 }
-                for (auto const &node : *(players.at(i)->getNodes())) {
+                for (auto const &node : *(players->at(i)->getNodes())) {
                     if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
-                        defendingPlayer = &(*players.at(i));
+                        defendingPlayer = &(*players->at(i));
                         break;
                     }
                 }
@@ -409,20 +410,21 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
  * - Attacks with strongest country until it can't any more
  * @param players List of players
  */
-AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Player*> &players)
+AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Player*> *players)
 {
     // Sort the players countries by strongest
-    std::vector<Node*> strongestCountries = targetPlayer->sortByStrongest();
+    std::vector<Node*> *strongestCountries = Strategy::sortByStrongest(targetPlayer->getNodes());
 
     //Setting up some pointers for returning an attack response
-    std::pair<Player*,Node*> *attacker;
     Node *defendingCountry;
+    Node *attackingCountry;
 
     //Finding an attack vector between the strongest node and an adjacent weak node
     std::vector<Node *>::iterator nodeIterator;
-    for (nodeIterator = strongestCountries.begin(); nodeIterator != strongestCountries.end(); ++nodeIterator) {
+    for (nodeIterator = strongestCountries->begin(); nodeIterator != strongestCountries->end(); ++nodeIterator) {
         Node *playerOwnedNode = *nodeIterator;
         if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
+            attackingCountry = playerOwnedNode;
             std::vector<Node*> adjacentEnemyNodes = {};
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
                 if (!Strategy::containsNode(targetPlayer, *adjacentNode)) {
@@ -438,6 +440,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
                 }
                 defendingCountry = weakestNode;
             }
+        break;
         }
     }
 
@@ -447,14 +450,14 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
 
     //Determine who the defending player is for the chosen defending country
     Player *defendingPlayer;
-    for (int i = 0; i < players.size(); i++) {
+    for (int i = 0; i < players->size(); i++) {
         bool validDefendingPlayer = false;
-        if (players.at(i)->getName() == targetPlayer->getName()) { //the player is this player
+        if (players->at(i)->getName() == targetPlayer->getName()) { //the player is this player
             continue;
         }
-        for (auto const &node : *(players.at(i)->getNodes())) {
+        for (auto const &node : *(players->at(i)->getNodes())) {
             if (node->getPointerToCountry()->getName() == defendingCountry->getPointerToCountry()->getName()) {
-                defendingPlayer = &(*players.at(i));
+                defendingPlayer = &(*players->at(i));
                 validDefendingPlayer = true;
                 break;
             }
@@ -463,6 +466,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
             break;
     }
 
+    std::pair<Player*,Node*> *attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
     std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
     return new AttackResponse(attacker, defender, false);
 }
@@ -623,7 +627,7 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
     return responses;
 }
 
-AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+AttackResponse* BenevolentStrategy::attack(Player *targetPlayer, std::vector<Player *> *players)
 {
     return nullptr;
 }
@@ -1085,4 +1089,31 @@ Strategy::StrategyType RandomStrategy::getType()
 Strategy::StrategyType CheaterStrategy::getType()
 {
     return Strategy::CHEATER;
+}
+
+vector<Node*>* Strategy::sortByStrongest(std::list<Node*> *nodes) {
+    vector<Node*> *strongestCountries = new vector<Node*>;
+    std::list<Node*>::const_iterator countryIterator;
+    for (countryIterator = nodes->begin(); countryIterator != nodes->end(); countryIterator++)
+        strongestCountries->push_back(*countryIterator);
+
+    auto sortCountriesStrongest = [](const Node *first, const Node *second) -> bool {
+        int i = first->getPointerToCountry()->getNbrArmies();
+        int j = second->getPointerToCountry()->getNbrArmies();
+        return i > j;};
+
+    std::sort(strongestCountries->begin(), strongestCountries->end(), sortCountriesStrongest);
+
+//    for (int i = 0; i < strongestCountries->size(); i++) {
+//        for (int j = 0; j < strongestCountries->size() - i - 1; j++) {
+//            int a = strongestCountries->at(j)->getCountry().getNbrArmies();
+//            int b = strongestCountries->at(j+1)->getCountry().getNbrArmies();
+//            if (a < b) {
+//                Node *temp = strongestCountries->at(j);
+//                strongestCountries.(j) = strongestCountries->at(j + 1);
+//                strongestCountries->at(j + 1) = temp;
+//            }
+//        }
+//    }
+    return strongestCountries;
 }
