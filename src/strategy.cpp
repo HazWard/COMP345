@@ -444,10 +444,6 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
         }
     }
 
-    if(!defendingCountry){ //Checking if the pointer is NULL, ie. that no defending country was found
-        return nullptr;
-    }
-
     //Determine who the defending player is for the chosen defending country
     Player *defendingPlayer;
     for (int i = 0; i < players->size(); i++) {
@@ -466,8 +462,31 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
             break;
     }
 
+    try {
+        defendingPlayer->getName();
+        defendingCountry->getPointerToCountry()->getName();
+    }
+    catch (exception){
+        return nullptr;
+    }
+
+
+    if(defendingCountry->getPointerToCountry()->getNbrArmies() >= attackingCountry->getPointerToCountry()->getNbrArmies()){
+        strongestCountries->clear();
+        defendingPlayer = nullptr;
+        attackingCountry = nullptr;
+        defendingCountry = nullptr;
+        return nullptr;
+    }
+
     std::pair<Player*,Node*> *attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
     std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
+
+    strongestCountries->clear();
+    defendingPlayer = nullptr;
+    attackingCountry = nullptr;
+    defendingCountry = nullptr;
+
     return new AttackResponse(attacker, defender, false);
 }
 

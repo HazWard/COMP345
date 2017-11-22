@@ -814,6 +814,7 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
 
+            cout << players->at(i)->getName() << endl;
             if(reinforcementsMade(reinforceResponse)){
                 riskGame.performReinforce(reinforceResponse);
                 //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
@@ -826,18 +827,38 @@ void mainGameLoopDriver()
                 attackResponse = players->at(i)->attack(players);
                 if(attackResponse){
                     //Counting how many continents the attacker and defender have before the attack is done
+                    cout << "Before ATTACK:" << endl << "Attacking Player:" << endl;
+                    for(auto const &node : *attackResponse->attacker->first->getNodes()){
+                        cout << attackResponse->attacker->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
+                    }
+                    cout << "Defending Player:" << endl;
+                    for(auto const &node : *attackResponse->defender->first->getNodes()){
+                        cout << attackResponse->defender->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
+                    }
                     int attackerCont = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
                     int defenderCont = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
 
                     //Performing the attack
                     bool conquest = riskGame.performAttack(attackResponse);
 
+
                     //checks if the number of continents owned by either of the player has changed as a result of the attack
-                    if(conquest && (attackerCont != attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size() ||
-                            defenderCont != attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size()))
-                        riskGame.notify(CONTINENT_CONTROL);
-                    else if(conquest)
-                        riskGame.notify(NEW_CONQUEST);
+                    if(conquest) {
+                        cout << "Before ATTACK:" << endl << "Attacking Player:" << endl;
+                        for(auto const &node : *attackResponse->attacker->first->getNodes()){
+                            cout << attackResponse->attacker->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
+                        }
+                        cout << "Defending Player:" << endl;
+                        for(auto const &node : *attackResponse->defender->first->getNodes()){
+                            cout << attackResponse->defender->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
+                        }
+                        int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
+                        int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
+                        if((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
+                            riskGame.notify(CONTINENT_CONTROL);
+                        else
+                            riskGame.notify(NEW_CONQUEST);
+                    }
                     else
                         riskGame.notify(0);
                 }
@@ -966,8 +987,8 @@ bool Game::performAttack(AttackResponse* response) {
 
     int armiesMoved = 0;
     if(victory){// If the attacker won, the country changes hands and he moves armies
-        attackingPlayer->getNodes()->push_back(defendingCountry);
-        defendingPlayer->getNodes()->remove(defendingCountry);
+        attackingPlayer->addNode(defendingCountry);
+        defendingPlayer->removeNode(defendingCountry);
 
         armiesMoved = attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
 
@@ -982,7 +1003,14 @@ bool Game::performAttack(AttackResponse* response) {
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
 
-    return victory ? true : false; //returns true if victory false otherwise
+    attackingCountry = nullptr;
+    attackingPlayer = nullptr;
+    defendingCountry = nullptr;
+    defendingPlayer = nullptr;
+    delete totalDefenderRolls;
+    delete totalAttackerRolls;
+
+    return victory; //returns true if victory false otherwise
 }
 
 void Game::performFortify(FortifyResponse* response) {
