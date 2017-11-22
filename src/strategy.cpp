@@ -396,7 +396,6 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
     std::vector<Node*> *strongestCountries = Strategy::sortByStrongest(targetPlayer->getNodes());
 
     //Setting up some pointers for returning an attack response
-    std::pair<Player*,Node*> *attacker;
     Node *defendingCountry;
     Node *attackingCountry;
 
@@ -447,7 +446,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
             break;
     }
 
-    attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
+    std::pair<Player*,Node*> *attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
     std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
     return new AttackResponse(attacker, defender);
 }
@@ -705,8 +704,12 @@ vector<Node*>* Strategy::sortByStrongest(std::list<Node*> *nodes) {
     for (countryIterator = nodes->begin(); countryIterator != nodes->end(); countryIterator++)
         strongestCountries->push_back(*countryIterator);
 
-    std::sort(*strongestCountries->begin(), *strongestCountries->end(), [](Node &first, Node &second) -> bool {
-        return ((first.getPointerToCountry()->getNbrArmies()) > (second.getPointerToCountry()->getNbrArmies()));} );
+    auto sortCountriesStrongest = [](const Node *first, const Node *second) -> bool {
+        int i = first->getPointerToCountry()->getNbrArmies();
+        int j = second->getPointerToCountry()->getNbrArmies();
+        return i > j;};
+
+    std::sort(strongestCountries->begin(), strongestCountries->end(), sortCountriesStrongest);
 
 //    for (int i = 0; i < strongestCountries->size(); i++) {
 //        for (int j = 0; j < strongestCountries->size() - i - 1; j++) {
