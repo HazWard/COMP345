@@ -35,10 +35,10 @@ std::vector<ReinforceResponse*>* HumanStrategy::reinforce(Player *targetPlayer, 
     bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
-        std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
+        std::vector<Continent*> *continentsOwned =  targetPlayer->getsContinentsOwned(&continents);
 
-        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += continentsOwned[i]->getBonus();
+        for (unsigned int i = 0; i < continentsOwned->size(); i++) {
+            totalNbArmies += continentsOwned->at(i)->getBonus();
         }
 
         // Exchange process
@@ -377,9 +377,9 @@ std::vector<ReinforceResponse*>* AggressiveStrategy::reinforce(Player *targetPla
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
         // Get continent bonuses
-        std::vector<Continent*> continentsOwned = targetPlayer->getsContinentsOwned(continents);
-        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += continentsOwned[i]->getBonus();
+        std::vector<Continent*> *continentsOwned = targetPlayer->getsContinentsOwned(&continents);
+        for (unsigned int i = 0; i < continentsOwned->size(); i++) {
+            totalNbArmies += continentsOwned->at(i)->getBonus();
         }
 
 
@@ -455,7 +455,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
         if (players->at(i)->getName() == targetPlayer->getName()) { //the player is this player
             continue;
         }
-        for (auto const &node : *(players->at(i)->getNodes())) {
+        for (auto const &node : *players->at(i)->getNodes()) {
             if (node->getPointerToCountry()->getName() == defendingCountry->getPointerToCountry()->getName()) {
                 defendingPlayer = &(*players->at(i));
                 validDefendingPlayer = true;
@@ -570,9 +570,9 @@ std::vector<ReinforceResponse *> *BenevolentStrategy::reinforce(Player *targetPl
     bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES) {
         // Get continent bonuses
-        std::vector<Continent *> continentsOwned = targetPlayer->getsContinentsOwned(continents);
-        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += continentsOwned[i]->getBonus();
+        std::vector<Continent *> *continentsOwned = targetPlayer->getsContinentsOwned(&continents);
+        for (unsigned int i = 0; i < continentsOwned->size(); i++) {
+            totalNbArmies += continentsOwned->at(i)->getBonus();
         }
 
         // Exchange process
@@ -733,10 +733,10 @@ std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player *targetPlayer,
     bool exchangeOccured = false;
     if (totalNbArmies >= Player::MIN_NUMBER_OF_ARMIES)
     {
-        std::vector<Continent*> continentsOwned =  targetPlayer->getsContinentsOwned(continents);
+        std::vector<Continent*> *continentsOwned =  targetPlayer->getsContinentsOwned(&continents);
 
-        for (unsigned int i = 0; i < continentsOwned.size(); i++) {
-            totalNbArmies += continentsOwned[i]->getBonus();
+        for (unsigned int i = 0; i < continentsOwned->size(); i++) {
+            totalNbArmies += continentsOwned->at(i)->getBonus();
         }
 
         // Exchange process
@@ -1104,16 +1104,5 @@ vector<Node*>* Strategy::sortByStrongest(std::list<Node*> *nodes) {
 
     std::sort(strongestCountries->begin(), strongestCountries->end(), sortCountriesStrongest);
 
-//    for (int i = 0; i < strongestCountries->size(); i++) {
-//        for (int j = 0; j < strongestCountries->size() - i - 1; j++) {
-//            int a = strongestCountries->at(j)->getCountry().getNbrArmies();
-//            int b = strongestCountries->at(j+1)->getCountry().getNbrArmies();
-//            if (a < b) {
-//                Node *temp = strongestCountries->at(j);
-//                strongestCountries.(j) = strongestCountries->at(j + 1);
-//                strongestCountries->at(j + 1) = temp;
-//            }
-//        }
-//    }
     return strongestCountries;
 }

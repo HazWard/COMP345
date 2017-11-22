@@ -826,15 +826,15 @@ void mainGameLoopDriver()
                 attackResponse = players->at(i)->attack(players);
                 if(attackResponse){
                     //Counting how many continents the attacker and defender have before the attack is done
-                    int attackerCont = attackResponse->attacker->first->getsContinentsOwned(*riskGame.getContinents()).size();
-                    int defenderCont = attackResponse->defender->first->getsContinentsOwned(*riskGame.getContinents()).size();
+                    int attackerCont = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
+                    int defenderCont = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
 
                     //Performing the attack
                     bool conquest = riskGame.performAttack(attackResponse);
 
                     //checks if the number of continents owned by either of the player has changed as a result of the attack
-                    if(conquest && (attackerCont != attackResponse->attacker->first->getsContinentsOwned(*riskGame.getContinents()).size() ||
-                            defenderCont != attackResponse->defender->first->getsContinentsOwned(*riskGame.getContinents()).size()))
+                    if(conquest && (attackerCont != attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size() ||
+                            defenderCont != attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size()))
                         riskGame.notify(CONTINENT_CONTROL);
                     else if(conquest)
                         riskGame.notify(NEW_CONQUEST);

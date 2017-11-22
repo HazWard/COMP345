@@ -161,12 +161,12 @@ bool Player::controlsAllCountriesInMap(Graph& map)
     return true;
 }
 
-vector<Continent*> Player::getsContinentsOwned(vector<Continent*> continents) {
-    vector<Continent*> continentsOwned;
+vector<Continent*>* Player::getsContinentsOwned(vector<Continent*> *continents) {
+    vector<Continent*> *continentsOwned = new vector<Continent*>();
     //We iterate through all the continents and add the ones that the player completely owns
-    for (int i = 0; i < continents.size(); i++) {
+    for (int i = 0; i < continents->size(); i++) {
         bool continentOwned = true;
-        vector<Node*> nodesInCurrentContinent = *(continents[i]->getNodesInContinent());
+        vector<Node*> nodesInCurrentContinent = *(continents->at(i)->getNodesInContinent());
         //we iterate through all the countries in the current continent and check if the player owns them all
         for (int j = 0; j < nodesInCurrentContinent.size(); j++) {
             bool countryOwned = false;
@@ -185,7 +185,7 @@ vector<Continent*> Player::getsContinentsOwned(vector<Continent*> continents) {
             }
         }
         if (continentOwned)
-            continentsOwned.push_back(continents[i]);
+            continentsOwned->push_back(&*continents->at(i));
     }
     return continentsOwned;
 }

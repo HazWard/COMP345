@@ -50,7 +50,7 @@ class Player
         void setDice(Dice* targetDice);
         Dice* getDice();
         void addNode(Node* newNode);
-        vector<Continent*> getsContinentsOwned(vector<Continent*> continents);
+        vector<Continent*>* getsContinentsOwned(vector<Continent*> *continents);
         bool controlsAllCountriesInMap(Graph& map);
         void removeNode(Node *n);
     private:

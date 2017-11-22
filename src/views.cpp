@@ -22,7 +22,7 @@ void StatObserver::update(int code) {
 void StatObserver::display()
 {
     Game* game = static_cast <Game*> (model);
-    cout << "================== Current Turn: " << game->currentTurn << " ==================";
+    cout << "================== Current Turn: " << game->currentTurn << " ==================" << endl;
 }
 
 PhaseObserver::PhaseObserver() :Observer() {}
