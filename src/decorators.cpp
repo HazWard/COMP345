@@ -46,9 +46,13 @@ void PlayerHandDecorator::update(int code)
 void PlayerHandDecorator::display()
 {
     statObserver->display();
-    //TODO Add player hand behaviour to stat observer
-
-
+    Game* game = static_cast <Game*> (model);
+    vector<Player*> players1 = game->players;
+    for(int i=0; i<players1.size(); i++)
+    {
+        cout << "Player " << players1[i]->getName() << "'s hand:" << endl;
+        players1[i]->getHand()->display();
+    }
 }
 
 void ContinentDecorator::update(int code)
@@ -65,5 +69,20 @@ void ContinentDecorator::update(int code)
 void ContinentDecorator::display()
 {
     statObserver->display();
-    //TODO Add Continent behaviour to stat observer
+    Game* game = static_cast <Game*> (model);
+    vector<Player*> players1 = game->players;
+    for(int i=0; i<players1.size(); i++)
+    {
+        vector<Continent*> continentsOwned = players1[i]->getsContinentsOwned(*(game->getContinents()));
+        if (!continentsOwned.size()== 0)
+        {
+            cout << "Player " << players1[i]->getName() << " controls the following continents:" << endl;
+            for (int j = 0; i < continentsOwned.size(); j++)
+            {
+               cout << continentsOwned[i]->getName() << endl;
+            }
+        }
+    }
+
+
 }
