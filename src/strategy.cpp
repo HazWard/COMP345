@@ -825,6 +825,14 @@ AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player 
         std::uniform_int_distribution<int> dist(0, canAttack.size()-1);
         int chosenCountryInd = dist(mt);
         int counter = 0;
+
+        // Choose whether to take or not
+        int decisionFactor = chosenCountryInd * chosenCountryInd;
+        if (decisionFactor % 7 > 3)
+        {
+            return nullptr;
+        }
+
         std::map<Node *, Node *>::iterator iterator;
         for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
 
