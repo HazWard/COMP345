@@ -47,12 +47,12 @@ void PlayerHandDecorator::update(int code)
 
 void PlayerHandDecorator::display()
 {
-    Game* game = static_cast <Game*> (model);
-    vector<Player*> players1 = game->players;
-    for(int i=0; i<players1.size(); i++)
+    Game* game = static_cast <Game*> (this->statObserver->model);
+    vector<Player*> *players1 = game->getArrayPlayers();
+    for(int i=0; i<players1->size(); i++)
     {
-        cout << "Player " << players1[i]->getName() << "'s hand:" << endl;
-        players1[i]->getHand()->display();
+        cout << "Player " << players1->at(i)->getName() << "'s hand:" << endl;
+        players1->at(i)->getHand()->display();
     }
 }
 

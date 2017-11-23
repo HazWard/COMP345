@@ -804,6 +804,7 @@ void mainGameLoopDriver()
     //Main game loop
     while(!playerWins)
     {
+
         //Adding and removing decorators based on user input
         while(decorators >= 1) {
             cout << "Do you wish to remove decorators from StatObserver?(y/n)" << endl;
@@ -868,48 +869,49 @@ void mainGameLoopDriver()
             std::string answer;
             cin >> answer;
 
-            if (answer == "y") {
-                answer.clear();
+            if (answer == "n")
+                break;
 
-                if (!dominationDecorator) {
-                    cout << "Domination Decorator?(y/n)" << endl;
-                    cin >> answer;
-                    if (answer == "y") {
-                        decorators++; dominationDecorator = true;
-                        riskGame.detach(statObserver);
-                        statObserver = new DominationDecorator(statObserver);
-                        riskGame.attach(statObserver);
-                    }
-                    answer.clear();
+            answer.clear();
+
+            if (!dominationDecorator) {
+                cout << "Domination Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators++; dominationDecorator = true;
+                    riskGame.detach(statObserver);
+                    statObserver = new DominationDecorator(statObserver);
+                    riskGame.attach(statObserver);
                 }
-                if (!handsDecorator) {
-                    cout << "Player Hand Decorator?(y/n)" << endl;
-                    cin >> answer;
-                    if (answer == "y") {
-                        decorators++; handsDecorator = true;
-                        riskGame.detach(statObserver);
-                        statObserver = new PlayerHandDecorator(statObserver);
-                        riskGame.attach(statObserver);
-                    }
-                    answer.clear();
+                answer.clear();
+            }
+            if (!handsDecorator) {
+                cout << "Player Hand Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators++; handsDecorator = true;
+                    riskGame.detach(statObserver);
+                    statObserver = new PlayerHandDecorator(statObserver);
+                    riskGame.attach(statObserver);
                 }
-                if (!continentDecorator) {
-                    cout << "Continents Decorator?(y/n)" << endl;
-                    cin >> answer;
-                    if (answer == "y") {
-                        decorators++; continentDecorator = true;
-                        riskGame.detach(statObserver);
-                        statObserver = new ContinentDecorator(statObserver);
-                        riskGame.attach(statObserver);
-                    }
-                    answer.clear();
+                answer.clear();
+            }
+            if (!continentDecorator) {
+                cout << "Continents Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators++; continentDecorator = true;
+                    riskGame.detach(statObserver);
+                    statObserver = new ContinentDecorator(statObserver);
+                    riskGame.attach(statObserver);
                 }
+                answer.clear();
             }
         }
 
+        riskGame.notify(NEW_TURN);
         for(int i = 0; i < players->size(); i++)
         {
-            riskGame.notify(NEW_TURN);
             cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
             //monitor current player
             riskGame.currentPlayer = players->at(i);
@@ -919,11 +921,14 @@ void mainGameLoopDriver()
             cout << players->at(i)->getName() << endl;
             if(reinforcementsMade(reinforceResponse)){
                 riskGame.performReinforce(reinforceResponse);
-                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
-                riskGame.notify(0);
+                if(reinforceResponse->at(0)->exchangeOccured)
+                    riskGame.notify(HAND_CHANGE);
+                else
+                    riskGame.notify(0);
             }
             delete reinforceResponse;
 
+            bool conqueredTerritory = false;
             AttackResponse *attackResponse;
             do{
                 attackResponse = players->at(i)->attack(players);
@@ -937,6 +942,7 @@ void mainGameLoopDriver()
 
                     //checks if the number of continents owned by either of the player has changed as a result of the attack
                     if(conquest) {
+                        conqueredTerritory = true;
                         int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
                         int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
                         if((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
@@ -949,6 +955,11 @@ void mainGameLoopDriver()
                 }
             }while(attackResponse);
             delete attackResponse;
+
+            if(conqueredTerritory){
+                players->at(i)->getHand()->draw(riskGame.getMainDeck().draw());
+                riskGame.notify(HAND_CHANGE);
+            }
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
