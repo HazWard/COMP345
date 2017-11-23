@@ -7,6 +7,11 @@
 
 class Tournament
 {
+private:
+    bool check_validity_M(string M_in_string_form);
+    bool check_validity_P(string P_in_string_form);
+    bool check_validity_G();
+    bool check_validity_D();
 public:
     const int MAX_MAPS = 5;
     const int MIN_PLAYERS = 2;
@@ -17,12 +22,15 @@ public:
 
     vector<Parser*> M;
     vector<Player*> P;
-    int G;
-    int D;
+    size_t G;
+    size_t D;
 
-    map<Graph, vector<Game*>> games;
+    map<Graph*, vector<Game*>*> games;
 
     Tournament();
+    void setup_games();
+    void play_games();
+    void display_results();
 };
 
 #endif //COMP345_TOURNAMENT_H

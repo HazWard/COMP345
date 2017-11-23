@@ -230,12 +230,3 @@ bool Parser::mapIsValid()
 {
 	return !error && graphIsConnected() && continentsAreConnected();
 }
-
-//Method used to display all of the continents within a given map
-void Parser::displayContinents()
-{
-	for(int i = 0; i < continents->size(); i++)
-	{
-		cout << (*continents)[i];
-	}
-}

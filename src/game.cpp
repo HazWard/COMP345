@@ -52,6 +52,34 @@ Game::Game()
     }
 }
 
+Game::Game(Parser* map, vector<Player*> pl, int maximum_turns)
+{
+    this->mapName = "some_map";
+    this->mapCountries = map->getGraph();
+    //TODO: might cause a problem we shall see (content of pointer)
+    this->continents = *(map->getContinents());
+    this->arrayPlayers.reserve(pl.size());
+    for(int i = 0; i < pl.size(); i++)
+        this->arrayPlayers.push_back(pl[i]);
+    this->nbrPlayers = pl.size();
+    determinePlayerTurn();
+    this->mainDeck = Deck(mapCountries->getNbrCountries());
+    if(nbrPlayers != arrayPlayers.size())
+    {
+        cout << "The number of players (" << nbrPlayers << ") and "
+             << "the number of players created (" << arrayPlayers.size()
+             << ") is not equivalent. We will exit the program." << endl;
+        exit (EXIT_FAILURE);
+    }
+    if(mainDeck.getNumberOfCards() != mapCountries->getNbrCountries())
+    {
+        cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
+             << "the number of nodes in the map (" << mapCountries->getNbrCountries()
+             << "is not equivalent. We will exit the program." << endl;
+        exit (EXIT_FAILURE);
+    }
+}
+
 //ACCESSOR METHODS
 string Game::getMapName() { return mapName; }
 
@@ -151,7 +179,7 @@ void Game::getMapUser(list<string> listOfMapFiles) {
     list<string>::const_iterator iterator;
     for (iterator = listOfMapFiles.begin(); iterator != listOfMapFiles.end(); ++iterator)
     {
-        cout << i+1 << ": " << *iterator << endl;
+        cout << "\t" << i+1 << ": " << *iterator << endl;
         i++;
     }
     cout << endl;
@@ -781,8 +809,6 @@ void mainGameLoopDriver()
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
 
-    //We keep track of the winning player
-    Player* winningPlayer;
     riskGame.currentTurn = 1;
 
     //creating observers
@@ -812,7 +838,6 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
 
-            cout << players->at(i)->getName() << endl;
             if(reinforcementsMade(reinforceResponse)){
                 riskGame.performReinforce(reinforceResponse);
                 //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
@@ -854,15 +879,15 @@ void mainGameLoopDriver()
             delete fortifyResponse;
 
             //After each player's turn, we check if one player owns all the countries in the map
-            if(players->at(i)->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
+            if(riskGame.currentPlayer->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
                 playerWins = true;
-                winningPlayer = players->at(i);
+                riskGame.winningPlayer = riskGame.currentPlayer;
                 break;
             }
-            if (riskGame.currentTurn == 20)
+            if(riskGame.currentPlayer->controlsAllCountriesInMap(*riskGame.getMapCountries()) || riskGame.currentTurn == 5000)
             {
                 playerWins = true;
-                winningPlayer = players->at(i);
+                riskGame.winningPlayer = riskGame.currentPlayer;
                 break;
             }
         }
@@ -872,7 +897,125 @@ void mainGameLoopDriver()
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
         cout << *node << endl;
     }
-    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+    cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+}
+
+void mainGameLoopTournament(Game& riskGame)
+{
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    vector<Continent*> continents = *(riskGame.getContinents());
+
+    riskGame.assignCountriesToPlayers();
+
+    players = riskGame.getArrayPlayers();
+
+    /*
+    //Displaying all the continents in the graph
+    for(int i = 0; i < continents.size(); i++)
+    {
+        cout << *(continents[i]);
+    }*/
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        players->at(i)->printNodes();
+    }
+    riskGame.placeArmiesAutomatic();
+
+    //Boolean is false until a player wins. this is the breaking condition of the main game loop
+    bool playerWins = false;
+
+    riskGame.currentTurn = 1;
+
+    //creating observers
+    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
+
+    //Attaching observers
+    riskGame.attach(phaseObserver);
+    riskGame.attach(statObserver);
+    riskGame.attach(domObserver);
+    riskGame.attach(handObserver);
+    riskGame.attach(continentObserver);
+
+    //Main game loop
+    while(!playerWins)
+    {
+        for(int i = 0; i < players->size(); i++)
+        {
+            riskGame.notify(NEW_TURN);
+            cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
+            //monitor current player
+            riskGame.currentPlayer = players->at(i);
+            // Each player gets to reinforce, attack and fortify
+            std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
+
+            if(reinforcementsMade(reinforceResponse)){
+                riskGame.performReinforce(reinforceResponse);
+                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
+                riskGame.notify(0);
+            }
+            delete reinforceResponse;
+
+            AttackResponse *attackResponse;
+            do{
+                attackResponse = players->at(i)->attack(players);
+                if(attackResponse){
+                    //Counting how many continents the attacker and defender have before the attack is done
+                    int attackerCont = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
+                    int defenderCont = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
+
+                    //Performing the attack
+                    bool conquest = riskGame.performAttack(attackResponse);
+
+                    //checks if the number of continents owned by either of the player has changed as a result of the attack
+                    if(conquest) {
+                        int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
+                        int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
+                        if((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
+                            riskGame.notify(CONTINENT_CONTROL);
+                        else
+                            riskGame.notify(NEW_CONQUEST);
+                    }
+                    else
+                        riskGame.notify(0);
+                }
+            }while(attackResponse);
+            delete attackResponse;
+
+            FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
+            if(fortifyResponse){
+                riskGame.performFortify(fortifyResponse);
+                riskGame.notify(0);
+            }
+            delete fortifyResponse;
+
+            //After each player's turn, we check if one player owns all the countries in the map
+            if(riskGame.currentPlayer->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
+                playerWins = true;
+                riskGame.winningPlayer = riskGame.currentPlayer;
+                break;
+            }
+            if(riskGame.currentPlayer->controlsAllCountriesInMap(*riskGame.getMapCountries()) || riskGame.currentTurn == 5000)
+            {
+                playerWins = true;
+                riskGame.winningPlayer = riskGame.currentPlayer;
+                break;
+            }
+        }
+        riskGame.currentTurn++;
+    }
+    cout << "===== GAME RESULTS =====" << endl;
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << *node << endl;
+    }
+    cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 }
 
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)

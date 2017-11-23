@@ -29,8 +29,13 @@ private:
     bool verifyPlayerArmies(int nbrArmiesPerPlayer);
     bool armiesLeftToPlace(vector<int> nbrArmiesPlayers);
 public:
+    //public member:
+    Player* winningPlayer;
+    int max_turns;
+
     //Constructor:
     Game();
+    Game(Parser* map, vector<Player*> pl, int maximum_turns);
     //Mutator methods:
     void setMap(Graph* newMap);
     void setNbrPlayers(int nbrP);
@@ -59,3 +64,5 @@ public:
 
 const string MAPS_FOLDER = "../maps/";
 list<string> getNameOfFiles(const char *path);
+void mainGameLoopDriver();
+void mainGameLoopTournament(Game& riskGame);

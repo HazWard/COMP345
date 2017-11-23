@@ -33,7 +33,6 @@ public:
 	vector<Continent*>* getContinents();
 	//Public methods
 	bool mapIsValid();
-	void displayContinents();
 };
 
 template<typename Out>

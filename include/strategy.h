@@ -106,4 +106,5 @@ public:
     StrategyType getType();
 };
 
+string tolower(string& str);
 string trim(const string& str);
