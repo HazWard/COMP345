@@ -296,22 +296,3 @@ void Tournament::display_results()
     }
     cout << endl;
 }
-
-int main()
-{
-    //mainGameLoopDriver();
-    Tournament t;
-
-    t.setup_games();
-    t.play_games();
-    t.display_results();
-
-    if(wind)
-        system("pause");
-    else {
-        std::cout << "Press any key to continue . . ." << std::endl;
-        std::getchar();
-    }
-
-    return 0;
-}

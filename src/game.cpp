@@ -3,6 +3,7 @@
 #include "../include/events.h"
 #include "../include/views.h"
 #include "../include/decorators.h"
+#include "../include/tournament.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -1267,13 +1268,34 @@ void Game::performFortify(Player* player, FortifyResponse* response) {
 Event* Game::getCurrentEvent(){
     return this->currentEvent;
 }
-/*
+
 int main()
 {
+    cout << "Choose a part to execute: " << endl;
+    std::string answer;
+    cin >> answer;
 
-    mainGameLoopDriver();
+    if(answer == "1")
+        mainGameLoopDriver();
+    else if(answer == "2"){
+        //TODO: Call the proper driver
+    }
+    else if(answer == "3"){
+        //mainGameLoopDriver();
+        Tournament t;
 
-    std::getchar();
-    system("pause");
-    return 0;
-}*/
+        t.setup_games();
+        t.play_games();
+        t.display_results();
+
+        if(windows)
+            system("pause");
+        else {
+            std::cout << "Press any key to continue . . ." << std::endl;
+            std::getchar();
+        }
+    }
+    else{
+        cout << "Invalid choice." << endl;
+    }
+}

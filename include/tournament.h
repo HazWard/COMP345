@@ -1,6 +1,4 @@
-
-#ifndef COMP345_TOURNAMENT_H
-#define COMP345_TOURNAMENT_H
+#pragma once
 #include "../include/game.h"
 #include <iostream>
 
@@ -33,5 +31,3 @@ public:
     void play_games();
     void display_results();
 };
-
-#endif //COMP345_TOURNAMENT_H
