@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono>
 #include <cstdio>
+#include <set>
 
 using namespace std;
 
@@ -902,7 +903,7 @@ void mainGameLoopDriver()
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
-                riskGame.performFortify(fortifyResponse);
+                riskGame.performFortify(players->at(i),fortifyResponse);
                 riskGame.notify(0);
             }
             delete fortifyResponse;
@@ -1032,7 +1033,7 @@ void mainGameLoopTournament(Game& riskGame)
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if (fortifyResponse) {
-                riskGame.performFortify(fortifyResponse);
+                riskGame.performFortify(players->at(i), fortifyResponse);
                 riskGame.notify(0);
             }
             delete fortifyResponse;
@@ -1095,8 +1096,50 @@ bool Game::performAttack(AttackResponse* response) {
 
     if (response->isCheater)
     {
-        // Conquers all the neighbors of all its countries
-        // TODO: Write implementation
+        // Find countries with neighbors belonging to other players
+        Player* player = response->attacker->first;
+        std::set<Node *> countriesToConquer = std::set<Node *>();
+        std::list<Node*>::iterator countryIterator;
+        for (countryIterator = player->getNodes()->begin(); countryIterator != player->getNodes()->end(); ++countryIterator)
+        {
+            Node* currentNode = *countryIterator;
+            for(int i = 0; i < currentNode->getAdjList().size(); ++i)
+            {
+                if (!player->getStrategy()->containsNode(player, *currentNode->getAdjList()[i]))
+                {
+                    countriesToConquer.insert(currentNode);
+                }
+            }
+        }
+
+        std::set<Node*>::iterator attacksIterator;
+        for (attacksIterator = countriesToConquer.begin(); attacksIterator != countriesToConquer.end(); attacksIterator++)
+        {
+            // Find the defending player and change ownership of Country
+            Player *defendingPlayer;
+            for (int i = 0; i < players.size(); i++) {
+                if (players.at(i) == player)
+                {
+                    continue;
+                }
+                for (auto const &node : *(players.at(i)->getNodes()))
+                {
+                    if (node->getPointerToCountry()->getName() == (*attacksIterator)->getPointerToCountry()->getName())
+                    {
+                        // Take over Country
+                        defendingPlayer = &(*players.at(i));
+                        player->addNode(*attacksIterator);
+                        defendingPlayer->removeNode(*attacksIterator);
+                    }
+                }
+            }
+        }
+        if (!this->currentEvent)
+        {
+            delete this->currentEvent;
+        }
+        this->currentEvent = new AttackEvent(response->attacker->first, nullptr,
+                                             nullptr, nullptr, nullptr, nullptr, true, -1);
         return true;
     }
 
@@ -1177,20 +1220,48 @@ bool Game::performAttack(AttackResponse* response) {
     return victory; //returns true if victory false otherwise
 }
 
-void Game::performFortify(FortifyResponse* response) {
-    //Apply changes
-    string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
-    string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
-    response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
-    response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
-
-    //update currentEvent and return it
-    if (!this->currentEvent)
+void Game::performFortify(Player* player, FortifyResponse* response) {
+    if (response->isCheater)
     {
-        delete this->currentEvent;
-    }
-    this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+        // Find countries with neighbors belonging to other players
+        std::set<Node *> countriesToFortify = std::set<Node *>();
+        std::list<Node*>::iterator countryIterator;
+        for (countryIterator = player->getNodes()->begin(); countryIterator != player->getNodes()->end(); ++countryIterator)
+        {
+            Node* currentNode = *countryIterator;
+            for(int i = 0; i < currentNode->getAdjList().size(); ++i)
+            {
+                if (!player->getStrategy()->containsNode(player, *currentNode->getAdjList()[i]))
+                {
+                    countriesToFortify.insert(currentNode);
+                }
+            }
+        }
 
+        // Double the number of armies on countries
+        std::set<Node*>::iterator fortifyIterator;
+        for (fortifyIterator = countriesToFortify.begin(); fortifyIterator != countriesToFortify.end(); ++fortifyIterator)
+        {
+            Node* currentNode = *fortifyIterator;
+            int nbOfAmies = 2 * currentNode->getPointerToCountry()->getNbrArmies();
+            currentNode->getPointerToCountry()->setNbrArmies(nbOfAmies);
+        }
+    }
+    else
+    {
+        //Apply changes
+        string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
+        string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
+        response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
+        response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
+
+        //update currentEvent and return it
+        if (!this->currentEvent)
+        {
+            delete this->currentEvent;
+        }
+        this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+    }
 }
 
 Event* Game::getCurrentEvent(){

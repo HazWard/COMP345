@@ -341,7 +341,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
         validInput=true;
     }
     validInput=false;
-    return new FortifyResponse(armNum,sourceCtr,destCtr);
+    return new FortifyResponse(armNum,sourceCtr,destCtr, false);
 
 }
 
@@ -567,7 +567,7 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total==0)
         return nullptr;
-    return new FortifyResponse(total, secondStrongestCountry, strongestCountry);
+    return new FortifyResponse(total, secondStrongestCountry, strongestCountry, false);
 }
 
 /**
@@ -722,7 +722,7 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = strongestAdjacentCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total == 0)
         return nullptr;
-    return new FortifyResponse(total, strongestAdjacentCountry, weakestCountry);
+    return new FortifyResponse(total, strongestAdjacentCountry, weakestCountry, false);
 }
 
 /**
@@ -842,6 +842,14 @@ AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player 
         std::uniform_int_distribution<int> dist(0, canAttack.size()-1);
         int chosenCountryInd = dist(mt);
         int counter = 0;
+
+        // Choose whether to take or not
+        int decisionFactor = chosenCountryInd * chosenCountryInd;
+        if (decisionFactor % 7 > 3)
+        {
+            return nullptr;
+        }
+
         std::map<Node *, Node *>::iterator iterator;
         for (iterator = canAttack.begin(); iterator != canAttack.end(); iterator++) {
 
@@ -1015,7 +1023,7 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
         validInput=true;
     }
     validInput=false;
-    return new FortifyResponse(armNum,sourceCtr,destCtr);
+    return new FortifyResponse(armNum,sourceCtr,destCtr, false);
 }
 
 /**
@@ -1024,7 +1032,7 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
 
 /**
  * Reinforcement phase for Cheater Player
- * - Doubles the number of armies to place
+ * - Doubles the number of armies
  *   on each country owned
  * @param targetPlayer
  * @param continents
@@ -1034,6 +1042,7 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
 {
     // Perform actions to reinforce
     std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
+    
     // Army placement
     Node* currentNode;
     std::list<Node*>::iterator countryIter;
@@ -1057,7 +1066,8 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
 AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> *players)
 {
     // Custom response with Cheater flag enabled
-    return new AttackResponse(nullptr, nullptr, true);
+    std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, nullptr);
+    return new AttackResponse(attacker, nullptr, true);
 }
 
 /**
@@ -1070,9 +1080,9 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
  */
 FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
 {
-    return nullptr;
+    // Custom response with Cheater flag enabled
+    return new FortifyResponse(-1, nullptr, nullptr, true);
 }
-
 
 // Methods to get Strategy Type
 

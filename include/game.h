@@ -55,7 +55,7 @@ public:
     void placeArmies();
     void performReinforce(std::vector<ReinforceResponse*>* responses);
     bool performAttack(AttackResponse *response);
-    void performFortify(FortifyResponse* response);
+    void performFortify(Player* player,FortifyResponse* response);
     void placeArmiesAutomatic();
     Event* currentEvent;
     vector <Player*> players;
