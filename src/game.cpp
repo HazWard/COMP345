@@ -827,31 +827,14 @@ void mainGameLoopDriver()
                 attackResponse = players->at(i)->attack(players);
                 if(attackResponse){
                     //Counting how many continents the attacker and defender have before the attack is done
-                    cout << "Before ATTACK:" << endl << "Attacking Player:" << endl;
-                    for(auto const &node : *attackResponse->attacker->first->getNodes()){
-                        cout << attackResponse->attacker->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                    }
-                    cout << "Defending Player:" << endl;
-                    for(auto const &node : *attackResponse->defender->first->getNodes()){
-                        cout << attackResponse->defender->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                    }
                     int attackerCont = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
                     int defenderCont = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
 
                     //Performing the attack
                     bool conquest = riskGame.performAttack(attackResponse);
 
-
                     //checks if the number of continents owned by either of the player has changed as a result of the attack
                     if(conquest) {
-                        cout << "Before ATTACK:" << endl << "Attacking Player:" << endl;
-                        for(auto const &node : *attackResponse->attacker->first->getNodes()){
-                            cout << attackResponse->attacker->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                        }
-                        cout << "Defending Player:" << endl;
-                        for(auto const &node : *attackResponse->defender->first->getNodes()){
-                            cout << attackResponse->defender->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                        }
                         int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
                         int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
                         if((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
@@ -885,6 +868,7 @@ void mainGameLoopDriver()
                 break;
             }
         }
+        riskGame.currentTurn++;
     }
     cout << "===== GAME RESULTS =====" << endl;
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){

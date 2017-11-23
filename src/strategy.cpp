@@ -416,8 +416,8 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
     std::vector<Node*> *strongestCountries = Strategy::sortByStrongest(targetPlayer->getNodes());
 
     //Setting up some pointers for returning an attack response
-    Node *defendingCountry;
-    Node *attackingCountry;
+    Node *defendingCountry = nullptr;
+    Node *attackingCountry = nullptr;
 
     //Finding an attack vector between the strongest node and an adjacent weak node
     std::vector<Node *>::iterator nodeIterator;
@@ -432,16 +432,23 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
                 }
             }
             if(!adjacentEnemyNodes.empty()){
-                Node *weakestNode = adjacentEnemyNodes.at(0);
+                Node *weakestNode = nullptr;
                 for(auto const &adjacentNode : adjacentEnemyNodes){
-                    if(adjacentNode->getPointerToCountry()->getNbrArmies() < weakestNode->getPointerToCountry()->getNbrArmies()){
-                        weakestNode = adjacentNode;
+                    if(weakestNode == nullptr)
+                        weakestNode = *&adjacentNode;
+                    else if(adjacentNode->getPointerToCountry()->getNbrArmies() < weakestNode->getPointerToCountry()->getNbrArmies()){
+                        weakestNode = *&adjacentNode;
                     }
                 }
                 defendingCountry = weakestNode;
             }
         break;
         }
+    }
+
+    if(defendingCountry == nullptr){ //Was not able to find a valid defending country
+        strongestCountries->clear();
+        return nullptr;
     }
 
     //Determine who the defending player is for the chosen defending country
@@ -462,20 +469,10 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
             break;
     }
 
-    try {
-        defendingPlayer->getName();
-        defendingCountry->getPointerToCountry()->getName();
-    }
-    catch (exception){
-        return nullptr;
-    }
-
 
     if(defendingCountry->getPointerToCountry()->getNbrArmies() >= attackingCountry->getPointerToCountry()->getNbrArmies()){
+        //The chosen attack would be against a country that has as many or more
         strongestCountries->clear();
-        defendingPlayer = nullptr;
-        attackingCountry = nullptr;
-        defendingCountry = nullptr;
         return nullptr;
     }
 
@@ -483,9 +480,6 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
     std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
 
     strongestCountries->clear();
-    defendingPlayer = nullptr;
-    attackingCountry = nullptr;
-    defendingCountry = nullptr;
 
     return new AttackResponse(attacker, defender, false);
 }
