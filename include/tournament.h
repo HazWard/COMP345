@@ -25,6 +25,7 @@ public:
     size_t G;
     size_t D;
 
+    vector<string> map_names;
     map<Graph*, vector<Game*>*> games;
 
     Tournament();

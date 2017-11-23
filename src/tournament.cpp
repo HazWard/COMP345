@@ -19,22 +19,22 @@ static string trim_dots(const string& str)
 bool Tournament::check_validity_M(string M_in_string_form)
 {
     bool valid_M = false;
-    vector<string> line_data_maps = split(M_in_string_form, ',');
+    map_names = split(M_in_string_form, ',');
     //Allocating/reserving an array of size equal to the number of file names (since it is technically the number of maps)
-    M.reserve(line_data_maps.size());
+    M.reserve(map_names.size());
 
-    for (int i = 0; i < line_data_maps.size(); i++) {
-        line_data_maps[i] = trim_dots(trim(line_data_maps[i]));
+    for (int i = 0; i < map_names.size(); i++) {
+        map_names[i] = trim_dots(trim(map_names[i]));
         Parser *parser;
-        cout << "Loading map located at " << MAPS_FOLDER << line_data_maps[i] << endl;
+        cout << "Loading map located at " << MAPS_FOLDER << map_names[i] << endl;
 
-        parser = new Parser(MAPS_FOLDER + line_data_maps[i]);
+        parser = new Parser(MAPS_FOLDER + map_names[i]);
 
         if (parser->mapIsValid() && parser->getGraph()->getNbrCountries() <= 80) {
-            cout << "The map " << line_data_maps[i] << " is valid.\n\n";
+            cout << "The map " << map_names[i] << " is valid.\n\n";
             valid_M = true;
         } else {
-            cout << "We have detected that the map " << line_data_maps[i] << " is invalid." << endl;
+            cout << "We have detected that the map " << map_names[i] << " is invalid." << endl;
             cout << "Please enter a valid M." << endl;
             M.clear();
             return (valid_M = false);
@@ -181,7 +181,7 @@ Tournament::Tournament() {
     std::cout << "You can select from " << MIN_PLAYERS << " to " << MAX_PLAYERS << " different computer players strategies." << std::endl;
     std::cout << "You can select from 1 to " << MAX_GAMES_PER_MAP << " games to be played on each map." << std::endl;
     std::cout << "You can select the maximum number of turns per game from " << LOWER_MAX_TURNS_PER_GAME << " to " << UPPER_MAX_TURNS_PER_GAME << "." << std::endl;
-    std::cout << "\t(Note: this is to minimum run completion time.)" << std::endl << std::endl;
+    std::cout << "\t(Note: this is to minimize run completion time.)" << std::endl << std::endl;
 
     bool valid_M = false;
     bool valid_P = false;
@@ -216,10 +216,11 @@ Tournament::Tournament() {
         cin >> D;
         cin.ignore();
          */
-        M_in_string_form = "New York.map, World.map";
-        P_in_string_form = "Aggressive, Aggressive, Aggressive, Aggressive";
-        G = 3;
-        D = 30;
+        //Used for debugging: (makes everything faster)
+        M_in_string_form = "World.map, New York.map, USA.map";
+        P_in_string_form = "Aggressive, Aggressive, Benevolent, Benevolent";
+        G = 5;
+        D = 20;
 
         valid_M = check_validity_M(M_in_string_form);
         if(!valid_M)
@@ -264,18 +265,6 @@ void Tournament::play_games()
         {
             cout << "*************GAME NUMBER " << (i+1) << " ON MAP NUMBER " << k << endl;
             mainGameLoopTournament(*(*current_games)[i]);
-            /*
-            vector<Player*> resettingPlayers;
-            for(int i = 0; i < P.size(); i++)
-            {
-                resettingPlayers.push_back(new Player(P[i]->getName(), P[i]->getStrategy()));
-                delete P[i];
-            }
-            P.clear();
-            for(int i = 0; i < resettingPlayers.size(); i++)
-            {
-                P.push_back(resettingPlayers[i]);
-            }*/
         }
         k++;
     }
@@ -283,17 +272,27 @@ void Tournament::play_games()
 
 void Tournament::display_results()
 {
+    cout << "****************BIG RISK TOURNAMENT RESULTS****************" << endl;
+    cout << "\t\t";
+    for(int i = 1; i <= G; i++)
+    {
+        cout << "Game " << i << "         ";
+    }
+    cout << endl;
+    int i = 0;
     map<Graph*, vector<Game*>*>::reverse_iterator rit;
     for (rit = games.rbegin(); rit != games.rend(); ++rit)
     {
         vector<Game*>* current_games = rit->second;
+        printf("%-16s", map_names[i].c_str());
         for(int i = 0; i < current_games->size(); i++)
         {
             if((*current_games)[i]->winningPlayer)
-                cout << (*current_games)[i]->winningPlayer->getName() << " ";
-            else cout << "DRAW ";
+                printf("%-15s", (*current_games)[i]->winningPlayer->getName());
+            else cout << "DRAW           ";
         }
         cout << endl;
+        i++;
     }
     cout << endl;
 }
@@ -313,5 +312,6 @@ int main()
         std::cout << "Press any key to continue . . ." << std::endl;
         std::getchar();
     }
+
     return 0;
 }

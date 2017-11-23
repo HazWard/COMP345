@@ -942,7 +942,7 @@ void mainGameLoopTournament(Game& riskGame)
         (*riskGame.getArrayPlayers())[i]->getNodes()->clear();
         cout << (*riskGame.getArrayPlayers())[i]->getNodes()->size() << endl;
     }*/
-
+    riskGame.determinePlayerTurn();
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
 
@@ -952,12 +952,11 @@ void mainGameLoopTournament(Game& riskGame)
 
     players = riskGame.getArrayPlayers();
 
-    /*
     //Displaying all the continents in the graph
     for(int i = 0; i < continents.size(); i++)
     {
         cout << *(continents[i]);
-    }*/
+    }
 
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
