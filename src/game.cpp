@@ -807,6 +807,7 @@ void mainGameLoopDriver()
     {
         for(int i = 0; i < players->size(); i++)
         {
+
             riskGame.notify(NEW_TURN);
             cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
             //monitor current player
@@ -822,7 +823,11 @@ void mainGameLoopDriver()
             }
             delete reinforceResponse;
 
+
+            cout << players->at(i)->getNodes()->size() << endl;
+
             AttackResponse *attackResponse;
+            int y = 0;
             do{
                 attackResponse = players->at(i)->attack(players);
                 if(attackResponse){
@@ -878,13 +883,13 @@ void mainGameLoopDriver()
                 winningPlayer = players->at(i);
                 break;
             }
-            if (riskGame.currentTurn == 20)
-            {
+            if (riskGame.currentTurn == 20) {
                 playerWins = true;
                 winningPlayer = players->at(i);
                 break;
             }
         }
+        riskGame.currentTurn++;
     }
     cout << "===== GAME RESULTS =====" << endl;
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){

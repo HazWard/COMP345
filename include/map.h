@@ -7,6 +7,7 @@ using namespace std;
 //This class creates Country objects.
 //A Country is defined as a territory in Risk
 //(could be a country, could be a subset of a continent like North America, a province like Quebec, a territory like Yukon or a state like Virginia)
+
 class Country
 {
 private:
