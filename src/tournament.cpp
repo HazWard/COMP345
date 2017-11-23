@@ -44,6 +44,7 @@ bool Tournament::check_validity_M(string M_in_string_form)
     if(M.size() < 1 || M.size() > MAX_GAMES_PER_MAP)
     {
         std::cout << "You entered no maps to be used, some invalid maps or you entered more than " << MAX_GAMES_PER_MAP << " maps." << std::endl;
+        M.clear();
         return (valid_M = false);
     }
     else return valid_M;
@@ -105,12 +106,14 @@ bool Tournament::check_validity_P(string P_in_string_form)
         } else
         {
             std::cout << line_data_players[i] << " is not a valid type of player. Please enter a proper P." << std::endl;
+            P.clear();
             return false;
         }
     }
     if(P.size() < MIN_PLAYERS || P.size() > MAX_PLAYERS)
     {
-        std::cout << "You entered less than " << MIN_PLAYERS << " or more than " << MAX_PLAYERS << "." << std::endl;
+        std::cout << "You entered less than " << MIN_PLAYERS << " or more than " << MAX_PLAYERS << " players." << std::endl;
+        P.clear();
         return false;
     }
     else if(P.size() == line_data_players.size()) {
@@ -134,6 +137,7 @@ bool Tournament::check_validity_P(string P_in_string_form)
         return true;
     }
     else {
+        P.clear();
         return false;
     }
 }
@@ -199,6 +203,7 @@ Tournament::Tournament() {
         valid_G = false;
         valid_D = false;
 
+        /*
         cin.clear();
         std::cout << "M: ";
         std::getline(std::cin, M_in_string_form);
@@ -210,6 +215,11 @@ Tournament::Tournament() {
         std::cout << "D: ";
         cin >> D;
         cin.ignore();
+         */
+        M_in_string_form = "World.map";
+        P_in_string_form = "Aggressive, Aggressive";
+        G = 3;
+        D = 30;
 
         valid_M = check_validity_M(M_in_string_form);
         if(!valid_M)
@@ -223,7 +233,6 @@ Tournament::Tournament() {
         valid_D = check_validity_D();
         if(!valid_D)
             continue;
-        cout << valid_M << valid_P << valid_G << valid_D << endl;
     }   while(!valid_M || !valid_P || !valid_G || !valid_D);
 
 }

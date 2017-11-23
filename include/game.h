@@ -29,10 +29,11 @@ private:
     bool verifyPlayerArmies(int nbrArmiesPerPlayer);
     bool armiesLeftToPlace(vector<int> nbrArmiesPlayers);
 public:
-    //public member:
+    //public members:
     Player* winningPlayer;
     int max_turns;
-
+    //public constant:
+    const int DEFAULT_MAX_TURNS = 50;
     //Constructor:
     Game();
     Game(Parser* map, vector<Player*> pl, int maximum_turns);
@@ -60,6 +61,7 @@ public:
     int currentTurn;
     Player* currentPlayer;
     void chooseGameScenario(vector<Player*>* players);
+    void reinitialize_game();
 };
 
 const string MAPS_FOLDER = "../maps/";
