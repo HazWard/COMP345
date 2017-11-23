@@ -11,8 +11,8 @@
 #include "../include/cards.h"
 #include "../include/dice.h"
 #include "../include/map.h"
-#include "../include/strategy.h"
 #include "../include/response.h"
+#include "../include/strategy.h"
 
 class Strategy; // Forward declaration
 class Player

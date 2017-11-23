@@ -6,8 +6,8 @@
 #include "../include/response.h"
 #include <climits>
 
-class Player; // Forward declaration
-
+// Forward declaration
+class Player;
 
 /** Strategy Summary (PLEASE READ THIS!)
  * The Strategy class encapsulates the behaviors of Players. The general idea behind the strategy is that each
