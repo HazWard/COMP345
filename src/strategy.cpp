@@ -1032,7 +1032,7 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
 
 /**
  * Reinforcement phase for Cheater Player
- * - Doubles the number of armies to place
+ * - Doubles the number of armies
  *   on each country owned
  * @param targetPlayer
  * @param continents
@@ -1042,6 +1042,7 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
 {
     // Perform actions to reinforce
     std::vector<ReinforceResponse*>* responses = new std::vector<ReinforceResponse*>();
+    
     // Army placement
     Node* currentNode;
     std::list<Node*>::iterator countryIter;
@@ -1080,7 +1081,7 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
 FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
 {
     // Custom response with Cheater flag enabled
-    return new FortifyResponse(NULL, nullptr, nullptr, true);
+    return new FortifyResponse(-1, nullptr, nullptr, true);
 }
 
 // Methods to get Strategy Type
