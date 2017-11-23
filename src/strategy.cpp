@@ -819,7 +819,7 @@ std::vector<ReinforceResponse*>* RandomStrategy::reinforce(Player *targetPlayer,
  * @param players List of players
  * @return
  */
-AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player *> *players)
 {
     std::random_device rd;
     std::mt19937 mt(rd());
@@ -849,13 +849,13 @@ AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player 
             {
                 //Determining who the defending player will be for this particular attack vector
                 Player *defendingPlayer;
-                for (int i = 0; i < players.size(); i++) {
-                    if (players.at(i) == targetPlayer) { //This player is our current player
+                for (int i = 0; i < players->size(); i++) {
+                    if (players->at(i) == targetPlayer) { //This player is our current player
                         continue;
                     }
-                    for (auto const &node : *(players.at(i)->getNodes())) {
+                    for (auto const &node : *(players->at(i)->getNodes())) {
                         if (node->getPointerToCountry()->getName() == iterator->second->getPointerToCountry()->getName()) {
-                            defendingPlayer = &(*players.at(i));
+                            defendingPlayer = &(*players->at(i));
                             break;
                         }
                     }
@@ -1054,7 +1054,7 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
  * @param players List of players
  * @return
  */
-AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
+AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> *players)
 {
     // Custom response with Cheater flag enabled
     return new AttackResponse(nullptr, nullptr, true);
