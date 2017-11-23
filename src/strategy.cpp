@@ -341,7 +341,7 @@ FortifyResponse* HumanStrategy::fortify(Player *targetPlayer, Graph &map)
         validInput=true;
     }
     validInput=false;
-    return new FortifyResponse(armNum,sourceCtr,destCtr);
+    return new FortifyResponse(armNum,sourceCtr,destCtr, false);
 
 }
 
@@ -567,7 +567,7 @@ FortifyResponse* AggressiveStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = secondStrongestCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total==0)
         return nullptr;
-    return new FortifyResponse(total, secondStrongestCountry, strongestCountry);
+    return new FortifyResponse(total, secondStrongestCountry, strongestCountry, false);
 }
 
 /**
@@ -722,7 +722,7 @@ FortifyResponse* BenevolentStrategy::fortify(Player *targetPlayer, Graph &map)
     int total = strongestAdjacentCountry->getPointerToCountry()->getNbrArmies() - 1;
     if (total == 0)
         return nullptr;
-    return new FortifyResponse(total, strongestAdjacentCountry, weakestCountry);
+    return new FortifyResponse(total, strongestAdjacentCountry, weakestCountry, false);
 }
 
 /**
@@ -1023,7 +1023,7 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
         validInput=true;
     }
     validInput=false;
-    return new FortifyResponse(armNum,sourceCtr,destCtr);
+    return new FortifyResponse(armNum,sourceCtr,destCtr, false);
 }
 
 /**
@@ -1078,9 +1078,9 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
  */
 FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
 {
-    return nullptr;
+    // Custom response with Cheater flag enabled
+    return new FortifyResponse(NULL, nullptr, nullptr, true);
 }
-
 
 // Methods to get Strategy Type
 
