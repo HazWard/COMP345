@@ -1065,7 +1065,8 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
 AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> &players)
 {
     // Custom response with Cheater flag enabled
-    return new AttackResponse(nullptr, nullptr, true);
+    std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, nullptr);
+    return new AttackResponse(attacker, nullptr, true);
 }
 
 /**

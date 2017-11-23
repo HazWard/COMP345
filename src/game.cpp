@@ -850,7 +850,7 @@ void mainGameLoopDriver()
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
-                riskGame.performFortify(fortifyResponse);
+                riskGame.performFortify(players->at(i),fortifyResponse);
                 riskGame.notify(0);
             }
             delete fortifyResponse;
@@ -997,7 +997,7 @@ bool Game::performAttack(AttackResponse* response) {
     return victory; //returns true if victory false otherwise
 }
 
-void Game::performFortify(FortifyResponse* response) {
+void Game::performFortify(Player* player, FortifyResponse* response) {
     //Apply changes
     string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
     string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
