@@ -54,6 +54,7 @@ Game::Game()
 
 Game::Game(Parser* map, vector<Player*> pl, int maximum_turns)
 {
+    this->arrayPlayers.clear();
     this->mapName = "some_map";
     this->mapCountries = map->getGraph();
     //TODO: might cause a problem we shall see (content of pointer)
@@ -61,6 +62,10 @@ Game::Game(Parser* map, vector<Player*> pl, int maximum_turns)
     this->arrayPlayers.reserve(pl.size());
     for(int i = 0; i < pl.size(); i++)
         this->arrayPlayers.push_back(pl[i]);
+    for(int i = 0; i < arrayPlayers.size(); i++)
+    {
+        arrayPlayers[i]->getNodes()->clear();
+    }
     this->nbrPlayers = pl.size();
     determinePlayerTurn();
     this->mainDeck = Deck(mapCountries->getNbrCountries());
@@ -476,6 +481,12 @@ void Game::placeArmiesAutomatic()
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     vector<int> nbrArmiesPlayers(arrayPlayers.size(), nbrArmiesPerPlayer);
 
+    for (int i = 0; i < nbrPlayers; i++)
+    {
+        cout << nbrPlayers << " ";
+        cout << (*(arrayPlayers[i]->getNodes())).size() << endl;
+    }
+
     //We are going to place 1 army per owbed territory in a round robin fashion. This process is automated.
     cout << "Placing 1 army per owned Territory for each player..." << endl;
     bool allNodesHaveOneArmy = false;
@@ -502,6 +513,8 @@ void Game::placeArmiesAutomatic()
             }
         }
     }
+    for(int i = 0; i < nbrArmiesPlayers.size(); i++)
+        cout << nbrArmiesPlayers[i] << endl;
 
     //Now, we ask for the player to add the remaining armies that were not automatically added, one by one.
     //He only has to select a valid index associated with the country.
@@ -550,6 +563,7 @@ bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
         for (auto const& node : *(arrayPlayers[i]->getNodes())) {
             nbrArmies += node->getCountry().getNbrArmies();
         }
+        cout << nbrArmies << "   " << nbrArmiesPerPlayer << endl;
         if(nbrArmies != nbrArmiesPerPlayer)
             return false;
     }
@@ -777,10 +791,11 @@ void Game::chooseGameScenario(vector<Player*>* players)
     cout << endl << endl;
 }
 
+//empty the list of nodes of each player, and set the number of armies of every country in the graph to 0
 void Game::reinitialize_game() {
-    for(int i = 0; i < arrayPlayers.size(); i++)
+    for (int i = 0; i < this->arrayPlayers.size(); i++)
     {
-        arrayPlayers[i] = new Player(arrayPlayers[i]->getName(), arrayPlayers[i]->getStrategy());
+        this->arrayPlayers[i]->getNodes()->clear();
     }
     for(int i = 0; i < mapCountries->getVectorOfNodes()->size(); i++)
     {
@@ -922,6 +937,12 @@ void mainGameLoopDriver()
 
 void mainGameLoopTournament(Game& riskGame)
 {
+    /*
+    for (int i = 0; i < riskGame.getArrayPlayers()->size(); i++) {
+        (*riskGame.getArrayPlayers())[i]->getNodes()->clear();
+        cout << (*riskGame.getArrayPlayers())[i]->getNodes()->size() << endl;
+    }*/
+
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
 

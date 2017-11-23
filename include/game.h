@@ -3,6 +3,7 @@
 #include "../include/player.h"
 #include "../include/observer.h"
 #include "../include/events.h"
+#include <chrono>
 
 class Game : public Subject {
 private:

@@ -216,8 +216,8 @@ Tournament::Tournament() {
         cin >> D;
         cin.ignore();
          */
-        M_in_string_form = "World.map";
-        P_in_string_form = "Aggressive, Aggressive";
+        M_in_string_form = "New York.map, World.map";
+        P_in_string_form = "Aggressive, Aggressive, Aggressive, Aggressive";
         G = 3;
         D = 30;
 
@@ -254,6 +254,7 @@ void Tournament::setup_games()
 void Tournament::play_games()
 {
     cout << games.size() << endl;
+    int k = 1;
     map<Graph*, vector<Game*>*>::reverse_iterator rit;
     for (rit = games.rbegin(); rit != games.rend(); ++rit)
     {
@@ -261,8 +262,22 @@ void Tournament::play_games()
         cout << current_games->size();
         for(int i = 0; i < current_games->size(); i++)
         {
+            cout << "*************GAME NUMBER " << (i+1) << " ON MAP NUMBER " << k << endl;
             mainGameLoopTournament(*(*current_games)[i]);
+            /*
+            vector<Player*> resettingPlayers;
+            for(int i = 0; i < P.size(); i++)
+            {
+                resettingPlayers.push_back(new Player(P[i]->getName(), P[i]->getStrategy()));
+                delete P[i];
+            }
+            P.clear();
+            for(int i = 0; i < resettingPlayers.size(); i++)
+            {
+                P.push_back(resettingPlayers[i]);
+            }*/
         }
+        k++;
     }
 }
 
@@ -274,7 +289,9 @@ void Tournament::display_results()
         vector<Game*>* current_games = rit->second;
         for(int i = 0; i < current_games->size(); i++)
         {
-            cout << (*current_games)[i]->winningPlayer->getName() << " ";
+            if((*current_games)[i]->winningPlayer)
+                cout << (*current_games)[i]->winningPlayer->getName() << " ";
+            else cout << "DRAW ";
         }
         cout << endl;
     }
