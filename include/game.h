@@ -20,6 +20,7 @@ private:
     Deck mainDeck;
 
     //Helper methods:
+    list<string> getNameOfFiles(const char *path);
     void getMapUser(list<string> listOfMapFiles);
     void getMapAutomatic();
     int getNbrPlayersUser();
@@ -56,6 +57,3 @@ public:
     Player* currentPlayer;
     void chooseGameScenario(vector<Player*>* players);
 };
-
-const string MAPS_FOLDER = "../maps/";
-list<string> getNameOfFiles(const char *path);

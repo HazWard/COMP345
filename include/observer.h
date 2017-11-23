@@ -6,6 +6,11 @@
 #include <list>
 #include "../include/events.h"
 
+static const int NEW_TURN = 10;
+static const int NEW_CONQUEST = 20;
+static const int HAND_CHANGE = 30;
+static const int CONTINENT_CONTROL = 40;
+
 //Forward declaration of Observer
 class Observer;
 
@@ -21,7 +26,7 @@ public:
     Subject();
     void attach(Observer *observer);
     void detach(Observer *observer);
-    void notify();
+    void notify(int code);
 };
 
 class Observer {
@@ -35,7 +40,7 @@ public:
     Subject *model;
     Observer();
     Observer(Subject *subject) : model(subject) {};
-    virtual void update() {};
+    virtual void update(int code) {};
 protected:
     Subject *getSubject();
 };
