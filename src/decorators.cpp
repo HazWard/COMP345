@@ -4,6 +4,7 @@
 
 void DominationDecorator::update(int code)
 {
+    this->statObserver->update(code);
     if(code == NEW_CONQUEST || code == CONTINENT_CONTROL) {
         this->display();
         // pausing system
@@ -15,7 +16,6 @@ void DominationDecorator::update(int code)
 
 void DominationDecorator::display()
 {
-    statObserver->display();
     Game* game = static_cast<Game*> (this->statObserver->model);
     int numberOfPlayers = game->getNbrPlayers();
     vector<Player*>* players = game->getArrayPlayers();
@@ -35,6 +35,7 @@ void DominationDecorator::display()
 
 void PlayerHandDecorator::update(int code)
 {
+    this->statObserver->update(code);
     if(code == HAND_CHANGE) {
         this->display();
         // pausing system
@@ -46,7 +47,6 @@ void PlayerHandDecorator::update(int code)
 
 void PlayerHandDecorator::display()
 {
-    statObserver->display();
     Game* game = static_cast <Game*> (model);
     vector<Player*> players1 = game->players;
     for(int i=0; i<players1.size(); i++)
@@ -58,6 +58,7 @@ void PlayerHandDecorator::display()
 
 void ContinentDecorator::update(int code)
 {
+    this->statObserver->update(code);
     if(code == CONTINENT_CONTROL) {
         this->display();
         // pausing system
@@ -69,7 +70,6 @@ void ContinentDecorator::update(int code)
 
 void ContinentDecorator::display()
 {
-    statObserver->display();
     Game* game = static_cast <Game*> (this->statObserver->model);
     vector<Player*> players1 = game->players;
     for(int i=0; i<players1.size(); i++)
@@ -86,4 +86,8 @@ void ContinentDecorator::display()
     }
 
 
+}
+
+Observer* StatObserverDecorator::getStatObserver() {
+    return this->statObserver;
 }

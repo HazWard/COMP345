@@ -790,21 +790,123 @@ void mainGameLoopDriver()
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
     Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
     //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
 
     //Attaching observers
     riskGame.attach(phaseObserver);
     riskGame.attach(statObserver);
-    riskGame.attach(domObserver);
-    riskGame.attach(handObserver);
-    riskGame.attach(continentObserver);
+
+    int decorators = 0;
+    bool dominationDecorator = false;
+    bool handsDecorator = false;
+    bool continentDecorator = false;
 
     //Main game loop
     while(!playerWins)
     {
+        //Adding and removing decorators based on user input
+        while(decorators >= 1) {
+            cout << "Do you wish to remove decorators from StatObserver?(y/n)" << endl;
+            std::string answer;
+            cin >> answer;
+
+            if (answer == "n")
+                break;
+
+            answer.clear();
+
+            if (dominationDecorator) {
+                cout << "Domination Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators--;
+                    riskGame.detach(statObserver);
+                    dominationDecorator = false;
+                    statObserver = new StatObserver(static_cast<Subject *>(&riskGame));
+                    if (handsDecorator)
+                        statObserver = new PlayerHandDecorator(statObserver);
+                    if (continentDecorator)
+                        statObserver = new ContinentDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+            if (handsDecorator) {
+                cout << "Player Hand Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators--;
+                    handsDecorator = false;
+                    riskGame.detach(statObserver);
+                    statObserver = new StatObserver(static_cast<Subject *>(&riskGame));
+                    if (dominationDecorator)
+                        statObserver = new DominationDecorator(statObserver);
+                    if (continentDecorator)
+                        statObserver = new ContinentDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+            if (continentDecorator) {
+                cout << "Continents Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators--;
+                    continentDecorator = false;
+                    riskGame.detach(statObserver);
+                    statObserver = new StatObserver(static_cast<Subject *>(&riskGame));
+                    if (dominationDecorator)
+                        statObserver = new DominationDecorator(statObserver);
+                    if (handsDecorator)
+                        statObserver = new PlayerHandDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+            }
+        }
+        while(decorators < 3) {
+            cout << "Do you wish to add decorators to StatObserver?(y/n)" << endl;
+            std::string answer;
+            cin >> answer;
+
+            if (answer == "y") {
+                answer.clear();
+
+                if (!dominationDecorator) {
+                    cout << "Domination Decorator?(y/n)" << endl;
+                    cin >> answer;
+                    if (answer == "y") {
+                        decorators++; dominationDecorator = true;
+                        riskGame.detach(statObserver);
+                        statObserver = new DominationDecorator(statObserver);
+                        riskGame.attach(statObserver);
+                    }
+                    answer.clear();
+                }
+                if (!handsDecorator) {
+                    cout << "Player Hand Decorator?(y/n)" << endl;
+                    cin >> answer;
+                    if (answer == "y") {
+                        decorators++; handsDecorator = true;
+                        riskGame.detach(statObserver);
+                        statObserver = new PlayerHandDecorator(statObserver);
+                        riskGame.attach(statObserver);
+                    }
+                    answer.clear();
+                }
+                if (!continentDecorator) {
+                    cout << "Continents Decorator?(y/n)" << endl;
+                    cin >> answer;
+                    if (answer == "y") {
+                        decorators++; continentDecorator = true;
+                        riskGame.detach(statObserver);
+                        statObserver = new ContinentDecorator(statObserver);
+                        riskGame.attach(statObserver);
+                    }
+                    answer.clear();
+                }
+            }
+        }
+
         for(int i = 0; i < players->size(); i++)
         {
             riskGame.notify(NEW_TURN);
@@ -1021,8 +1123,5 @@ int main()
 {
 
     mainGameLoopDriver();
-
-    std::getchar();
-    system("pause");
     return 0;
 }

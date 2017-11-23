@@ -10,41 +10,42 @@ class StatObserverDecorator : public Observer {
 public:
     virtual void update(int code) = 0;
     virtual void display() = 0;
+    Observer* getStatObserver();
 
 private:
-    StatObserver statObserver;
+    Observer *statObserver;
 
 };
 
 class DominationDecorator : public StatObserverDecorator {
 
 public:
-    DominationDecorator(StatObserver *so) : statObserver(so) {};
+    DominationDecorator(Observer *so) : statObserver(so) {};
     void update(int code);
     void display();
 
 private:
-    StatObserver *statObserver;
+    Observer *statObserver;
 };
 
 class PlayerHandDecorator : public StatObserverDecorator {
 
 public:
-    PlayerHandDecorator(StatObserver *so) : statObserver(so) {};
+    PlayerHandDecorator(Observer *so) : statObserver(so) {};
     void update(int code);
     void display();
 
 private:
-    StatObserver *statObserver;
+    Observer *statObserver;
 };
 
 class ContinentDecorator : public StatObserverDecorator {
 
 public:
-    ContinentDecorator(StatObserver *so) : statObserver(so) {};
+    ContinentDecorator(Observer *so) : statObserver(so) {};
     void update(int code);
     void display();
 
 private:
-    StatObserver *statObserver;
+    Observer *statObserver;
 };
