@@ -40,5 +40,6 @@ public:
     int nbArmies;
     Node* sourceCountry;
     Node* destinationCountry;
-    FortifyResponse(int n, Node *s, Node *d) : nbArmies(n), sourceCountry(s), destinationCountry(d) {};
+    bool isCheater;
+    FortifyResponse(int n, Node *s, Node *d, bool c) : nbArmies(n), sourceCountry(s), destinationCountry(d), isCheater(c) {};
 };

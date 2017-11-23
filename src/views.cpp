@@ -12,10 +12,11 @@ StatObserver::StatObserver() :Observer() {}
 void StatObserver::update(int code) {
     if(code == NEW_TURN) {
         this->display();
-        // Pausing System
+        // Pausing System: COMMENT OUT FOR PART 3
+        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();
+        cin.get();*/
     }
 }
 
@@ -30,10 +31,11 @@ PhaseObserver::PhaseObserver() :Observer() {}
 void PhaseObserver::update(int code) {
     if(code != NEW_TURN) {
         this->display();
-        // Pausing System
+        // Pausing System COMMENT OUT FOR PART 3
+        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();
+        cin.get();*/
     }
 }
 

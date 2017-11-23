@@ -85,7 +85,7 @@ class RandomStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
     StrategyType getType();
 };
@@ -101,7 +101,10 @@ class CheaterStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
     StrategyType getType();
 };
+
+string tolower(string& str);
+string trim(const string& str);

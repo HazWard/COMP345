@@ -6,10 +6,11 @@ void DominationDecorator::update(int code)
 {
     if(code == NEW_CONQUEST || code == CONTINENT_CONTROL) {
         this->display();
-        // pausing system
+        // pausing system COMMENT OUT FOR PART 3
+        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();
+        cin.get();*/
     }
 }
 
@@ -36,10 +37,11 @@ void PlayerHandDecorator::update(int code)
 {
     if(code == HAND_CHANGE) {
         this->display();
-        // pausing system
+        // pausing system COMMENT OUT FOR PART 3
+        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();
+        cin.get();*/
     }
     StatObserverDecorator::update(code);
 }
@@ -59,10 +61,11 @@ void ContinentDecorator::update(int code)
 {
     if(code == CONTINENT_CONTROL) {
         this->display();
-        // pausing system
+        // pausing system COMMENT OUT FOR PART 3
+        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();
+        cin.get();*/
     }
     StatObserverDecorator::update(code);
 }

@@ -3,22 +3,22 @@
 #include "../include/events.h"
 #include "../include/views.h"
 #include "../include/decorators.h"
+#include "../include/tournament.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
 #include <chrono>
 #include <cstdio>
+#include <set>
 
 using namespace std;
-
-const string MAPS_FOLDER = "../maps/";
 
 bool windows = false;
 #ifdef OS_WINDOW1S
 windows = true;
 #endif
 
-//forward declaration
+//forward declarations
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses);
 
 //Constructor for the Game class
@@ -43,6 +43,40 @@ Game::Game()
         cout << "The number of players (" << nbrPlayers << " and "
              << "the number of players created (" << arrayPlayers.size()
              << "is not equivalent. We will exit the program." << endl;
+        exit (EXIT_FAILURE);
+    }
+    if(mainDeck.getNumberOfCards() != mapCountries->getNbrCountries())
+    {
+        cout << "The number of cards (" << mainDeck.getNumberOfCards() << " and "
+             << "the number of nodes in the map (" << mapCountries->getNbrCountries()
+             << "is not equivalent. We will exit the program." << endl;
+        exit (EXIT_FAILURE);
+    }
+}
+
+Game::Game(Parser* map, vector<Player*> pl, int maximum_turns)
+{
+    this->arrayPlayers.clear();
+    this->mapName = "some_map";
+    this->mapCountries = map->getGraph();
+    //TODO: might cause a problem we shall see (content of pointer)
+    this->continents = *(map->getContinents());
+    this->arrayPlayers.reserve(pl.size());
+    for(int i = 0; i < pl.size(); i++)
+        this->arrayPlayers.push_back(pl[i]);
+    for(int i = 0; i < arrayPlayers.size(); i++)
+    {
+        arrayPlayers[i]->getNodes()->clear();
+    }
+    this->nbrPlayers = pl.size();
+    determinePlayerTurn();
+    this->mainDeck = Deck(mapCountries->getNbrCountries());
+    this->max_turns = maximum_turns;
+    if(nbrPlayers != arrayPlayers.size())
+    {
+        cout << "The number of players (" << nbrPlayers << ") and "
+             << "the number of players created (" << arrayPlayers.size()
+             << ") is not equivalent. We will exit the program." << endl;
         exit (EXIT_FAILURE);
     }
     if(mainDeck.getNumberOfCards() != mapCountries->getNbrCountries())
@@ -83,7 +117,7 @@ void Game::setArrayPlayers(vector<Player*>& newArrayPl)
 
 //Function to read all files from a given folder taken from:
 //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-list<string> Game::getNameOfFiles(const char *path)
+list<string> getNameOfFiles(const char *path)
 {
     list<string> listOfMapFiles;
     struct dirent *entry;
@@ -153,7 +187,7 @@ void Game::getMapUser(list<string> listOfMapFiles) {
     list<string>::const_iterator iterator;
     for (iterator = listOfMapFiles.begin(); iterator != listOfMapFiles.end(); ++iterator)
     {
-        cout << i+1 << ": " << *iterator << endl;
+        cout << "\t" << i+1 << ": " << *iterator << endl;
         i++;
     }
     cout << endl;
@@ -449,6 +483,12 @@ void Game::placeArmiesAutomatic()
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     vector<int> nbrArmiesPlayers(arrayPlayers.size(), nbrArmiesPerPlayer);
 
+    for (int i = 0; i < nbrPlayers; i++)
+    {
+        cout << nbrPlayers << " ";
+        cout << (*(arrayPlayers[i]->getNodes())).size() << endl;
+    }
+
     //We are going to place 1 army per owbed territory in a round robin fashion. This process is automated.
     cout << "Placing 1 army per owned Territory for each player..." << endl;
     bool allNodesHaveOneArmy = false;
@@ -475,6 +515,8 @@ void Game::placeArmiesAutomatic()
             }
         }
     }
+    for(int i = 0; i < nbrArmiesPlayers.size(); i++)
+        cout << nbrArmiesPlayers[i] << endl;
 
     //Now, we ask for the player to add the remaining armies that were not automatically added, one by one.
     //He only has to select a valid index associated with the country.
@@ -523,6 +565,7 @@ bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
         for (auto const& node : *(arrayPlayers[i]->getNodes())) {
             nbrArmies += node->getCountry().getNbrArmies();
         }
+        cout << nbrArmies << "   " << nbrArmiesPerPlayer << endl;
         if(nbrArmies != nbrArmiesPerPlayer)
             return false;
     }
@@ -630,12 +673,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy);
                 }
             }
         } break;
@@ -645,12 +688,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy);
                 }
             }
         } break;
@@ -660,12 +703,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy);
                 }
             }
         } break;
@@ -675,12 +718,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy);
                 }
             }
         } break;
@@ -690,12 +733,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy);
                 }
             }
         } break;
@@ -705,12 +748,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy);
                 }
             }
         }
@@ -750,12 +793,26 @@ void Game::chooseGameScenario(vector<Player*>* players)
     cout << endl << endl;
 }
 
+//empty the list of nodes of each player, and set the number of armies of every country in the graph to 0
+void Game::reinitialize_game() {
+    for (int i = 0; i < this->arrayPlayers.size(); i++)
+    {
+        this->arrayPlayers[i]->getNodes()->clear();
+    }
+    for(int i = 0; i < mapCountries->getVectorOfNodes()->size(); i++)
+    {
+        (*mapCountries->getVectorOfNodes())[i]->getPointerToCountry()->setNbrArmies(0);
+    }
+}
+
 void mainGameLoopDriver()
 {
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
     Also, we check that the right number of players is created inside the constructor as well.*/
     Game riskGame;
+
+    riskGame.max_turns = riskGame.DEFAULT_MAX_TURNS;
     //Determine player order and print them to check that the order changed (randomly)
     vector<Continent*> continents = *(riskGame.getContinents());
 
@@ -777,8 +834,6 @@ void mainGameLoopDriver()
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
     bool playerWins = false;
 
-    //We keep track of the winning player
-    Player* winningPlayer;
     riskGame.currentTurn = 1;
 
     //creating observers
@@ -955,31 +1010,159 @@ void mainGameLoopDriver()
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
-                riskGame.performFortify(fortifyResponse);
+                riskGame.performFortify(players->at(i),fortifyResponse);
                 riskGame.notify(0);
             }
             delete fortifyResponse;
 
             //After each player's turn, we check if one player owns all the countries in the map
-            if(players->at(i)->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
-                playerWins = true;
-                winningPlayer = players->at(i);
-                break;
-            }
-            if (riskGame.currentTurn == 20)
+            if(riskGame.currentPlayer->controlsAllCountriesInMap(*riskGame.getMapCountries()))
             {
                 playerWins = true;
-                winningPlayer = players->at(i);
+                riskGame.winningPlayer = riskGame.currentPlayer;
                 break;
             }
         }
-        riskGame.currentTurn++;
+        //If we reach the max number of turns, the game is over with a draw
+        if(riskGame.currentTurn++ == riskGame.max_turns)
+        {
+            playerWins = true;
+            riskGame.winningPlayer = nullptr;
+        }
     }
     cout << "===== GAME RESULTS =====" << endl;
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
         cout << *node << endl;
     }
-    cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+    if(riskGame.winningPlayer)
+        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+    else {
+        cout << "The game of risk reached the maximum number of turns (" << riskGame.max_turns << ")." << endl;
+        cout << "It ended up with a DRAW." << endl;
+    }
+}
+
+
+void mainGameLoopTournament(Game& riskGame)
+{
+    /*
+    for (int i = 0; i < riskGame.getArrayPlayers()->size(); i++) {
+        (*riskGame.getArrayPlayers())[i]->getNodes()->clear();
+        cout << (*riskGame.getArrayPlayers())[i]->getNodes()->size() << endl;
+    }*/
+    riskGame.determinePlayerTurn();
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    vector<Continent*> continents = *(riskGame.getContinents());
+
+    riskGame.assignCountriesToPlayers();
+
+    players = riskGame.getArrayPlayers();
+
+    //Displaying all the continents in the graph
+    for(int i = 0; i < continents.size(); i++)
+    {
+        cout << *(continents[i]);
+    }
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        players->at(i)->printNodes();
+    }
+    riskGame.placeArmiesAutomatic();
+
+    //Boolean is false until a player wins. this is the breaking condition of the main game loop
+    bool playerWins = false;
+
+    riskGame.currentTurn = 1;
+
+    //creating observers
+    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
+
+    //Attaching observers
+    riskGame.attach(phaseObserver);
+    riskGame.attach(statObserver);
+    riskGame.attach(domObserver);
+    riskGame.attach(handObserver);
+    riskGame.attach(continentObserver);
+
+    //Main game loop
+    while(!playerWins) {
+        for (int i = 0; i < players->size(); i++) {
+            riskGame.notify(NEW_TURN);
+            cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
+            //monitor current player
+            riskGame.currentPlayer = players->at(i);
+            // Each player gets to reinforce, attack and fortify
+            std::vector<ReinforceResponse *> *reinforceResponse = (*players)[i]->reinforce(continents);
+
+            if (reinforcementsMade(reinforceResponse)) {
+                riskGame.performReinforce(reinforceResponse);
+                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
+                riskGame.notify(0);
+            }
+            delete reinforceResponse;
+
+            AttackResponse *attackResponse;
+            do {
+                attackResponse = players->at(i)->attack(players);
+                if (attackResponse) {
+                    //Counting how many continents the attacker and defender have before the attack is done
+                    int attackerCont = attackResponse->attacker->first->getsContinentsOwned(
+                            riskGame.getContinents())->size();
+                    int defenderCont = attackResponse->defender->first->getsContinentsOwned(
+                            riskGame.getContinents())->size();
+
+                    //Performing the attack
+                    bool conquest = riskGame.performAttack(attackResponse);
+
+                    //checks if the number of continents owned by either of the player has changed as a result of the attack
+                    if (conquest) {
+                        int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(
+                                riskGame.getContinents())->size();
+                        int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(
+                                riskGame.getContinents())->size();
+                        if ((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
+                            riskGame.notify(CONTINENT_CONTROL);
+                        else
+                            riskGame.notify(NEW_CONQUEST);
+                    } else
+                        riskGame.notify(0);
+                }
+            } while (attackResponse);
+            delete attackResponse;
+
+            FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
+            if (fortifyResponse) {
+                riskGame.performFortify(players->at(i), fortifyResponse);
+                riskGame.notify(0);
+            }
+            delete fortifyResponse;
+        }
+        //After each player's turn, we check if one player owns all the countries in the map
+        //If we reach the max number of turns, the game is over with a draw
+        if (riskGame.currentTurn++ == riskGame.max_turns) {
+            playerWins = true;
+            riskGame.winningPlayer = nullptr;
+        }
+    }
+    cout << "\n\n===== GAME RESULTS =====" << endl;
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << *node << endl;
+    }
+    if(riskGame.winningPlayer)
+        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+    else {
+        cout << "The game of risk reached the maximum number of turns (" << riskGame.max_turns << ")." << endl;
+        cout << "It ended up with a DRAW." << endl << endl;
+    }
+    riskGame.reinitialize_game();
 }
 
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)
@@ -1020,8 +1203,50 @@ bool Game::performAttack(AttackResponse* response) {
 
     if (response->isCheater)
     {
-        // Conquers all the neighbors of all its countries
-        // TODO: Write implementation
+        // Find countries with neighbors belonging to other players
+        Player* player = response->attacker->first;
+        std::set<Node *> countriesToConquer = std::set<Node *>();
+        std::list<Node*>::iterator countryIterator;
+        for (countryIterator = player->getNodes()->begin(); countryIterator != player->getNodes()->end(); ++countryIterator)
+        {
+            Node* currentNode = *countryIterator;
+            for(int i = 0; i < currentNode->getAdjList().size(); ++i)
+            {
+                if (!player->getStrategy()->containsNode(player, *currentNode->getAdjList()[i]))
+                {
+                    countriesToConquer.insert(currentNode);
+                }
+            }
+        }
+
+        std::set<Node*>::iterator attacksIterator;
+        for (attacksIterator = countriesToConquer.begin(); attacksIterator != countriesToConquer.end(); attacksIterator++)
+        {
+            // Find the defending player and change ownership of Country
+            Player *defendingPlayer;
+            for (int i = 0; i < players.size(); i++) {
+                if (players.at(i) == player)
+                {
+                    continue;
+                }
+                for (auto const &node : *(players.at(i)->getNodes()))
+                {
+                    if (node->getPointerToCountry()->getName() == (*attacksIterator)->getPointerToCountry()->getName())
+                    {
+                        // Take over Country
+                        defendingPlayer = &(*players.at(i));
+                        player->addNode(*attacksIterator);
+                        defendingPlayer->removeNode(*attacksIterator);
+                    }
+                }
+            }
+        }
+        if (!this->currentEvent)
+        {
+            delete this->currentEvent;
+        }
+        this->currentEvent = new AttackEvent(response->attacker->first, nullptr,
+                                             nullptr, nullptr, nullptr, nullptr, true, -1);
         return true;
     }
 
@@ -1102,20 +1327,48 @@ bool Game::performAttack(AttackResponse* response) {
     return victory; //returns true if victory false otherwise
 }
 
-void Game::performFortify(FortifyResponse* response) {
-    //Apply changes
-    string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
-    string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
-    response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
-    response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
-
-    //update currentEvent and return it
-    if (!this->currentEvent)
+void Game::performFortify(Player* player, FortifyResponse* response) {
+    if (response->isCheater)
     {
-        delete this->currentEvent;
-    }
-    this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+        // Find countries with neighbors belonging to other players
+        std::set<Node *> countriesToFortify = std::set<Node *>();
+        std::list<Node*>::iterator countryIterator;
+        for (countryIterator = player->getNodes()->begin(); countryIterator != player->getNodes()->end(); ++countryIterator)
+        {
+            Node* currentNode = *countryIterator;
+            for(int i = 0; i < currentNode->getAdjList().size(); ++i)
+            {
+                if (!player->getStrategy()->containsNode(player, *currentNode->getAdjList()[i]))
+                {
+                    countriesToFortify.insert(currentNode);
+                }
+            }
+        }
 
+        // Double the number of armies on countries
+        std::set<Node*>::iterator fortifyIterator;
+        for (fortifyIterator = countriesToFortify.begin(); fortifyIterator != countriesToFortify.end(); ++fortifyIterator)
+        {
+            Node* currentNode = *fortifyIterator;
+            int nbOfAmies = 2 * currentNode->getPointerToCountry()->getNbrArmies();
+            currentNode->getPointerToCountry()->setNbrArmies(nbOfAmies);
+        }
+    }
+    else
+    {
+        //Apply changes
+        string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
+        string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
+        response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
+        response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
+
+        //update currentEvent and return it
+        if (!this->currentEvent)
+        {
+            delete this->currentEvent;
+        }
+        this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
+    }
 }
 
 Event* Game::getCurrentEvent(){
@@ -1124,7 +1377,31 @@ Event* Game::getCurrentEvent(){
 
 int main()
 {
+    cout << "Choose a part to execute: " << endl;
+    std::string answer;
+    cin >> answer;
 
-    mainGameLoopDriver();
-    return 0;
+    if(answer == "1")
+        mainGameLoopDriver();
+    else if(answer == "2"){
+        //TODO: Call the proper driver
+    }
+    else if(answer == "3"){
+        //mainGameLoopDriver();
+        Tournament t;
+
+        t.setup_games();
+        t.play_games();
+        t.display_results();
+
+        if(windows)
+            system("pause");
+        else {
+            std::cout << "Press any key to continue . . ." << std::endl;
+            std::getchar();
+        }
+    }
+    else{
+        cout << "Invalid choice." << endl;
+    }
 }
