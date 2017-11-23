@@ -47,8 +47,9 @@ class Hand{
     */
     int inf, cav, art;
     public:
+        Hand() : inf(0), cav(0), art(0) {};
         bool exchange(int t);
         void draw(Card *c);
-        void display(void);
+        void display();
         int getTotalCards();
 };

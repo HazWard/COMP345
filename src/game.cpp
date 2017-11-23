@@ -63,7 +63,7 @@ vector<Player*>* Game::getArrayPlayers() { return &arrayPlayers; }
 
 Graph* Game::getMapCountries() { return mapCountries; }
 
-Deck Game::getMainDeck() { return mainDeck; }
+Deck* Game::getMainDeck() { return &mainDeck; }
 
 vector<Continent*>* Game::getContinents() { return &continents; };
 
@@ -757,13 +757,11 @@ void mainGameLoopDriver()
     Also, we check that the right number of players is created inside the constructor as well.*/
     Game riskGame;
     //Determine player order and print them to check that the order changed (randomly)
-    vector<Player*>* players = riskGame.getArrayPlayers();
-
     vector<Continent*> continents = *(riskGame.getContinents());
 
     riskGame.assignCountriesToPlayers();
 
-    players = riskGame.getArrayPlayers();
+    vector<Player*>* players = riskGame.getArrayPlayers();
 
     //Displaying all the continents in the graph
     for(int i = 0; i < continents.size(); i++)
@@ -771,10 +769,6 @@ void mainGameLoopDriver()
         cout << *(continents[i]);
     }
 
-    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
-    {
-        players->at(i)->printNodes();
-    }
     riskGame.placeArmiesAutomatic();
 
     //Setting player strategy according to our 5 scenarios
@@ -804,7 +798,6 @@ void mainGameLoopDriver()
     //Main game loop
     while(!playerWins)
     {
-
         //Adding and removing decorators based on user input
         while(decorators >= 1) {
             cout << "Do you wish to remove decorators from StatObserver?(y/n)" << endl;
@@ -918,7 +911,6 @@ void mainGameLoopDriver()
             // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
 
-            cout << players->at(i)->getName() << endl;
             if(reinforcementsMade(reinforceResponse)){
                 riskGame.performReinforce(reinforceResponse);
                 if(reinforceResponse->at(0)->exchangeOccured)
@@ -957,7 +949,7 @@ void mainGameLoopDriver()
             delete attackResponse;
 
             if(conqueredTerritory){
-                players->at(i)->getHand()->draw(riskGame.getMainDeck().draw());
+                players->at(i)->getHand()->draw(riskGame.getMainDeck()->draw());
                 riskGame.notify(HAND_CHANGE);
             }
 

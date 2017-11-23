@@ -89,6 +89,7 @@ Card* Deck::draw(){
     if(this->numberOfCards > 0){
         Card *temp = top;
         top = top->next;
+        this->numberOfCards--;
         return temp;
     }
     return NULL;
@@ -165,9 +166,9 @@ void Hand::draw(Card *c){
     delete c;
 }
 
-void Hand::display(void){
-    cout << "This hand contains " << inf << " infantry cards, " << cav << " cavalry cards, and "
-    << art << " artillery cards." << endl;
+void Hand::display(){
+    cout << "This hand contains " << this->inf << " infantry cards, " << this->cav << " cavalry cards, and "
+    << this->art << " artillery cards." << endl;
 }
 
 int Hand::getTotalCards()
