@@ -24,12 +24,10 @@ class Strategy
 {
 public:
     virtual std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents) = 0;
-    virtual AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players) = 0;
+    virtual AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players) = 0;
     virtual FortifyResponse* fortify(Player* targetPlayer, Graph& map) = 0;
     bool containsNode(Player* targetPlayer, Node &node);
-    vector<Node*>* sortByStrongest(list<Node*> *nodes);
-    enum StrategyType { ABSTRACT = 0, HUMAN = 1, AGGRESSIVE = 2, BENEVOLENT = 3, RANDOM = 4, CHEATER = 5 };
-    virtual StrategyType getType();
+    virtual void printStrat();
 };
 
 /**
@@ -40,9 +38,9 @@ class HumanStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    StrategyType getType();
+    void printStrat();
 };
 
 /**
@@ -55,9 +53,9 @@ class AggressiveStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer,std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    StrategyType getType();
+    void printStrat();
 };
 
 /**
@@ -70,9 +68,9 @@ class BenevolentStrategy : public Strategy
 {
 public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
-    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> *players);
+    AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    StrategyType getType();
+    void printStrat();
 };
 
 /**
@@ -87,7 +85,7 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    StrategyType getType();
+    void printStrat();
 };
 
 /**
@@ -103,5 +101,7 @@ public:
     std::vector<ReinforceResponse*>* reinforce(Player* targetPlayer, std::vector<Continent*> continents);
     AttackResponse* attack(Player* targetPlayer, std::vector<Player*> &players);
     FortifyResponse* fortify(Player* targetPlayer, Graph& map);
-    StrategyType getType();
+    void printStrat();
 };
+
+string trim(const string& str);

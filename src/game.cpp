@@ -2,7 +2,6 @@
 #include <dirent.h>
 #include "../include/events.h"
 #include "../include/views.h"
-#include "../include/decorators.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -11,14 +10,12 @@
 
 using namespace std;
 
-const string MAPS_FOLDER = "../maps/";
-
 bool windows = false;
 #ifdef OS_WINDOW1S
 windows = true;
 #endif
 
-//forward declaration
+//forward declarations
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses);
 
 //Constructor for the Game class
@@ -83,7 +80,7 @@ void Game::setArrayPlayers(vector<Player*>& newArrayPl)
 
 //Function to read all files from a given folder taken from:
 //https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
-list<string> Game::getNameOfFiles(const char *path)
+list<string> getNameOfFiles(const char *path)
 {
     list<string> listOfMapFiles;
     struct dirent *entry;
@@ -607,7 +604,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
             case 2: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
             case 3: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
             case 4: cout << "\t" << (*players)[i]->getName() << " is human.\n"; break;
-            case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n"; break;
+            case 5: cout << "\t" << (*players)[i]->getName() << " is benevolent.\n";
         }
     }
 
@@ -630,12 +627,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy);
                 }
             }
         } break;
@@ -645,12 +642,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy);
                 }
             }
         } break;
@@ -660,12 +657,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new HumanStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new HumanStrategy);
                 }
             }
         } break;
@@ -675,12 +672,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new AggressiveStrategy);
                 }
             }
         } break;
@@ -690,12 +687,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 0: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new AggressiveStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy);
                 }
             }
         } break;
@@ -705,12 +702,12 @@ void Game::chooseGameScenario(vector<Player*>* players)
             {
                 switch(i)
                 {
-                    case 0: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
+                    case 0: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 2: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy); break;
+                    case 4: (*players)[i]->setStrategy(new HumanStrategy); break;
+                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy);
                 }
             }
         }
@@ -735,17 +732,7 @@ void Game::chooseGameScenario(vector<Player*>* players)
     for(int i = 0; i < nbrPlayers; i++)
     {
         cout << (*players)[i]->getName() << ": ";
-
-        Strategy::StrategyType strategyType = (*players)[i]->getStrategy()->getType();
-        switch(strategyType)
-        {
-            case Strategy::ABSTRACT  : std::cout << "Abstract Strategy";   break;
-            case Strategy::AGGRESSIVE: std::cout << "Aggressive Strategy";   break;
-            case Strategy::BENEVOLENT: std::cout << "Benevolent Strategy";   break;
-            case Strategy::HUMAN: std::cout << "Human Strategy";   break;
-            case Strategy::CHEATER  : std::cout << "Cheater Strategy";   break;
-            case Strategy::RANDOM: std::cout << "Random Strategy";   break;
-        }
+        (*players)[i]->getStrategy()->printStrat();
     }
     cout << endl << endl;
 }
@@ -763,7 +750,8 @@ void mainGameLoopDriver()
 
     riskGame.assignCountriesToPlayers();
 
-    players = riskGame.getArrayPlayers();
+    vector<Player*> play = *(riskGame.getArrayPlayers());
+    *players = play;
 
     //Displaying all the continents in the graph
     for(int i = 0; i < continents.size(); i++)
@@ -773,7 +761,7 @@ void mainGameLoopDriver()
 
     for(int i = 0; i < riskGame.getNbrPlayers(); i++)
     {
-        players->at(i)->printNodes();
+        play[i]->printNodes();
     }
     riskGame.placeArmiesAutomatic();
 
@@ -789,103 +777,58 @@ void mainGameLoopDriver()
 
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
-    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame), riskGame.currentTurn);
 
     //Attaching observers
     riskGame.attach(phaseObserver);
     riskGame.attach(statObserver);
-    riskGame.attach(domObserver);
-    riskGame.attach(handObserver);
-    riskGame.attach(continentObserver);
 
     //Main game loop
     while(!playerWins)
     {
         for(int i = 0; i < players->size(); i++)
         {
-            riskGame.notify(NEW_TURN);
-            cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
+            cout << "***************** " << (*players)[i]->getName() << "'s turn *****************" << std::endl;
             //monitor current player
-            riskGame.currentPlayer = players->at(i);
+            riskGame.currentPlayer = (*players)[i];
             // Each player gets to reinforce, attack and fortify
             std::vector<ReinforceResponse*>* reinforceResponse = (*players)[i]->reinforce(continents);
-
-            if(reinforcementsMade(reinforceResponse)){
+            bool reinforcements_were_made = reinforcementsMade(reinforceResponse);
+            if(reinforcements_were_made){
                 riskGame.performReinforce(reinforceResponse);
-                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
-                riskGame.notify(0);
+                riskGame.notify();
             }
             delete reinforceResponse;
 
             AttackResponse *attackResponse;
             do{
-                attackResponse = players->at(i)->attack(players);
+                attackResponse = (*players)[i]->attack(play);
                 if(attackResponse){
-                    /*
-                    //Counting how many continents the attacker and defender have before the attack is done
-                    cout << "Before ATTACK:" << endl << "Attacking Player:" << endl;
-                    for(auto const &node : *attackResponse->attacker->first->getNodes()){
-                        cout << attackResponse->attacker->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                    }
-                    cout << "Defending Player:" << endl;
-                    for(auto const &node : *attackResponse->defender->first->getNodes()){
-                        cout << attackResponse->defender->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                    }*/
-                    int attackerCont = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
-                    int defenderCont = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
-
-                    //Performing the attack
-                    bool conquest = riskGame.performAttack(attackResponse);
-
-
-                    //checks if the number of continents owned by either of the player has changed as a result of the attack
-                    if(conquest) {/*
-                        cout << "Before ATTACK:" << endl << "Attacking Player:" << endl;
-                        for(auto const &node : *attackResponse->attacker->first->getNodes()){
-                            cout << attackResponse->attacker->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                        }
-                        cout << "Defending Player:" << endl;
-                        for(auto const &node : *attackResponse->defender->first->getNodes()){
-                            cout << attackResponse->defender->first->getName() << " " << node->getPointerToCountry()->getName() << " " << node->getPointerToCountry()->getNbrArmies() << endl;
-                        }*/
-                        int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
-                        int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
-                        if((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
-                            riskGame.notify(CONTINENT_CONTROL);
-                        else
-                            riskGame.notify(NEW_CONQUEST);
-                    }
-                    else
-                        riskGame.notify(0);
+                    riskGame.performAttack(attackResponse);
+                    riskGame.notify();
                 }
             }while(attackResponse);
             delete attackResponse;
 
-            FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
+            FortifyResponse *fortifyResponse = (*players)[i]->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
                 riskGame.performFortify(fortifyResponse);
-                riskGame.notify(0);
+                riskGame.notify();
             }
             delete fortifyResponse;
 
             //After each player's turn, we check if one player owns all the countries in the map
-            if(players->at(i)->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
+            if((*players)[i]->controlsAllCountriesInMap(*riskGame.getMapCountries())) {
                 playerWins = true;
-                winningPlayer = players->at(i);
+                winningPlayer = (*players)[i];
                 break;
             }
-            if (riskGame.currentTurn == 20)
-            {
+            if(riskGame.currentTurn == 20) {
                 playerWins = true;
-                winningPlayer = players->at(i);
+                winningPlayer = (*players)[i];
                 break;
             }
         }
-        riskGame.currentTurn++;
     }
     cout << "===== GAME RESULTS =====" << endl;
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
@@ -893,7 +836,6 @@ void mainGameLoopDriver()
     }
     cout << winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
 }
-
 static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)
 {
     //If we can go through this loop, that means some reinforcements were made.
@@ -903,7 +845,6 @@ static bool reinforcementsMade(std::vector<ReinforceResponse*>* responses)
     }
     return false;
 }
-
 void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
 {
     int tempTotal;
@@ -915,28 +856,15 @@ void Game::performReinforce(std::vector<ReinforceResponse*>* responses)
         countriesReinforces.push_back(response->country);
         armiesPlaced.push_back(response->nbArmies);
     }
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
     this->currentEvent = new ReinforceEvent(armiesPlaced, countriesReinforces);
 }
 
 /**
  * Helper method to perform attacking phase
- * returns true when a battle resulted in a new conquest for a player, and false otherwise
  */
 bool Game::performAttack(AttackResponse* response) {
     if(!response)
         return true;
-
-    if (response->isCheater)
-    {
-        // Conquers all the neighbors of all its countries
-        // TODO: Write implementation
-        return true;
-    }
-
     bool victory = false;
     int rounds = 1;
     std::vector<int> *totalAttackerRolls = new std::vector<int>();
@@ -988,8 +916,8 @@ bool Game::performAttack(AttackResponse* response) {
 
     int armiesMoved = 0;
     if(victory){// If the attacker won, the country changes hands and he moves armies
-        attackingPlayer->addNode(defendingCountry);
-        defendingPlayer->removeNode(defendingCountry);
+        attackingPlayer->getNodes()->push_back(defendingCountry);
+        defendingPlayer->getNodes()->remove(defendingCountry);
 
         armiesMoved = attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
 
@@ -997,21 +925,9 @@ bool Game::performAttack(AttackResponse* response) {
         defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
     }
 
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
     this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
                                          response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
-
-    attackingCountry = nullptr;
-    attackingPlayer = nullptr;
-    defendingCountry = nullptr;
-    defendingPlayer = nullptr;
-    delete totalDefenderRolls;
-    delete totalAttackerRolls;
-
-    return victory; //returns true if victory false otherwise
+    return true;
 }
 
 void Game::performFortify(FortifyResponse* response) {
@@ -1022,10 +938,6 @@ void Game::performFortify(FortifyResponse* response) {
     response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
 
     //update currentEvent and return it
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
     this->currentEvent = new FortifyEvent(response->nbArmies,response->sourceCountry,response->destinationCountry);
 
 }
@@ -1033,7 +945,7 @@ void Game::performFortify(FortifyResponse* response) {
 Event* Game::getCurrentEvent(){
     return this->currentEvent;
 }
-
+/*
 int main()
 {
 
@@ -1042,4 +954,4 @@ int main()
     std::getchar();
     system("pause");
     return 0;
-}
+}*/

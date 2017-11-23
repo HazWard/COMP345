@@ -38,7 +38,7 @@ class Player
         Strategy* getStrategy() { return strategy; };
         void setStrategy(Strategy *targetStrategy);
         std::vector<ReinforceResponse*>* reinforce(std::vector<Continent*> continents);
-        AttackResponse* attack(std::vector<Player*> *players);
+        AttackResponse* attack(std::vector<Player*> &players);
         FortifyResponse* fortify(Graph& map);
         string getName();
         std::list<Node*>* getNodes();
@@ -50,9 +50,10 @@ class Player
         void setDice(Dice* targetDice);
         Dice* getDice();
         void addNode(Node* newNode);
-        vector<Continent*>* getsContinentsOwned(vector<Continent*> *continents);
+        vector<Continent*> getsContinentsOwned(vector<Continent*> continents);
         bool controlsAllCountriesInMap(Graph& map);
         void removeNode(Node *n);
+        vector<Node*> sortByStrongest();
     private:
         Strategy *strategy;
         std::string name;

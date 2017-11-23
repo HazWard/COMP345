@@ -17,9 +17,9 @@ void Subject::detach(Observer *observer) {
     views.remove(observer);
 }
 
-void Subject::notify(int code) {
+void Subject::notify() {
     for(list<Observer*>::iterator iter = views.begin(); iter != views.end(); iter++){
-        (*iter)->update(code);
+        (*iter)->update();
     }
 }
 

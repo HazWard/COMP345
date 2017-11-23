@@ -14,7 +14,7 @@ class PhaseObserver : public Observer{
 public:
     PhaseObserver();
     PhaseObserver(Subject *subject) : Observer(subject) {};
-    void update(int code);
+    void update();
     void display();
     void displayReinforceInfo();
     void displayAttackInfo();
@@ -29,7 +29,9 @@ class StatObserver : public Observer{
      */
 public:
     StatObserver();
-    StatObserver(Subject *subject) : Observer(subject) {};
-    void update(int code);
+    StatObserver(Subject *subject, int turn) : Observer(subject), turn(turn) {};
+    void update();
     void display();
+private:
+    int turn;
 };

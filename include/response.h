@@ -21,8 +21,7 @@ class ReinforceResponse
 public:
     int nbArmies;
     Node* country;
-    bool exchangeOccured;
-    ReinforceResponse(int n, Node *c, bool e) : nbArmies(n), country(c), exchangeOccured(e) {};
+    ReinforceResponse(int n, Node *c) : nbArmies(n), country(c) {};
 };
 
 class AttackResponse
@@ -30,8 +29,7 @@ class AttackResponse
 public:
     std::pair<Player*, Node*>* attacker;
     std::pair<Player*, Node*>* defender;
-    bool isCheater;
-    AttackResponse(std::pair<Player*,Node*> *a, std::pair<Player*,Node*> *d, bool c) : attacker(a), defender(d), isCheater(c) {};
+    AttackResponse(std::pair<Player*,Node*> *a, std::pair<Player*,Node*> *d) : attacker(a), defender(d) {};
 };
 
 class FortifyResponse
