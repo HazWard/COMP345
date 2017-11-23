@@ -288,7 +288,7 @@ void Tournament::display_results()
         for(int i = 0; i < current_games->size(); i++)
         {
             if((*current_games)[i]->winningPlayer)
-                printf("%-15s", (*current_games)[i]->winningPlayer->getName());
+                printf("%-15s", (*current_games)[i]->winningPlayer->getName().c_str());
             else cout << "DRAW           ";
         }
         cout << endl;
