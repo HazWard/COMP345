@@ -420,12 +420,10 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
     Node *attackingCountry;
 
     //Finding an attack vector between the strongest node and an adjacent weak node
-
-    cout << strongestCountries->size() << endl;
-    for (int i = 0; i < strongestCountries->size(); i++) {
-        Node *playerOwnedNode = (*strongestCountries)[i];
-        cout << playerOwnedNode->getCountry().getName() << playerOwnedNode->getCountry().getNbrArmies() << endl;
-        if (playerOwnedNode != nullptr && playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
+    std::vector<Node *>::iterator nodeIterator;
+    for (nodeIterator = strongestCountries->begin(); nodeIterator != strongestCountries->end(); ++nodeIterator) {
+        Node *playerOwnedNode = *nodeIterator;
+        if (playerOwnedNode->getPointerToCountry()->getNbrArmies() >= 2) {
             attackingCountry = playerOwnedNode;
             std::vector<Node*> adjacentEnemyNodes = {};
             for (auto const &adjacentNode : playerOwnedNode->getAdjList()) {
@@ -444,12 +442,6 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
             }
         break;
         }
-    }
-    delete strongestCountries;
-
-    cout << attackingCountry->getCountry().getName() << "     " << defendingCountry->getCountry().getName() << endl;
-    if(!attackingCountry || !defendingCountry){ //Checking if the pointer is NULL, ie. that no defending country was found
-        return nullptr;
     }
 
     //Determine who the defending player is for the chosen defending country

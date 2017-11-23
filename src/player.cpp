@@ -116,7 +116,7 @@ std::vector<ReinforceResponse*>* Player::reinforce(vector<Continent*> continents
     return this->strategy->reinforce(this, continents);
 }
 
-AttackResponse* Player::attack(std::vector<Player*> *players)
+AttackResponse* Player::attack(std::vector<Player *> *players)
 {
     return this->strategy->attack(this, players);
 }
@@ -162,21 +162,18 @@ bool Player::controlsAllCountriesInMap(Graph& map)
 }
 
 vector<Continent*>* Player::getsContinentsOwned(vector<Continent*> *continents) {
-    //cout << "Getting inside the prob method" << endl;
-    vector<Continent*>* continentsOwned = new vector<Continent*>();
+    vector<Continent*> *continentsOwned = new vector<Continent*>();
     //We iterate through all the continents and add the ones that the player completely owns
     for (int i = 0; i < continents->size(); i++) {
         bool continentOwned = true;
         vector<Node*> *nodesInCurrentContinent = continents->at(i)->getNodesInContinent();
         //we iterate through all the countries in the current continent and check if the player owns them all
-        for (int j = 0; j < nodesInCurrentContinent.size(); j++) {
-            //cout << nodesInCurrentContinent[j];
+        for (int j = 0; j < nodesInCurrentContinent->size(); j++) {
             bool countryOwned = false;
-            list<Node*>::const_iterator countryIterator;
+            list<Node *>::iterator countryIterator;
             //We iterate through all the countries the player owns and see if he owns the current country from the continent we are checking
-            for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator) {
-                //cout << nodesInCurrentContinent[j] << "   " << *countryIterator << endl;
-                if (nodesInCurrentContinent[j]->getPointerToCountry() == (*countryIterator)->getPointerToCountry()) {
+            for (countryIterator = nodes.begin(); countryIterator != nodes.end(); countryIterator++) {
+                if (nodesInCurrentContinent->at(j)->getPointerToCountry() == (*countryIterator)->getPointerToCountry()) {
                     countryOwned = true;
                     break;
                 }
@@ -188,7 +185,7 @@ vector<Continent*>* Player::getsContinentsOwned(vector<Continent*> *continents) 
             }
         }
         if (continentOwned)
-            continentsOwned->push_back(&(*continents->at(i)));
+            continentsOwned->push_back(&*continents->at(i));
     }
     return continentsOwned;
 }

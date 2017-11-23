@@ -54,7 +54,6 @@ Country::Country(string n, string cont, int nbrArm) : name(n), continent(cont), 
 Country::Country(string n) : name(n) {}
 
 //-- ACCESSOR METHODS --
-
 string Country::getName() { return name; }
 
 string Country::getContinent() { return continent; }
