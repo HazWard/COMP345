@@ -218,7 +218,7 @@ Tournament::Tournament() {
          */
         //Used for debugging: (makes everything faster)
         M_in_string_form = "World.map, New York.map, USA.map";
-        P_in_string_form = "Aggressive, Aggressive, Benevolent, Benevolent";
+        P_in_string_form = "Aggressive, Aggressive, Benevolent, Cheater";
         G = 5;
         D = 20;
 

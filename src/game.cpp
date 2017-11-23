@@ -1028,6 +1028,10 @@ void mainGameLoopTournament(Game& riskGame)
                     } else
                         riskGame.notify(0);
                 }
+                else
+                {
+                    std::cout << players->at(i)->getName() << " did not attack" << std::endl;
+                }
             } while (attackResponse);
             delete attackResponse;
 
