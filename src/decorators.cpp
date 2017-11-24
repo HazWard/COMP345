@@ -7,15 +7,16 @@ void DominationDecorator::update(int code)
     if(code == NEW_CONQUEST || code == CONTINENT_CONTROL) {
         this->display();
         // pausing system COMMENT OUT FOR PART 3
-        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();*/
+        cin.get();
     }
+    StatObserverDecorator::update(code);
 }
 
 void DominationDecorator::display()
 {
+    cout << endl << "-----------Domination Observer-----------" << endl;
     Game* game = static_cast<Game*> (dynamic_cast<StatObserverDecorator*>(this)->getStatObserver()->model);
     int numberOfPlayers = game->getNbrPlayers();
     vector<Player*>* players = game->getArrayPlayers();
@@ -31,6 +32,7 @@ void DominationDecorator::display()
         }
         cout << std::endl;
     }
+    cout << "----------------------------------------" << endl;
 }
 
 void PlayerHandDecorator::update(int code)
@@ -38,16 +40,16 @@ void PlayerHandDecorator::update(int code)
     if(code == HAND_CHANGE) {
         this->display();
         // pausing system COMMENT OUT FOR PART 3
-        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();*/
+        cin.get();
     }
     StatObserverDecorator::update(code);
 }
 
 void PlayerHandDecorator::display()
 {
+    cout << endl << "-----------Hand Observer-----------" << endl;
     Game* game = static_cast <Game*> (StatObserverDecorator::getStatObserver()->model);
     vector<Player*> *players1 = game->getArrayPlayers();
     for(int i=0; i < players1->size(); i++)
@@ -55,6 +57,7 @@ void PlayerHandDecorator::display()
         cout << "Player " << players1->at(i)->getName() << "'s hand:" << endl;
         players1->at(i)->getHand()->display();
     }
+    cout << "-----------------------------------" << endl;
 }
 
 void ContinentDecorator::update(int code)
@@ -62,16 +65,16 @@ void ContinentDecorator::update(int code)
     if(code == CONTINENT_CONTROL) {
         this->display();
         // pausing system COMMENT OUT FOR PART 3
-        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();*/
+        cin.get();
     }
     StatObserverDecorator::update(code);
 }
 
 void ContinentDecorator::display()
 {
+    cout << endl << "-----------Continent Observer-----------" << endl;
     Game* game = static_cast <Game*> (StatObserverDecorator::getStatObserver()->model);
     vector<Player*> *players1 = game->getArrayPlayers();
     for(int i=0; i < players1->size(); i++)
@@ -87,7 +90,7 @@ void ContinentDecorator::display()
             }
         }
     }
-
+    cout << "----------------------------------------" << endl;
 
 }
 

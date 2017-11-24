@@ -22,7 +22,6 @@ public:
     DominationDecorator(Observer *so) : StatObserverDecorator(so) {};
     void update(int code);
     void display();
-    Observer* getStatObserver(){ return StatObserverDecorator::getStatObserver(); };
 };
 
 class PlayerHandDecorator : public StatObserverDecorator {
@@ -31,7 +30,6 @@ public:
     PlayerHandDecorator(Observer *so) : StatObserverDecorator(so) {};
     void update(int code);
     void display();
-    Observer* getStatObserver(){ return StatObserverDecorator::getStatObserver(); };
 };
 
 class ContinentDecorator : public StatObserverDecorator {
@@ -40,5 +38,4 @@ public:
     ContinentDecorator(Observer *so) : StatObserverDecorator(so) {};
     void update(int code);
     void display();
-    Observer* getStatObserver(){ return StatObserverDecorator::getStatObserver(); };
 };
