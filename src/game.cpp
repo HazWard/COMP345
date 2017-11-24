@@ -987,6 +987,7 @@ void mainGameLoopTournament(Game& riskGame)
 
     //Main game loop
     while(!playerWins) {
+        riskGame.cheaterPlayed = false;
         for (int i = 0; i < players->size(); i++) {
             riskGame.notify(NEW_TURN);
             cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
@@ -1004,46 +1005,53 @@ void mainGameLoopTournament(Game& riskGame)
 
             AttackResponse *attackResponse;
             do {
-                attackResponse = players->at(i)->attack(players);
-                if (attackResponse) {
-                    //Counting how many continents the attacker and defender have before the attack is done
-                    CheaterAttackResponse* actualResponse = dynamic_cast<CheaterAttackResponse*>(attackResponse);
-                    int attackerCont = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
-                    int defenderCont = 0;
+                if(riskGame.cheaterPlayed)
+                {
+                    attackResponse = nullptr;
+                }
+                else
+                {
+                    attackResponse = players->at(i)->attack(players);
+                    if (attackResponse) {
+                        //Counting how many continents the attacker and defender have before the attack is done
+                        CheaterAttackResponse* actualResponse = dynamic_cast<CheaterAttackResponse*>(attackResponse);
+                        int attackerCont = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
+                        int defenderCont = 0;
 
-                    if(!actualResponse)
-                    {
-                        attackerCont = attackResponse->attacker->first->getsContinentsOwned(
-                                riskGame.getContinents())->size();
-                        defenderCont = attackResponse->defender->first->getsContinentsOwned(
-                                riskGame.getContinents())->size();
-                    }
-
-                    //Performing the attack
-                    bool conquest = riskGame.performAttack(attackResponse);
-
-                    //checks if the number of continents owned by either of the player has changed as a result of the attack
-                    if (conquest) {
-
-                        int attackerContAfter = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
-                        int defenderContAfter = 0;
-                        if(actualResponse)
+                        if(!actualResponse)
                         {
                             attackerCont = attackResponse->attacker->first->getsContinentsOwned(
                                     riskGame.getContinents())->size();
                             defenderCont = attackResponse->defender->first->getsContinentsOwned(
                                     riskGame.getContinents())->size();
                         }
-                        if ((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
-                            riskGame.notify(CONTINENT_CONTROL);
                         else
-                            riskGame.notify(NEW_CONQUEST);
-                    } else
-                        riskGame.notify(0);
-                }
-                else
-                {
-                    std::cout << players->at(i)->getName() << " did not attack" << std::endl;
+                        {
+                            riskGame.cheaterPlayed = true;
+                        }
+
+                        //Performing the attack
+                        bool conquest = riskGame.performAttack(attackResponse);
+
+                        //checks if the number of continents owned by either of the player has changed as a result of the attack
+                        if (conquest) {
+
+                            int attackerContAfter = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
+                            int defenderContAfter = 0;
+                            if(actualResponse)
+                            {
+                                attackerCont = attackResponse->attacker->first->getsContinentsOwned(
+                                        riskGame.getContinents())->size();
+                                defenderCont = attackResponse->defender->first->getsContinentsOwned(
+                                        riskGame.getContinents())->size();
+                            }
+                            if ((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
+                                riskGame.notify(CONTINENT_CONTROL);
+                            else
+                                riskGame.notify(NEW_CONQUEST);
+                        } else
+                            riskGame.notify(0);
+                    }
                 }
             } while (attackResponse);
             delete attackResponse;

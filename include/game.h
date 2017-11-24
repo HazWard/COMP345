@@ -33,6 +33,7 @@ public:
     //public members:
     Player* winningPlayer;
     int max_turns;
+    bool cheaterPlayed;
     //public constant:
     const int DEFAULT_MAX_TURNS = 50;
     //Constructor:

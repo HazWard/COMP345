@@ -1082,10 +1082,10 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
         }
     }
     std::set<Node*>::iterator victimsIterator;
+    Player *defendingPlayer = nullptr;
     for (victimsIterator = countriesToConquer.begin(); victimsIterator != countriesToConquer.end(); ++victimsIterator)
     {
         //Determine who the defending player is for the chosen defending country
-        Player *defendingPlayer;
         Node* defendingCountry = *victimsIterator;
         for (int i = 0; i < players->size(); i++)
         {
@@ -1103,12 +1103,13 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
                     break;
                 }
             }
-            if (validDefendingPlayer)
+            if (validDefendingPlayer) {
+                std::pair<Player*,Node*> *attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
+                std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
+                responses->push_back(new AttackResponse(attacker, defender, true, true));
                 break;
+            }
         }
-        std::pair<Player*,Node*> *attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
-        std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
-        responses->push_back(new AttackResponse(attacker, defender, true, true));
     }
     return new CheaterAttackResponse(responses);
 }
