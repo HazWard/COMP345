@@ -1459,7 +1459,8 @@ bool Game::performAttack(AttackResponse* response) {
 }
 
 void Game::performFortify(FortifyResponse* response) {
-    if (response->isCheater)
+    CheaterFortifyResponse* actualResponse = dynamic_cast<CheaterFortifyResponse*>(response);
+    if (actualResponse)
     {
         CheaterFortifyResponse* actualResponse = dynamic_cast<CheaterFortifyResponse*>(response);
         for (int i = 0; i < actualResponse->fortifyResponses->size(); ++i)
@@ -1469,11 +1470,23 @@ void Game::performFortify(FortifyResponse* response) {
     }
     else
     {
-        //Apply changes
-        string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
-        string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
-        response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
-        response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
+        if (response->isCheater)
+        {
+            //Apply changes
+            string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
+            string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
+            // Both the source and destination countries are the same so we can
+            // simply set the new number of armies to the destination country
+            response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
+        }
+        else
+        {
+            //Apply changes
+            string sourceStr = response->sourceCountry->getPointerToCountry()->getName();
+            string destinationStr = response->destinationCountry->getPointerToCountry()->getName();
+            response->sourceCountry->getPointerToCountry()->setNbrArmies(response->sourceCountry->getPointerToCountry()->getNbrArmies() - response->nbArmies);
+            response->destinationCountry->getPointerToCountry()->setNbrArmies(response->destinationCountry->getPointerToCountry()->getNbrArmies() + response->nbArmies);
+        }
 
         //update currentEvent and return it
         if (!this->currentEvent)
