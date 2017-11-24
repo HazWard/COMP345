@@ -1073,18 +1073,12 @@ void part2(Game& riskGame)
 
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
-    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *statObserver = new DominationDecorator(new PlayerHandDecorator(new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)))));
     //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
 
     //Attaching observers
     riskGame.attach(phaseObserver);
     riskGame.attach(statObserver);
-    riskGame.attach(domObserver);
-    riskGame.attach(handObserver);
-    riskGame.attach(continentObserver);
 
     //Main game loop
     while(!playerWins) {
@@ -1099,8 +1093,10 @@ void part2(Game& riskGame)
 
             if (reinforcementsMade(reinforceResponse)) {
                 riskGame.performReinforce(reinforceResponse);
-                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
-                riskGame.notify(0);
+                if(reinforceResponse->at(0)->exchangeOccured)
+                    riskGame.notify(HAND_CHANGE);
+                else
+                    riskGame.notify(0);
             }
             delete reinforceResponse;
 
@@ -1503,14 +1499,11 @@ int main()
     else if(answer == "2"){
         Parser* gameMap = new Parser("../maps/World.map");
         std::vector<Player*> players = std::vector<Player*>();
-        for (int i = 0; i < 4; ++i)
-        {
-            players.push_back(new Player(to_string(i + 1)));
-        }
-        players.at(0)->setStrategy(new AggressiveStrategy);
-        players.at(1)->setStrategy(new BenevolentStrategy);
-        players.at(2)->setStrategy(new CheaterStrategy);
-        players.at(3)->setStrategy(new RandomStrategy);
+        int i = 1;
+        players.push_back(new Player("Player " + std::to_string(i++), new AggressiveStrategy));
+        players.push_back(new Player("Player " + std::to_string(i++), new BenevolentStrategy));
+        players.push_back(new Player("Player " + std::to_string(i++), new CheaterStrategy));
+        players.push_back(new Player("Player " + std::to_string(i++), new RandomStrategy));
 
         Game* riskGame = new Game(gameMap, players, 50);
         part2(*riskGame);

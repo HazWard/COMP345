@@ -1146,7 +1146,7 @@ FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
     {
         Node* currentNode = *fortifyIterator;
         int nbOfAmies = 2 * currentNode->getPointerToCountry()->getNbrArmies();
-        responses->push_back(new FortifyResponse(nbOfAmies, currentNode, currentNode, false));
+        responses->push_back(new FortifyResponse(nbOfAmies, currentNode, currentNode, true));
     }
     return new CheaterFortifyResponse(responses);
 }

@@ -61,5 +61,5 @@ class CheaterFortifyResponse : public FortifyResponse
 public:
     std::vector<FortifyResponse*>* fortifyResponses;
     ~CheaterFortifyResponse() = default;
-    CheaterFortifyResponse(std::vector<FortifyResponse*>* r) : fortifyResponses(r) {};
+    CheaterFortifyResponse(std::vector<FortifyResponse*>* r) : fortifyResponses(r), FortifyResponse(0, nullptr, nullptr, true) {};
 };
