@@ -1292,7 +1292,7 @@ void mainGameLoopTournament(Game& riskGame)
         cout << *node << endl;
     }*/
     if(riskGame.winningPlayer)
-        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl << endl;
+        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl << endl << endl << endl;
     else {
         cout << "The game of risk reached the maximum number of turns (" << riskGame.max_turns << ")." << endl;
         cout << "It ended up with a DRAW." << endl << endl;
