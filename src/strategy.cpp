@@ -1051,7 +1051,7 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
     {
         currentNode = *(countryIter);
         int targetNbArmies = currentNode->getPointerToCountry()->getNbrArmies();
-        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode, true));
+        responses->push_back(new ReinforceResponse(targetNbArmies, currentNode, false));
     }
     return responses;
 }

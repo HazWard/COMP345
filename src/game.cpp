@@ -483,11 +483,6 @@ void Game::placeArmiesAutomatic()
     //Each player will have to place nbrArmiesPerPlayer number of armies.
     vector<int> nbrArmiesPlayers(arrayPlayers.size(), nbrArmiesPerPlayer);
 
-    for (int i = 0; i < nbrPlayers; i++)
-    {
-        cout << nbrPlayers << " ";
-        cout << (*(arrayPlayers[i]->getNodes())).size() << endl;
-    }
 
     //We are going to place 1 army per owbed territory in a round robin fashion. This process is automated.
     cout << "Placing 1 army per owned Territory for each player..." << endl;
@@ -515,8 +510,6 @@ void Game::placeArmiesAutomatic()
             }
         }
     }
-    for(int i = 0; i < nbrArmiesPlayers.size(); i++)
-        cout << nbrArmiesPlayers[i] << endl;
 
     //Now, we ask for the player to add the remaining armies that were not automatically added, one by one.
     //He only has to select a valid index associated with the country.
@@ -1033,6 +1026,10 @@ void part1()
                 riskGame.winningPlayer = riskGame.currentPlayer;
                 break;
             }
+            if(players->at(i)->getNodes()->size() >= riskGame.getMapCountries()->getVectorOfNodes()->size()){
+                riskGame.winningPlayer = players->at(i);
+                playerWins = true;
+            }
         }
         //If we reach the max number of turns, the game is over with a draw
         if(riskGame.currentTurn++ == riskGame.max_turns)
@@ -1170,6 +1167,10 @@ void part2(Game& riskGame)
                 riskGame.notify(0);
             }
             delete fortifyResponse;
+            if(players->at(i)->getNodes()->size() >= riskGame.getMapCountries()->getVectorOfNodes()->size()){
+                riskGame.winningPlayer = players->at(i);
+                playerWins = true;
+            }
         }
         //After each player's turn, we check if one player owns all the countries in the map
         //If we reach the max number of turns, the game is over with a draw
@@ -1225,20 +1226,21 @@ void mainGameLoopTournament(Game& riskGame)
 
     riskGame.currentTurn = 1;
 
-    //creating observers
-    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
-    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
-
-    //Attaching observers
-    riskGame.attach(phaseObserver);
-    riskGame.attach(statObserver);
-    riskGame.attach(domObserver);
-    riskGame.attach(handObserver);
-    riskGame.attach(continentObserver);
+    //Tournaments don't need observers
+//    //creating observers
+//    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
+//    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+//    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+//    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+//    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+//    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
+//
+//    //Attaching observers
+//    riskGame.attach(phaseObserver);
+//    riskGame.attach(statObserver);
+//    riskGame.attach(domObserver);
+//    riskGame.attach(handObserver);
+//    riskGame.attach(continentObserver);
 
     //Main game loop
     while(!playerWins) {
@@ -1253,8 +1255,10 @@ void mainGameLoopTournament(Game& riskGame)
 
             if (reinforcementsMade(reinforceResponse)) {
                 riskGame.performReinforce(reinforceResponse);
-                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
-                riskGame.notify(0);
+                if(reinforceResponse->at(0)->exchangeOccured)
+                    riskGame.notify(HAND_CHANGE);
+                else
+                    riskGame.notify(0);
             }
             delete reinforceResponse;
 
@@ -1317,6 +1321,10 @@ void mainGameLoopTournament(Game& riskGame)
                 riskGame.notify(0);
             }
             delete fortifyResponse;
+            if(players->at(i)->getNodes()->size() >= riskGame.getMapCountries()->getVectorOfNodes()->size()){
+                riskGame.winningPlayer = players->at(i);
+                playerWins = true;
+            }
         }
         //After each player's turn, we check if one player owns all the countries in the map
         //If we reach the max number of turns, the game is over with a draw
@@ -1399,49 +1407,54 @@ bool Game::performAttack(AttackResponse* response) {
         if(attackingCountry->getPointerToCountry() == defendingCountry->getPointerToCountry())
             return false;
 
-        while(attackingCountry->getPointerToCountry()->getNbrArmies() >= 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
-            int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
-            int defenderDice = defendingCountry->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
-
-            //Getting vectors of dice rolls
-            std::vector<int> attackerDiceRolls = response->attacker->first->getDice()->howManyDice(attackerDice);
-            std::vector<int> defenderDiceRolls = response->defender->first->getDice()->howManyDice(defenderDice);
-
-            //Adding those dice rolls to the total dice rolls
-            totalAttackerRolls->insert(std::end(*totalAttackerRolls), std::begin(attackerDiceRolls), std::end(attackerDiceRolls));
-            totalDefenderRolls->insert(std::end(*totalDefenderRolls), std::begin(defenderDiceRolls), std::end(defenderDiceRolls));
-
-            //Sorting the dice roll vectors in descending order
-            std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
-            std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
-
-            //iterating through the dice rolls, until run our of descending dice
-            for(int i = 0; i < std::min(defenderDiceRolls.size(), attackerDiceRolls.size()); i++){
-                if(defenderDiceRolls[i] >= attackerDiceRolls[i]){
-                    attackingCountry->getPointerToCountry()->setNbrArmies(attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
-                }
-                else{
-                    defendingCountry->getPointerToCountry()->setNbrArmies(defendingCountry->getPointerToCountry()->getNbrArmies() - 1);
-                }
-                if(defendingCountry->getPointerToCountry()->getNbrArmies() == 0){
-                    victory = true;
-                    battleOver = true;
-                }
-                else if(attackingCountry->getPointerToCountry()->getNbrArmies() == 1){
-                    victory = false;
-                    battleOver = true;
-                }
-            }
-            rounds++;
-        }
-
-        int armiesMoved = 0;
-
         // Use to identify this attack from a cheater
         if (response->cheaterPhase)
         {
             victory = true;
         }
+        else {
+            while (attackingCountry->getPointerToCountry()->getNbrArmies() >= 2 &&
+                   defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver) {
+                int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 :
+                                   attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
+                int defenderDice = defendingCountry->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
+
+                //Getting vectors of dice rolls
+                std::vector<int> attackerDiceRolls = response->attacker->first->getDice()->howManyDice(attackerDice);
+                std::vector<int> defenderDiceRolls = response->defender->first->getDice()->howManyDice(defenderDice);
+
+                //Adding those dice rolls to the total dice rolls
+                totalAttackerRolls->insert(std::end(*totalAttackerRolls), std::begin(attackerDiceRolls),
+                                           std::end(attackerDiceRolls));
+                totalDefenderRolls->insert(std::end(*totalDefenderRolls), std::begin(defenderDiceRolls),
+                                           std::end(defenderDiceRolls));
+
+                //Sorting the dice roll vectors in descending order
+                std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+                std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+                //iterating through the dice rolls, until run our of descending dice
+                for (int i = 0; i < std::min(defenderDiceRolls.size(), attackerDiceRolls.size()); i++) {
+                    if (defenderDiceRolls[i] >= attackerDiceRolls[i]) {
+                        attackingCountry->getPointerToCountry()->setNbrArmies(
+                                attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
+                    } else {
+                        defendingCountry->getPointerToCountry()->setNbrArmies(
+                                defendingCountry->getPointerToCountry()->getNbrArmies() - 1);
+                    }
+                    if (defendingCountry->getPointerToCountry()->getNbrArmies() == 0) {
+                        victory = true;
+                        battleOver = true;
+                    } else if (attackingCountry->getPointerToCountry()->getNbrArmies() == 1) {
+                        victory = false;
+                        battleOver = true;
+                    }
+                }
+                rounds++;
+            }
+        }
+
+        int armiesMoved = 0;
 
         if(victory){// If the attacker won, the country changes hands and he moves armies
             attackingPlayer->addNode(defendingCountry);
@@ -1449,6 +1462,8 @@ bool Game::performAttack(AttackResponse* response) {
 
             armiesMoved = attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
 
+            if(armiesMoved <= 0)
+                armiesMoved = 1;
             attackingCountry->getPointerToCountry()->setNbrArmies(1);
             defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
         }
