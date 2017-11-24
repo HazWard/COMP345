@@ -1380,7 +1380,9 @@ bool Game::performAttack(AttackResponse* response) {
         for (int i = 0; i < actualResponse->attackResponses->size(); ++i)
         {
             this->performAttack(actualResponse->attackResponses->at(i));
+            this->notify(NEW_CONQUEST);
         }
+        return false;
     }
     else
     {

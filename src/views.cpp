@@ -32,40 +32,34 @@ void PhaseObserver::update(int code) {
     if(code != NEW_TURN) {
         this->display();
         // Pausing System COMMENT OUT FOR PART 3
-        /*
         cout << '\n' << "Press Enter to continue";
         cin.ignore();
-        cin.get();*/
+        cin.get();
     }
 }
 
 void PhaseObserver::display() {
 
     cout << endl;
-    //display info depending on phase
+    std::cout << "--------Phase Observer--------"<< std::endl;
    if(dynamic_cast <ReinforceEvent*>((static_cast < Game* > (model))->currentEvent ))
    {
-       std::cout << "--------Phase Observer--------"<< std::endl;
        std::cout << "We are in the Reinforcement phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayReinforceInfo();
-       std::cout << "------------------------------"<< std::endl;
    }
 
    else if(dynamic_cast <AttackEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
-       std::cout << "--------Phase Observer--------"<< std::endl;
        std::cout << "We are in the Attacking phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayAttackInfo();
-       std::cout << "------------------------------"<< std::endl;
    }
 
    else if(dynamic_cast <FortifyEvent*> ( (static_cast < Game* > (model))->currentEvent ))
    {
-       std::cout << "--------Phase Observer--------"<< std::endl;
        std::cout << "We are in the Fortification phase" << " of the player: "<< (static_cast < Game* > (model))->currentPlayer->getName() <<std::endl;
        displayFortifyInfo();
-       std::cout << "------------------------------"<< std::endl;
    }
+    std::cout << "------------------------------"<< std::endl;
 }
 
 void PhaseObserver::displayReinforceInfo(){

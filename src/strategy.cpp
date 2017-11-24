@@ -1076,15 +1076,16 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
         Node* currentNode = *countryIterator;
         for(int i = 0; i < currentNode->getAdjList().size(); ++i)
         {
+            Node* possibleAttack = currentNode->getAdjList().at(i);
             if (!targetPlayer->getStrategy()->containsNode(targetPlayer, *currentNode->getAdjList()[i]))
             {
-                countriesToConquer.insert(currentNode);
+                countriesToConquer.insert(possibleAttack);
             }
         }
     }
     std::set<Node*>::iterator victimsIterator;
     Player *defendingPlayer = nullptr;
-    for (victimsIterator = countriesToConquer.begin(); victimsIterator != countriesToConquer.end(); ++victimsIterator)
+    for (victimsIterator = countriesToConquer.begin(); victimsIterator != countriesToConquer.end(); victimsIterator++)
     {
         //Determine who the defending player is for the chosen defending country
         Node* defendingCountry = *victimsIterator;
