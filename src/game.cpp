@@ -750,22 +750,6 @@ void Game::chooseGameScenario(vector<Player*>* players)
                 }
             }
         }
-        /*
-        case 7:
-        {
-            for(int i = 0; i < nbrPlayers; i++)
-            {
-                switch(i)
-                {
-                    case 0: (*players)[i]->setStrategy(new CheaterStrategy()); break;
-                    case 1: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 2: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 3: (*players)[i]->setStrategy(new BenevolentStrategy()); break;
-                    case 4: (*players)[i]->setStrategy(new HumanStrategy()); break;
-                    case 5: (*players)[i]->setStrategy(new BenevolentStrategy());
-                }
-            }
-        }*/
 }
     //Testing the type of strategy of each player:
     for(int i = 0; i < nbrPlayers; i++)
@@ -1194,11 +1178,6 @@ void part2(Game& riskGame)
 
 void mainGameLoopTournament(Game& riskGame)
 {
-    /*
-    for (int i = 0; i < riskGame.getArrayPlayers()->size(); i++) {
-        (*riskGame.getArrayPlayers())[i]->getNodes()->clear();
-        cout << (*riskGame.getArrayPlayers())[i]->getNodes()->size() << endl;
-    }*/
     riskGame.determinePlayerTurn();
     //Determine player order and print them to check that the order changed (randomly)
     vector<Player*>* players = riskGame.getArrayPlayers();
@@ -1225,22 +1204,6 @@ void mainGameLoopTournament(Game& riskGame)
     bool playerWins = false;
 
     riskGame.currentTurn = 1;
-
-    //Tournaments don't need observers
-//    //creating observers
-//    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
-//    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-//    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-//    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-//    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-//    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
-//
-//    //Attaching observers
-//    riskGame.attach(phaseObserver);
-//    riskGame.attach(statObserver);
-//    riskGame.attach(domObserver);
-//    riskGame.attach(handObserver);
-//    riskGame.attach(continentObserver);
 
     //Main game loop
     while(!playerWins) {
