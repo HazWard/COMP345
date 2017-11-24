@@ -1512,7 +1512,7 @@ int main()
         players.at(2)->setStrategy(new CheaterStrategy);
         players.at(3)->setStrategy(new RandomStrategy);
 
-        Game* riskGame = new Game(gameMap, players, 5);
+        Game* riskGame = new Game(gameMap, players, 50);
         part2(*riskGame);
     }
     else if(answer == "3"){

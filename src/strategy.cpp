@@ -889,6 +889,7 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
     // Random generator
     std::random_device rd;
     std::mt19937 mt(rd());
+    std::uniform_int_distribution<int> int_distribution(0, 99999);
 
     bool fortify_can_be_done = false;
     for(auto const &node : *(targetPlayer->getNodes()))
@@ -952,10 +953,10 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
     //this while loop asks for source and loops if not owned
     do
     {
-        std::uniform_int_distribution<int> sourceCountryRNG(0, targetPlayer->getNodes()->size() - 1);
+        // std::uniform_int_distribution<int> sourceCountryRNG(0, targetPlayer->getNodes()->size() - 1);
 
         int counter = 0;
-        int sourceCountryIndex = sourceCountryRNG(mt);
+        int sourceCountryIndex = int_distribution(mt) % (targetPlayer->getNodes()->size());
 
         list<Node*>::const_iterator sourceCountryIterator;
         for (sourceCountryIterator = targetPlayer->getNodes()->begin(); sourceCountryIterator != targetPlayer->getNodes()->end(); ++sourceCountryIterator)
@@ -994,9 +995,9 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
     //this while loop asks for destination and loops if not owned or if not connected to source
     do
     {
-        std::uniform_int_distribution<int> destinationCountryRNG(0, destinations.size() - 1);
+        // std::uniform_int_distribution<int> destinationCountryRNG(0, destinations.size() - 1);
         int counter = 0;
-        int destinationCountryIndex = destinationCountryRNG(mt);
+        int destinationCountryIndex = int_distribution(mt) % (destinations.size());
 
         //Get destination and check if valid
 
@@ -1016,10 +1017,10 @@ FortifyResponse* RandomStrategy::fortify(Player *targetPlayer, Graph &map)
 
 
     //Get number of armies to move and check if valid
-    std::uniform_int_distribution<int> randomArmies(0, sourceCtr->getCountry().getNbrArmies() - 1);
-    while(armNum >= sourceCtr->getCountry().getNbrArmies() || armNum <= 0)
+    // std::uniform_int_distribution<int> randomArmies(0, sourceCtr->getCountry().getNbrArmies() - 1);
+    while(armNum >= sourceCtr->getCountry().getNbrArmies() || armNum < 0)
     {
-        armNum = randomArmies(mt);
+        armNum = int_distribution(mt) % (sourceCtr->getCountry().getNbrArmies());
         validInput=true;
     }
     validInput=false;
