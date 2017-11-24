@@ -1250,6 +1250,9 @@ int main()
     cout << "Choose a part to execute: " << endl;
     std::string answer;
     cin >> answer;
+    //Clear the cin stream
+    cin.clear();
+    cin.ignore();
 
     if(answer == "1")
         mainGameLoopDriver();
