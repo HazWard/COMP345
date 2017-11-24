@@ -203,7 +203,6 @@ Tournament::Tournament() {
         valid_G = false;
         valid_D = false;
 
-        /*
         cin.clear();
         std::cout << "M: ";
         std::getline(std::cin, M_in_string_form);
@@ -215,12 +214,13 @@ Tournament::Tournament() {
         std::cout << "D: ";
         cin >> D;
         cin.ignore();
-         */
+        
+        /*
         //Used for debugging: (makes everything faster)
         M_in_string_form = "World.map, New York.map, USA.map";
-        P_in_string_form = "Aggressive, Aggressive, Benevolent, Benevolent";
+        P_in_string_form = "Aggressive, Aggressive, Benevolent, Random";
         G = 5;
-        D = 20;
+        D = 20;*/
 
         valid_M = check_validity_M(M_in_string_form);
         if(!valid_M)
