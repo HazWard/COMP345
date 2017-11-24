@@ -33,6 +33,7 @@ public:
     //public members:
     Player* winningPlayer;
     int max_turns;
+    bool cheaterPlayed;
     //public constant:
     const int DEFAULT_MAX_TURNS = 50;
     //Constructor:
@@ -55,7 +56,7 @@ public:
     void placeArmies();
     void performReinforce(std::vector<ReinforceResponse*>* responses);
     bool performAttack(AttackResponse *response);
-    void performFortify(Player* player,FortifyResponse* response);
+    void performFortify(FortifyResponse* response);
     void placeArmiesAutomatic();
     Event* currentEvent;
     vector <Player*> players;

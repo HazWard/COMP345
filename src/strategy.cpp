@@ -170,7 +170,7 @@ AttackResponse* HumanStrategy::attack(Player *targetPlayer, std::vector<Player *
             //return the first possible attack that the user approved
             std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
             std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
-            return new AttackResponse(attacker, defender, false);
+            return new AttackResponse(attacker, defender, false, false);
         }
     }
     return nullptr; //either no attacks were found or the user broke out of the loop by not selecting an attack
@@ -481,7 +481,7 @@ AttackResponse* AggressiveStrategy::attack(Player *targetPlayer, std::vector<Pla
 
     strongestCountries->clear();
 
-    return new AttackResponse(attacker, defender, false);
+    return new AttackResponse(attacker, defender, false, false);
 }
 
 /**
@@ -871,7 +871,7 @@ AttackResponse* RandomStrategy::attack(Player *targetPlayer, std::vector<Player 
                 //return the first possible attack that the user approved
                 std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, iterator->first);
                 std::pair<Player *, Node *> *defender = new std::pair<Player *, Node *>(defendingPlayer, iterator->second);
-                return new AttackResponse(attacker, defender, false);
+                return new AttackResponse(attacker, defender, false, false);
             }
             ++counter;
         }
@@ -1065,9 +1065,53 @@ std::vector<ReinforceResponse*>* CheaterStrategy::reinforce(Player* targetPlayer
  */
 AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player *> *players)
 {
-    // Custom response with Cheater flag enabled
-    std::pair<Player *, Node *> *attacker = new std::pair<Player *, Node *>(targetPlayer, nullptr);
-    return new AttackResponse(attacker, nullptr, true);
+    std::vector<AttackResponse*>* responses = new std::vector<AttackResponse*>();
+    Node* attackingCountry = *(targetPlayer->getNodes()->begin());
+    // Find countries with neighbors belonging to other players
+    std::set<Node *> countriesToConquer = std::set<Node *>();
+    std::list<Node*>::iterator countryIterator;
+    for (countryIterator = targetPlayer->getNodes()->begin(); countryIterator != targetPlayer->getNodes()->end(); ++countryIterator)
+    {
+        Node* currentNode = *countryIterator;
+        for(int i = 0; i < currentNode->getAdjList().size(); ++i)
+        {
+            if (!targetPlayer->getStrategy()->containsNode(targetPlayer, *currentNode->getAdjList()[i]))
+            {
+                countriesToConquer.insert(currentNode);
+            }
+        }
+    }
+    std::set<Node*>::iterator victimsIterator;
+    Player *defendingPlayer = nullptr;
+    for (victimsIterator = countriesToConquer.begin(); victimsIterator != countriesToConquer.end(); ++victimsIterator)
+    {
+        //Determine who the defending player is for the chosen defending country
+        Node* defendingCountry = *victimsIterator;
+        for (int i = 0; i < players->size(); i++)
+        {
+            bool validDefendingPlayer = false;
+            if (players->at(i)->getName() == targetPlayer->getName())
+            { //the player is this player
+                continue;
+            }
+            for (auto const &node : *players->at(i)->getNodes())
+            {
+                if (node->getPointerToCountry()->getName() == defendingCountry->getPointerToCountry()->getName())
+                {
+                    defendingPlayer = &(*players->at(i));
+                    validDefendingPlayer = true;
+                    break;
+                }
+            }
+            if (validDefendingPlayer) {
+                std::pair<Player*,Node*> *attacker = new std::pair<Player*, Node*>(targetPlayer, attackingCountry);
+                std::pair<Player*, Node*> *defender = new std::pair<Player*, Node*>(defendingPlayer, defendingCountry);
+                responses->push_back(new AttackResponse(attacker, defender, true, true));
+                break;
+            }
+        }
+    }
+    return new CheaterAttackResponse(responses);
 }
 
 /**
@@ -1080,8 +1124,30 @@ AttackResponse* CheaterStrategy::attack(Player *targetPlayer, std::vector<Player
  */
 FortifyResponse* CheaterStrategy::fortify(Player *targetPlayer, Graph &map)
 {
-    // Custom response with Cheater flag enabled
-    return new FortifyResponse(-1, nullptr, nullptr, true);
+    // Custom response with Cheater
+    std::set<Node *> countriesToFortify = std::set<Node *>();
+    std::vector<FortifyResponse*>* responses = new std::vector<FortifyResponse*>();
+    std::list<Node*>::iterator countryIterator;
+    for (countryIterator = targetPlayer->getNodes()->begin(); countryIterator != targetPlayer->getNodes()->end(); ++countryIterator)
+    {
+        Node* currentNode = *countryIterator;
+        for(int i = 0; i < currentNode->getAdjList().size(); ++i)
+        {
+            if (!targetPlayer->getStrategy()->containsNode(targetPlayer, *currentNode->getAdjList()[i]))
+            {
+                countriesToFortify.insert(currentNode);
+            }
+        }
+    }
+    // Double the number of armies on countries
+    std::set<Node*>::iterator fortifyIterator;
+    for (fortifyIterator = countriesToFortify.begin(); fortifyIterator != countriesToFortify.end(); ++fortifyIterator)
+    {
+        Node* currentNode = *fortifyIterator;
+        int nbOfAmies = 2 * currentNode->getPointerToCountry()->getNbrArmies();
+        responses->push_back(new FortifyResponse(nbOfAmies, currentNode, currentNode, false));
+    }
+    return new CheaterFortifyResponse(responses);
 }
 
 // Methods to get Strategy Type

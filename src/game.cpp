@@ -904,7 +904,7 @@ void mainGameLoopDriver()
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
-                riskGame.performFortify(players->at(i),fortifyResponse);
+                riskGame.performFortify(fortifyResponse);
                 riskGame.notify(0);
             }
             delete fortifyResponse;
@@ -988,6 +988,7 @@ void mainGameLoopTournament(Game& riskGame)
 
     //Main game loop
     while(!playerWins) {
+        riskGame.cheaterPlayed = false;
         for (int i = 0; i < players->size(); i++) {
             riskGame.notify(NEW_TURN);
             cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
@@ -1005,36 +1006,60 @@ void mainGameLoopTournament(Game& riskGame)
 
             AttackResponse *attackResponse;
             do {
-                attackResponse = players->at(i)->attack(players);
-                if (attackResponse) {
-                    //Counting how many continents the attacker and defender have before the attack is done
-                    int attackerCont = attackResponse->attacker->first->getsContinentsOwned(
-                            riskGame.getContinents())->size();
-                    int defenderCont = attackResponse->defender->first->getsContinentsOwned(
-                            riskGame.getContinents())->size();
+                if(riskGame.cheaterPlayed)
+                {
+                    attackResponse = nullptr;
+                }
+                else
+                {
+                    attackResponse = players->at(i)->attack(players);
+                    if (attackResponse) {
+                        //Counting how many continents the attacker and defender have before the attack is done
+                        CheaterAttackResponse* actualResponse = dynamic_cast<CheaterAttackResponse*>(attackResponse);
+                        int attackerCont = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
+                        int defenderCont = 0;
 
-                    //Performing the attack
-                    bool conquest = riskGame.performAttack(attackResponse);
-
-                    //checks if the number of continents owned by either of the player has changed as a result of the attack
-                    if (conquest) {
-                        int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(
-                                riskGame.getContinents())->size();
-                        int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(
-                                riskGame.getContinents())->size();
-                        if ((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
-                            riskGame.notify(CONTINENT_CONTROL);
+                        if(!actualResponse)
+                        {
+                            attackerCont = attackResponse->attacker->first->getsContinentsOwned(
+                                    riskGame.getContinents())->size();
+                            defenderCont = attackResponse->defender->first->getsContinentsOwned(
+                                    riskGame.getContinents())->size();
+                        }
                         else
-                            riskGame.notify(NEW_CONQUEST);
-                    } else
-                        riskGame.notify(0);
+                        {
+                            riskGame.cheaterPlayed = true;
+                        }
+
+                        //Performing the attack
+                        bool conquest = riskGame.performAttack(attackResponse);
+
+                        //checks if the number of continents owned by either of the player has changed as a result of the attack
+                        if (conquest) {
+
+                            int attackerContAfter = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
+                            int defenderContAfter = 0;
+                            if(actualResponse)
+                            {
+                                attackerCont = attackResponse->attacker->first->getsContinentsOwned(
+                                        riskGame.getContinents())->size();
+                                defenderCont = attackResponse->defender->first->getsContinentsOwned(
+                                        riskGame.getContinents())->size();
+                            }
+                            if ((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
+                                riskGame.notify(CONTINENT_CONTROL);
+                            else
+                                riskGame.notify(NEW_CONQUEST);
+                        } else
+                            riskGame.notify(0);
+                    }
                 }
             } while (attackResponse);
             delete attackResponse;
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if (fortifyResponse) {
-                riskGame.performFortify(players->at(i), fortifyResponse);
+                riskGame.performFortify(fortifyResponse);
                 riskGame.notify(0);
             }
             delete fortifyResponse;
@@ -1095,157 +1120,108 @@ bool Game::performAttack(AttackResponse* response) {
     if(!response)
         return true;
 
-    if (response->isCheater)
+    CheaterAttackResponse* actualResponse = dynamic_cast<CheaterAttackResponse*>(response);
+    if (actualResponse)
     {
-        // Find countries with neighbors belonging to other players
-        Player* player = response->attacker->first;
-        std::set<Node *> countriesToConquer = std::set<Node *>();
-        std::list<Node*>::iterator countryIterator;
-        for (countryIterator = player->getNodes()->begin(); countryIterator != player->getNodes()->end(); ++countryIterator)
+        for (int i = 0; i < actualResponse->attackResponses->size(); ++i)
         {
-            Node* currentNode = *countryIterator;
-            for(int i = 0; i < currentNode->getAdjList().size(); ++i)
-            {
-                if (!player->getStrategy()->containsNode(player, *currentNode->getAdjList()[i]))
-                {
-                    countriesToConquer.insert(currentNode);
+            this->performAttack(actualResponse->attackResponses->at(i));
+        }
+    }
+    else
+    {
+        bool victory = false;
+        int rounds = 1;
+        std::vector<int> *totalAttackerRolls = new std::vector<int>();
+        std::vector<int> *totalDefenderRolls = new std::vector<int>();
+        bool battleOver = false;
+        Node* attackingCountry = response->attacker->second;
+        Node* defendingCountry = response->defender->second;
+        Player* attackingPlayer = response->attacker->first;
+        Player* defendingPlayer = response->defender->first;
+
+        if(attackingCountry->getPointerToCountry() == defendingCountry->getPointerToCountry())
+            return false;
+
+        while(attackingCountry->getPointerToCountry()->getNbrArmies() >= 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
+            int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
+            int defenderDice = defendingCountry->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
+
+            //Getting vectors of dice rolls
+            std::vector<int> attackerDiceRolls = response->attacker->first->getDice()->howManyDice(attackerDice);
+            std::vector<int> defenderDiceRolls = response->defender->first->getDice()->howManyDice(defenderDice);
+
+            //Adding those dice rolls to the total dice rolls
+            totalAttackerRolls->insert(std::end(*totalAttackerRolls), std::begin(attackerDiceRolls), std::end(attackerDiceRolls));
+            totalDefenderRolls->insert(std::end(*totalDefenderRolls), std::begin(defenderDiceRolls), std::end(defenderDiceRolls));
+
+            //Sorting the dice roll vectors in descending order
+            std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
+            std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
+
+            //iterating through the dice rolls, until run our of descending dice
+            for(int i = 0; i < std::min(defenderDiceRolls.size(), attackerDiceRolls.size()); i++){
+                if(defenderDiceRolls[i] >= attackerDiceRolls[i]){
+                    attackingCountry->getPointerToCountry()->setNbrArmies(attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
+                }
+                else{
+                    defendingCountry->getPointerToCountry()->setNbrArmies(defendingCountry->getPointerToCountry()->getNbrArmies() - 1);
+                }
+                if(defendingCountry->getPointerToCountry()->getNbrArmies() == 0){
+                    victory = true;
+                    battleOver = true;
+                }
+                else if(attackingCountry->getPointerToCountry()->getNbrArmies() == 1){
+                    victory = false;
+                    battleOver = true;
                 }
             }
+            rounds++;
         }
 
-        std::set<Node*>::iterator attacksIterator;
-        for (attacksIterator = countriesToConquer.begin(); attacksIterator != countriesToConquer.end(); attacksIterator++)
+        int armiesMoved = 0;
+
+        // Use to identify this attack from a cheater
+        if (response->cheaterPhase)
         {
-            // Find the defending player and change ownership of Country
-            Player *defendingPlayer;
-            for (int i = 0; i < players.size(); i++) {
-                if (players.at(i) == player)
-                {
-                    continue;
-                }
-                for (auto const &node : *(players.at(i)->getNodes()))
-                {
-                    if (node->getPointerToCountry()->getName() == (*attacksIterator)->getPointerToCountry()->getName())
-                    {
-                        // Take over Country
-                        defendingPlayer = &(*players.at(i));
-                        player->addNode(*attacksIterator);
-                        defendingPlayer->removeNode(*attacksIterator);
-                    }
-                }
-            }
+            victory = true;
         }
+
+        if(victory){// If the attacker won, the country changes hands and he moves armies
+            attackingPlayer->addNode(defendingCountry);
+            defendingPlayer->removeNode(defendingCountry);
+
+            armiesMoved = attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
+
+            attackingCountry->getPointerToCountry()->setNbrArmies(1);
+            defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
+        }
+
         if (!this->currentEvent)
         {
             delete this->currentEvent;
         }
-        this->currentEvent = new AttackEvent(response->attacker->first, nullptr,
-                                             nullptr, nullptr, nullptr, nullptr, true, -1);
-        return true;
+        this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
+                                             response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
+
+        attackingCountry = nullptr;
+        attackingPlayer = nullptr;
+        defendingCountry = nullptr;
+        defendingPlayer = nullptr;
+        delete totalDefenderRolls;
+        delete totalAttackerRolls;
+
+        return victory; //returns true if victory false otherwise
     }
-
-    bool victory = false;
-    int rounds = 1;
-    std::vector<int> *totalAttackerRolls = new std::vector<int>();
-    std::vector<int> *totalDefenderRolls = new std::vector<int>();
-    bool battleOver = false;
-    Node* attackingCountry = response->attacker->second;
-    Node* defendingCountry = response->defender->second;
-    Player* attackingPlayer = response->attacker->first;
-    Player* defendingPlayer = response->defender->first;
-
-    if(attackingCountry->getPointerToCountry() == defendingCountry->getPointerToCountry())
-        return false;
-
-    while(attackingCountry->getPointerToCountry()->getNbrArmies() >= 2 && defendingCountry->getPointerToCountry()->getNbrArmies() > 0 && !battleOver){
-        int attackerDice = attackingCountry->getPointerToCountry()->getNbrArmies() >= 4 ? 3 : attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
-        int defenderDice = defendingCountry->getPointerToCountry()->getNbrArmies() >= 2 ? 2 : 1;
-
-        //Getting vectors of dice rolls
-        std::vector<int> attackerDiceRolls = response->attacker->first->getDice()->howManyDice(attackerDice);
-        std::vector<int> defenderDiceRolls = response->defender->first->getDice()->howManyDice(defenderDice);
-
-        //Adding those dice rolls to the total dice rolls
-        totalAttackerRolls->insert(std::end(*totalAttackerRolls), std::begin(attackerDiceRolls), std::end(attackerDiceRolls));
-        totalDefenderRolls->insert(std::end(*totalDefenderRolls), std::begin(defenderDiceRolls), std::end(defenderDiceRolls));
-
-        //Sorting the dice roll vectors in descending order
-        std::sort(attackerDiceRolls.begin(), attackerDiceRolls.end(), std::greater<int>());
-        std::sort(defenderDiceRolls.begin(), defenderDiceRolls.end(), std::greater<int>());
-
-        //iterating through the dice rolls, until run our of descending dice
-        for(int i = 0; i < std::min(defenderDiceRolls.size(), attackerDiceRolls.size()); i++){
-            if(defenderDiceRolls[i] >= attackerDiceRolls[i]){
-                attackingCountry->getPointerToCountry()->setNbrArmies(attackingCountry->getPointerToCountry()->getNbrArmies() - 1);
-            }
-            else{
-                defendingCountry->getPointerToCountry()->setNbrArmies(defendingCountry->getPointerToCountry()->getNbrArmies() - 1);
-            }
-            if(defendingCountry->getPointerToCountry()->getNbrArmies() == 0){
-                victory = true;
-                battleOver = true;
-            }
-            else if(attackingCountry->getPointerToCountry()->getNbrArmies() == 1){
-                victory = false;
-                battleOver = true;
-            }
-        }
-        rounds++;
-    }
-
-    int armiesMoved = 0;
-    if(victory){// If the attacker won, the country changes hands and he moves armies
-        attackingPlayer->addNode(defendingCountry);
-        defendingPlayer->removeNode(defendingCountry);
-
-        armiesMoved = attackingCountry->getPointerToCountry()->getNbrArmies() - 1;
-
-        attackingCountry->getPointerToCountry()->setNbrArmies(1);
-        defendingCountry->getPointerToCountry()->setNbrArmies(armiesMoved);
-    }
-
-    if (!this->currentEvent)
-    {
-        delete this->currentEvent;
-    }
-    this->currentEvent = new AttackEvent(response->attacker->first, response->defender->first, response->attacker->second,
-                                         response->defender->second, totalAttackerRolls, totalDefenderRolls, victory, armiesMoved);
-
-    attackingCountry = nullptr;
-    attackingPlayer = nullptr;
-    defendingCountry = nullptr;
-    defendingPlayer = nullptr;
-    delete totalDefenderRolls;
-    delete totalAttackerRolls;
-
-    return victory; //returns true if victory false otherwise
 }
 
-void Game::performFortify(Player* player, FortifyResponse* response) {
+void Game::performFortify(FortifyResponse* response) {
     if (response->isCheater)
     {
-        // Find countries with neighbors belonging to other players
-        std::set<Node *> countriesToFortify = std::set<Node *>();
-        std::list<Node*>::iterator countryIterator;
-        for (countryIterator = player->getNodes()->begin(); countryIterator != player->getNodes()->end(); ++countryIterator)
+        CheaterFortifyResponse* actualResponse = dynamic_cast<CheaterFortifyResponse*>(response);
+        for (int i = 0; i < actualResponse->fortifyResponses->size(); ++i)
         {
-            Node* currentNode = *countryIterator;
-            for(int i = 0; i < currentNode->getAdjList().size(); ++i)
-            {
-                if (!player->getStrategy()->containsNode(player, *currentNode->getAdjList()[i]))
-                {
-                    countriesToFortify.insert(currentNode);
-                }
-            }
-        }
-
-        // Double the number of armies on countries
-        std::set<Node*>::iterator fortifyIterator;
-        for (fortifyIterator = countriesToFortify.begin(); fortifyIterator != countriesToFortify.end(); ++fortifyIterator)
-        {
-            Node* currentNode = *fortifyIterator;
-            int nbOfAmies = 2 * currentNode->getPointerToCountry()->getNbrArmies();
-            currentNode->getPointerToCountry()->setNbrArmies(nbOfAmies);
+            this->performFortify(actualResponse->fortifyResponses->at(i));
         }
     }
     else
