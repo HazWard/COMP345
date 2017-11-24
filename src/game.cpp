@@ -1260,21 +1260,20 @@ int main()
         //TODO: Call the proper driver
     }
     else if(answer == "3"){
-        //mainGameLoopDriver();
         Tournament t;
 
         t.setup_games();
         t.play_games();
         t.display_results();
-
-        if(windows)
-            system("pause");
-        else {
-            std::cout << "Press any key to continue . . ." << std::endl;
-            std::getchar();
-        }
     }
     else{
         cout << "Invalid choice." << endl;
+    }
+    //Exit the program when the user enters a key (different on windows and other OS)
+    if(windows)
+        system("pause");
+    else {
+        std::cout << "Press any key to continue . . ." << std::endl;
+        std::getchar();
     }
 }
