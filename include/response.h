@@ -21,7 +21,8 @@ class ReinforceResponse
 public:
     int nbArmies;
     Node* country;
-    ReinforceResponse(int n, Node *c) : nbArmies(n), country(c) {};
+    bool exchangeOccured;
+    ReinforceResponse(int n, Node *c, bool e) : nbArmies(n), country(c), exchangeOccured(e) {};
 };
 
 class AttackResponse
@@ -29,7 +30,19 @@ class AttackResponse
 public:
     std::pair<Player*, Node*>* attacker;
     std::pair<Player*, Node*>* defender;
-    AttackResponse(std::pair<Player*,Node*> *a, std::pair<Player*,Node*> *d) : attacker(a), defender(d) {};
+    bool isCheater;
+    bool cheaterPhase;
+    AttackResponse() = default;
+    virtual ~AttackResponse() = default;
+    AttackResponse(std::pair<Player*,Node*> *a, std::pair<Player*,Node*> *d, bool c, bool p) : attacker(a), defender(d), isCheater(c), cheaterPhase(p) {};
+};
+
+class CheaterAttackResponse : public AttackResponse
+{
+public:
+    std::vector<AttackResponse*>*  attackResponses;
+    ~CheaterAttackResponse() = default;
+    CheaterAttackResponse(std::vector<AttackResponse*>* r) : attackResponses(r) {};
 };
 
 class FortifyResponse
@@ -38,5 +51,15 @@ public:
     int nbArmies;
     Node* sourceCountry;
     Node* destinationCountry;
-    FortifyResponse(int n, Node *s, Node *d) : nbArmies(n), sourceCountry(s), destinationCountry(d) {};
+    bool isCheater;
+    FortifyResponse() = default;
+    virtual ~FortifyResponse() = default;
+    FortifyResponse(int n, Node *s, Node *d, bool c) : nbArmies(n), sourceCountry(s), destinationCountry(d), isCheater(c) {};
+};
+class CheaterFortifyResponse : public FortifyResponse
+{
+public:
+    std::vector<FortifyResponse*>* fortifyResponses;
+    ~CheaterFortifyResponse() = default;
+    CheaterFortifyResponse(std::vector<FortifyResponse*>* r) : fortifyResponses(r), FortifyResponse(0, nullptr, nullptr, true) {};
 };

@@ -3,6 +3,7 @@
 #include "../include/player.h"
 #include "../include/observer.h"
 #include "../include/events.h"
+#include <chrono>
 
 class Game : public Subject {
 private:
@@ -20,7 +21,6 @@ private:
     Deck mainDeck;
 
     //Helper methods:
-    list<string> getNameOfFiles(const char *path);
     void getMapUser(list<string> listOfMapFiles);
     void getMapAutomatic();
     int getNbrPlayersUser();
@@ -30,8 +30,15 @@ private:
     bool verifyPlayerArmies(int nbrArmiesPerPlayer);
     bool armiesLeftToPlace(vector<int> nbrArmiesPlayers);
 public:
+    //public members:
+    Player* winningPlayer;
+    int max_turns;
+    bool cheaterPlayed;
+    //public constant:
+    const int DEFAULT_MAX_TURNS = 50;
     //Constructor:
     Game();
+    Game(Parser* map, vector<Player*> pl, int maximum_turns);
     //Mutator methods:
     void setMap(Graph* newMap);
     void setNbrPlayers(int nbrP);
@@ -41,7 +48,7 @@ public:
     int getNbrPlayers();
     vector<Player*>* getArrayPlayers();
     Graph* getMapCountries();
-    Deck getMainDeck();
+    Deck* getMainDeck();
     vector<Continent*>* getContinents();
     //Public methods:
     void determinePlayerTurn();
@@ -56,4 +63,10 @@ public:
     int currentTurn;
     Player* currentPlayer;
     void chooseGameScenario(vector<Player*>* players);
+    void reinitialize_game();
 };
+
+const string MAPS_FOLDER = "../maps/";
+list<string> getNameOfFiles(const char *path);
+void mainGameLoopDriver();
+void mainGameLoopTournament(Game& riskGame);

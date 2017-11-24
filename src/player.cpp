@@ -9,6 +9,7 @@
 #include <set>
 #include <map>
 #include "../include/player.h"
+#include "../include/strategy.h"
 
 
 /*
@@ -30,9 +31,9 @@ static const int ARTILLERY_BONUS = 10;
 
 // Constructors
 Player::Player() : name(""), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
-Player::Player(string n) : name(n), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice)
+Player::Player(string n) : name(n), hand(new Hand()), nodes(std::list<Node*>()), dice(new Dice)
 { }
-Player::Player(string n, Strategy* s) : name(n), strategy(s) { }
+Player::Player(string n, Strategy* s) : name(n), strategy(s), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
 Player::Player(string n, Hand* playerHand, std::list<Node*>* playerNodes)
 {
     this->setName(n);
@@ -115,7 +116,7 @@ std::vector<ReinforceResponse*>* Player::reinforce(vector<Continent*> continents
     return this->strategy->reinforce(this, continents);
 }
 
-AttackResponse* Player::attack(std::vector<Player *> &players)
+AttackResponse* Player::attack(std::vector<Player *> *players)
 {
     return this->strategy->attack(this, players);
 }
@@ -132,7 +133,7 @@ void Player::removeNode(Node* n)
     {
         if(*countryIterator == n)
         {
-            nodes.erase(countryIterator++);  // alternatively, i = items.erase(i);
+            nodes.remove(*countryIterator++); // alternatively, i = items.erase(i);
         }
     }
 }
@@ -160,19 +161,19 @@ bool Player::controlsAllCountriesInMap(Graph& map)
     return true;
 }
 
-vector<Continent*> Player::getsContinentsOwned(vector<Continent*> continents) {
-    vector<Continent*> continentsOwned;
+vector<Continent*>* Player::getsContinentsOwned(vector<Continent*> *continents) {
+    vector<Continent*> *continentsOwned = new vector<Continent*>();
     //We iterate through all the continents and add the ones that the player completely owns
-    for (int i = 0; i < continents.size(); i++) {
+    for (int i = 0; i < continents->size(); i++) {
         bool continentOwned = true;
-        vector<Node*> nodesInCurrentContinent = *(continents[i]->getNodesInContinent());
+        vector<Node*> *nodesInCurrentContinent = continents->at(i)->getNodesInContinent();
         //we iterate through all the countries in the current continent and check if the player owns them all
-        for (int j = 0; j < nodesInCurrentContinent.size(); j++) {
+        for (int j = 0; j < nodesInCurrentContinent->size(); j++) {
             bool countryOwned = false;
-            list<Node *>::const_iterator countryIterator;
+            list<Node *>::iterator countryIterator;
             //We iterate through all the countries the player owns and see if he owns the current country from the continent we are checking
-            for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator) {
-                if (nodesInCurrentContinent[j]->getCountry() == (*countryIterator)->getCountry()) {
+            for (countryIterator = nodes.begin(); countryIterator != nodes.end(); countryIterator++) {
+                if (nodesInCurrentContinent->at(j)->getPointerToCountry() == (*countryIterator)->getPointerToCountry()) {
                     countryOwned = true;
                     break;
                 }
@@ -184,7 +185,7 @@ vector<Continent*> Player::getsContinentsOwned(vector<Continent*> continents) {
             }
         }
         if (continentOwned)
-            continentsOwned.push_back(continents[i]);
+            continentsOwned->push_back(&*continents->at(i));
     }
     return continentsOwned;
 }
@@ -199,23 +200,4 @@ void Player::printNodes()
         cout << c.getName() << "; ";
     }
     cout << endl << endl;
-}
-vector<Node*> Player::sortByStrongest() {
-    std::vector<Node*> strongestCountries;
-    list<Node*>::const_iterator countryIterator;
-    for (countryIterator = nodes.begin(); countryIterator != nodes.end(); ++countryIterator)
-        strongestCountries.push_back(*countryIterator);
-
-    for (int i = 0; i < strongestCountries.size(); i++) {
-        for (int j = 0; j < strongestCountries.size() - i - 1; j++) {
-            int a = strongestCountries[j]->getCountry().getNbrArmies();
-            int b = strongestCountries[j+1]->getCountry().getNbrArmies();
-            if (a < b) {
-                Node *temp = strongestCountries[j];
-                strongestCountries[j] = strongestCountries[j + 1];
-                strongestCountries[j + 1] = temp;
-            }
-        }
-    }
-    return strongestCountries;
 }

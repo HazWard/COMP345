@@ -15,6 +15,8 @@ set(SOURCE_FILES
         include/observer.h
         include/views.h
         include/events.h
+        include/decorators.h
+        include/tournament.h
         src/cards.cpp
         src/dice.cpp
         src/player.cpp
@@ -24,6 +26,7 @@ set(SOURCE_FILES
         src/strategy.cpp
         src/observer.cpp
         src/views.cpp
-        )
+        src/decorators.cpp
+        src/tournament.cpp)
 
 add_executable(COMP345 ${SOURCE_FILES})

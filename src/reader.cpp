@@ -3,6 +3,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iterator>
+#include <functional>
 #include "../include/reader.h"
 
 using namespace std;
@@ -48,6 +49,13 @@ vector<string> Opener::readLines() {
 	string line;
 
 	while (getline(input, line)) {
+        line.erase(
+                std::remove_if(line.begin(), line.end(),
+                               [](char c) -> bool
+                               {
+                                   return std::isspace<char>(c, std::locale::classic());
+                               }),
+                line.end());
 		if (line.empty()) {
 			continue;
 		}
@@ -229,13 +237,4 @@ Therefore, the following method returns whether or not the map is valid,
 bool Parser::mapIsValid()
 {
 	return !error && graphIsConnected() && continentsAreConnected();
-}
-
-//Method used to display all of the continents within a given map
-void Parser::displayContinents()
-{
-	for(int i = 0; i < continents->size(); i++)
-	{
-		cout << (*continents)[i];
-	}
 }

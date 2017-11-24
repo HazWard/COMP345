@@ -33,5 +33,8 @@ public:
 	vector<Continent*>* getContinents();
 	//Public methods
 	bool mapIsValid();
-	void displayContinents();
 };
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result);
+vector<string> split(const string &s, char delim);
