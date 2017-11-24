@@ -558,7 +558,6 @@ bool Game::verifyPlayerArmies(int nbrArmiesPerPlayer)
         for (auto const& node : *(arrayPlayers[i]->getNodes())) {
             nbrArmies += node->getCountry().getNbrArmies();
         }
-        cout << nbrArmies << "   " << nbrArmiesPerPlayer << endl;
         if(nbrArmies != nbrArmiesPerPlayer)
             return false;
     }
@@ -1188,16 +1187,6 @@ void mainGameLoopTournament(Game& riskGame)
 
     players = riskGame.getArrayPlayers();
 
-    //Displaying all the continents in the graph
-    for(int i = 0; i < continents.size(); i++)
-    {
-        cout << *(continents[i]);
-    }
-
-    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
-    {
-        players->at(i)->printNodes();
-    }
     riskGame.placeArmiesAutomatic();
 
     //Boolean is false until a player wins. this is the breaking condition of the main game loop
@@ -1205,12 +1194,13 @@ void mainGameLoopTournament(Game& riskGame)
 
     riskGame.currentTurn = 1;
 
+    cout << "The game is starting" << endl << endl;
     //Main game loop
     while(!playerWins) {
         riskGame.cheaterPlayed = false;
         for (int i = 0; i < players->size(); i++) {
             riskGame.notify(NEW_TURN);
-            cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
+            //cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
             //monitor current player
             riskGame.currentPlayer = players->at(i);
             // Each player gets to reinforce, attack and fortify
@@ -1296,12 +1286,13 @@ void mainGameLoopTournament(Game& riskGame)
             riskGame.winningPlayer = nullptr;
         }
     }
-    cout << "\n\n===== GAME RESULTS =====" << endl;
+    cout << "\n===== GAME RESULTS =====" << endl;
+    /*Display map after game is over:
     for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
         cout << *node << endl;
-    }
+    }*/
     if(riskGame.winningPlayer)
-        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl << endl;
     else {
         cout << "The game of risk reached the maximum number of turns (" << riskGame.max_turns << ")." << endl;
         cout << "It ended up with a DRAW." << endl << endl;
