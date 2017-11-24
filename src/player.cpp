@@ -31,7 +31,7 @@ static const int ARTILLERY_BONUS = 10;
 
 // Constructors
 Player::Player() : name(""), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
-Player::Player(string n) : name(n), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice)
+Player::Player(string n) : name(n), hand(new Hand()), nodes(std::list<Node*>()), dice(new Dice)
 { }
 Player::Player(string n, Strategy* s) : name(n), strategy(s), hand(new Hand), nodes(std::list<Node*>()), dice(new Dice) { }
 Player::Player(string n, Hand* playerHand, std::list<Node*>* playerNodes)

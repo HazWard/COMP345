@@ -48,7 +48,7 @@ public:
     int getNbrPlayers();
     vector<Player*>* getArrayPlayers();
     Graph* getMapCountries();
-    Deck getMainDeck();
+    Deck* getMainDeck();
     vector<Continent*>* getContinents();
     //Public methods:
     void determinePlayerTurn();

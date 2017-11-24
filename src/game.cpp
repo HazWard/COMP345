@@ -3,6 +3,7 @@
 #include "../include/events.h"
 #include "../include/views.h"
 #include "../include/decorators.h"
+#include "../include/tournament.h"
 #include <iostream>
 #include <algorithm>
 #include <ctime>
@@ -96,7 +97,7 @@ vector<Player*>* Game::getArrayPlayers() { return &arrayPlayers; }
 
 Graph* Game::getMapCountries() { return mapCountries; }
 
-Deck Game::getMainDeck() { return mainDeck; }
+Deck* Game::getMainDeck() { return &mainDeck; }
 
 vector<Continent*>* Game::getContinents() { return &continents; };
 
@@ -804,7 +805,7 @@ void Game::reinitialize_game() {
     }
 }
 
-void mainGameLoopDriver()
+void part1()
 {
     /*The constructor verifies that the map loaded is valid.
     Invalid maps are rejected without the program crashing.
@@ -813,13 +814,11 @@ void mainGameLoopDriver()
 
     riskGame.max_turns = riskGame.DEFAULT_MAX_TURNS;
     //Determine player order and print them to check that the order changed (randomly)
-    vector<Player*>* players = riskGame.getArrayPlayers();
-
     vector<Continent*> continents = *(riskGame.getContinents());
 
     riskGame.assignCountriesToPlayers();
 
-    players = riskGame.getArrayPlayers();
+    vector<Player*>* players = riskGame.getArrayPlayers();
 
     //Displaying all the continents in the graph
     for(int i = 0; i < continents.size(); i++)
@@ -827,10 +826,6 @@ void mainGameLoopDriver()
         cout << *(continents[i]);
     }
 
-    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
-    {
-        players->at(i)->printNodes();
-    }
     riskGame.placeArmiesAutomatic();
 
     //Setting player strategy according to our 5 scenarios
@@ -844,24 +839,127 @@ void mainGameLoopDriver()
     //creating observers
     Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
     Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
-    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
-    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
     //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
 
     //Attaching observers
     riskGame.attach(phaseObserver);
     riskGame.attach(statObserver);
-    riskGame.attach(domObserver);
-    riskGame.attach(handObserver);
-    riskGame.attach(continentObserver);
+
+    int decorators = 0;
+    bool dominationDecorator = false;
+    bool handsDecorator = false;
+    bool continentDecorator = false;
 
     //Main game loop
     while(!playerWins)
     {
+        //Adding and removing decorators based on user input
+        while(decorators >= 1) {
+            cout << "Do you wish to remove decorators from StatObserver?(y/n)" << endl;
+            std::string answer;
+            cin >> answer;
+
+            if (answer == "n")
+                break;
+
+            answer.clear();
+
+            if (dominationDecorator) {
+                cout << "Domination Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators--;
+                    riskGame.detach(statObserver);
+                    dominationDecorator = false;
+                    statObserver = new StatObserver(static_cast<Subject *>(&riskGame));
+                    if (handsDecorator)
+                        statObserver = new PlayerHandDecorator(statObserver);
+                    if (continentDecorator)
+                        statObserver = new ContinentDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+            if (handsDecorator) {
+                cout << "Player Hand Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators--;
+                    handsDecorator = false;
+                    riskGame.detach(statObserver);
+                    statObserver = new StatObserver(static_cast<Subject *>(&riskGame));
+                    if (dominationDecorator)
+                        statObserver = new DominationDecorator(statObserver);
+                    if (continentDecorator)
+                        statObserver = new ContinentDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+            if (continentDecorator) {
+                cout << "Continents Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators--;
+                    continentDecorator = false;
+                    riskGame.detach(statObserver);
+                    statObserver = new StatObserver(static_cast<Subject *>(&riskGame));
+                    if (dominationDecorator)
+                        statObserver = new DominationDecorator(statObserver);
+                    if (handsDecorator)
+                        statObserver = new PlayerHandDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+            }
+        }
+        while(decorators < 3) {
+            cout << "Do you wish to add decorators to StatObserver?(y/n)" << endl;
+            std::string answer;
+            cin >> answer;
+
+            if (answer == "n")
+                break;
+
+            answer.clear();
+
+            if (!dominationDecorator) {
+                cout << "Domination Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators++; dominationDecorator = true;
+                    riskGame.detach(statObserver);
+                    statObserver = new DominationDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+            if (!handsDecorator) {
+                cout << "Player Hand Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators++; handsDecorator = true;
+                    riskGame.detach(statObserver);
+                    statObserver = new PlayerHandDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+            if (!continentDecorator) {
+                cout << "Continents Decorator?(y/n)" << endl;
+                cin >> answer;
+                if (answer == "y") {
+                    decorators++; continentDecorator = true;
+                    riskGame.detach(statObserver);
+                    statObserver = new ContinentDecorator(statObserver);
+                    riskGame.attach(statObserver);
+                }
+                answer.clear();
+            }
+        }
+
+        riskGame.notify(NEW_TURN);
         for(int i = 0; i < players->size(); i++)
         {
-            riskGame.notify(NEW_TURN);
             cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
             //monitor current player
             riskGame.currentPlayer = players->at(i);
@@ -870,11 +968,14 @@ void mainGameLoopDriver()
 
             if(reinforcementsMade(reinforceResponse)){
                 riskGame.performReinforce(reinforceResponse);
-                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
-                riskGame.notify(0);
+                if(reinforceResponse->at(0)->exchangeOccured)
+                    riskGame.notify(HAND_CHANGE);
+                else
+                    riskGame.notify(0);
             }
             delete reinforceResponse;
 
+            bool conqueredTerritory = false;
             AttackResponse *attackResponse;
             do{
                 attackResponse = players->at(i)->attack(players);
@@ -888,6 +989,7 @@ void mainGameLoopDriver()
 
                     //checks if the number of continents owned by either of the player has changed as a result of the attack
                     if(conquest) {
+                        conqueredTerritory = true;
                         int attackerContAfter = attackResponse->attacker->first->getsContinentsOwned(riskGame.getContinents())->size();
                         int defenderContAfter = attackResponse->defender->first->getsContinentsOwned(riskGame.getContinents())->size();
                         if((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
@@ -900,6 +1002,11 @@ void mainGameLoopDriver()
                 }
             }while(attackResponse);
             delete attackResponse;
+
+            if(conqueredTerritory){
+                players->at(i)->getHand()->draw(riskGame.getMainDeck()->draw());
+                riskGame.notify(HAND_CHANGE);
+            }
 
             FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
             if(fortifyResponse){
@@ -935,6 +1042,147 @@ void mainGameLoopDriver()
     }
 }
 
+void part2(Game& riskGame)
+{
+    riskGame.determinePlayerTurn();
+    //Determine player order and print them to check that the order changed (randomly)
+    vector<Player*>* players = riskGame.getArrayPlayers();
+
+    vector<Continent*> continents = *(riskGame.getContinents());
+
+    riskGame.assignCountriesToPlayers();
+
+    players = riskGame.getArrayPlayers();
+
+    //Displaying all the continents in the graph
+    for(int i = 0; i < continents.size(); i++)
+    {
+        cout << *(continents[i]);
+    }
+
+    for(int i = 0; i < riskGame.getNbrPlayers(); i++)
+    {
+        players->at(i)->printNodes();
+    }
+    riskGame.placeArmiesAutomatic();
+
+    //Boolean is false until a player wins. this is the breaking condition of the main game loop
+    bool playerWins = false;
+
+    riskGame.currentTurn = 1;
+
+    //creating observers
+    Observer *phaseObserver = new PhaseObserver(static_cast<Subject*>(&riskGame));
+    Observer *statObserver = new StatObserver(static_cast<Subject*>(&riskGame));
+    Observer *domObserver = new DominationDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *handObserver = new PlayerHandDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    Observer *continentObserver = new ContinentDecorator(new StatObserver(static_cast<Subject*>(&riskGame)));
+    //Unsure whether the last three objects should be taking the pointer to statObserver as their parameter instead of creating new instances
+
+    //Attaching observers
+    riskGame.attach(phaseObserver);
+    riskGame.attach(statObserver);
+    riskGame.attach(domObserver);
+    riskGame.attach(handObserver);
+    riskGame.attach(continentObserver);
+
+    //Main game loop
+    while(!playerWins) {
+        riskGame.cheaterPlayed = false;
+        for (int i = 0; i < players->size(); i++) {
+            riskGame.notify(NEW_TURN);
+            cout << "***************** " << players->at(i)->getName() << "'s turn *****************" << std::endl;
+            //monitor current player
+            riskGame.currentPlayer = players->at(i);
+            // Each player gets to reinforce, attack and fortify
+            std::vector<ReinforceResponse *> *reinforceResponse = (*players)[i]->reinforce(continents);
+
+            if (reinforcementsMade(reinforceResponse)) {
+                riskGame.performReinforce(reinforceResponse);
+                //TODO: Send the code HAND_CHANGE to notify() when the player's hand has changed as a result of reinforce
+                riskGame.notify(0);
+            }
+            delete reinforceResponse;
+
+            AttackResponse *attackResponse;
+            do {
+                if(riskGame.cheaterPlayed)
+                {
+                    attackResponse = nullptr;
+                }
+                else
+                {
+                    attackResponse = players->at(i)->attack(players);
+                    if (attackResponse) {
+                        //Counting how many continents the attacker and defender have before the attack is done
+                        CheaterAttackResponse* actualResponse = dynamic_cast<CheaterAttackResponse*>(attackResponse);
+                        int attackerCont = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
+                        int defenderCont = 0;
+
+                        if(!actualResponse)
+                        {
+                            attackerCont = attackResponse->attacker->first->getsContinentsOwned(
+                                    riskGame.getContinents())->size();
+                            defenderCont = attackResponse->defender->first->getsContinentsOwned(
+                                    riskGame.getContinents())->size();
+                        }
+                        else
+                        {
+                            riskGame.cheaterPlayed = true;
+                        }
+
+                        //Performing the attack
+                        bool conquest = riskGame.performAttack(attackResponse);
+
+                        //checks if the number of continents owned by either of the player has changed as a result of the attack
+                        if (conquest) {
+
+                            int attackerContAfter = players->at(i)->getsContinentsOwned(riskGame.getContinents())->size();
+                            int defenderContAfter = 0;
+                            if(actualResponse)
+                            {
+                                attackerCont = attackResponse->attacker->first->getsContinentsOwned(
+                                        riskGame.getContinents())->size();
+                                defenderCont = attackResponse->defender->first->getsContinentsOwned(
+                                        riskGame.getContinents())->size();
+                            }
+                            if ((attackerCont != attackerContAfter) || (defenderCont != defenderContAfter))
+                                riskGame.notify(CONTINENT_CONTROL);
+                            else
+                                riskGame.notify(NEW_CONQUEST);
+                        } else
+                            riskGame.notify(0);
+                    }
+                }
+            } while (attackResponse);
+            delete attackResponse;
+
+            FortifyResponse *fortifyResponse = players->at(i)->fortify(*riskGame.getMapCountries());
+            if (fortifyResponse) {
+                riskGame.performFortify(fortifyResponse);
+                riskGame.notify(0);
+            }
+            delete fortifyResponse;
+        }
+        //After each player's turn, we check if one player owns all the countries in the map
+        //If we reach the max number of turns, the game is over with a draw
+        if (riskGame.currentTurn++ == riskGame.max_turns) {
+            playerWins = true;
+            riskGame.winningPlayer = nullptr;
+        }
+    }
+    cout << "\n\n===== GAME RESULTS =====" << endl;
+    for(auto &node : *riskGame.getMapCountries()->getVectorOfNodes()){
+        cout << *node << endl;
+    }
+    if(riskGame.winningPlayer)
+        cout << riskGame.winningPlayer->getName() << " won the game of risk! Congratulations!!!" << endl;
+    else {
+        cout << "The game of risk reached the maximum number of turns (" << riskGame.max_turns << ")." << endl;
+        cout << "It ended up with a DRAW." << endl << endl;
+    }
+    riskGame.reinitialize_game();
+}
 
 void mainGameLoopTournament(Game& riskGame)
 {
@@ -1243,13 +1491,46 @@ void Game::performFortify(FortifyResponse* response) {
 Event* Game::getCurrentEvent(){
     return this->currentEvent;
 }
-/*
+
 int main()
 {
+    cout << "Choose a part to execute: " << endl;
+    std::string answer;
+    cin >> answer;
 
-    mainGameLoopDriver();
+    if(answer == "1")
+        part1();
+    else if(answer == "2"){
+        Parser* gameMap = new Parser("../maps/World.map");
+        std::vector<Player*> players = std::vector<Player*>();
+        for (int i = 0; i < 4; ++i)
+        {
+            players.push_back(new Player(to_string(i + 1)));
+        }
+        players.at(0)->setStrategy(new AggressiveStrategy);
+        players.at(1)->setStrategy(new BenevolentStrategy);
+        players.at(2)->setStrategy(new CheaterStrategy);
+        players.at(3)->setStrategy(new RandomStrategy);
 
-    std::getchar();
-    system("pause");
-    return 0;
-}*/
+        Game* riskGame = new Game(gameMap, players, 5);
+        part2(*riskGame);
+    }
+    else if(answer == "3"){
+        //mainGameLoopDriver();
+        Tournament t;
+
+        t.setup_games();
+        t.play_games();
+        t.display_results();
+
+        if(windows)
+            system("pause");
+        else {
+            std::cout << "Press any key to continue . . ." << std::endl;
+            std::getchar();
+        }
+    }
+    else{
+        cout << "Invalid choice." << endl;
+    }
+}

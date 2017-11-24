@@ -8,43 +8,37 @@ class StatObserverDecorator : public Observer {
      * Abstract Decorator type for the three StatObserver decorators.
      */
 public:
-    virtual void update(int code) = 0;
-    virtual void display() = 0;
-
+    StatObserverDecorator(Observer *so) : statObserver(so), Observer(so->model) {};
+    void update(int code) { this->statObserver->update(code); };
+    Observer* getStatObserver();
 private:
-    StatObserver statObserver;
+    Observer *statObserver;
 
 };
 
 class DominationDecorator : public StatObserverDecorator {
 
 public:
-    DominationDecorator(StatObserver *so) : statObserver(so) {};
+    DominationDecorator(Observer *so) : StatObserverDecorator(so) {};
     void update(int code);
     void display();
-
-private:
-    StatObserver *statObserver;
+    Observer* getStatObserver(){ return StatObserverDecorator::getStatObserver(); };
 };
 
 class PlayerHandDecorator : public StatObserverDecorator {
 
 public:
-    PlayerHandDecorator(StatObserver *so) : statObserver(so) {};
+    PlayerHandDecorator(Observer *so) : StatObserverDecorator(so) {};
     void update(int code);
     void display();
-
-private:
-    StatObserver *statObserver;
+    Observer* getStatObserver(){ return StatObserverDecorator::getStatObserver(); };
 };
 
 class ContinentDecorator : public StatObserverDecorator {
 
 public:
-    ContinentDecorator(StatObserver *so) : statObserver(so) {};
+    ContinentDecorator(Observer *so) : StatObserverDecorator(so) {};
     void update(int code);
     void display();
-
-private:
-    StatObserver *statObserver;
+    Observer* getStatObserver(){ return StatObserverDecorator::getStatObserver(); };
 };

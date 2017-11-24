@@ -16,8 +16,7 @@ void DominationDecorator::update(int code)
 
 void DominationDecorator::display()
 {
-    statObserver->display();
-    Game* game = static_cast<Game*> (this->statObserver->model);
+    Game* game = static_cast<Game*> (dynamic_cast<StatObserverDecorator*>(this)->getStatObserver()->model);
     int numberOfPlayers = game->getNbrPlayers();
     vector<Player*>* players = game->getArrayPlayers();
 
@@ -44,17 +43,17 @@ void PlayerHandDecorator::update(int code)
         cin.ignore();
         cin.get();*/
     }
+    StatObserverDecorator::update(code);
 }
 
 void PlayerHandDecorator::display()
 {
-    statObserver->display();
-    Game* game = static_cast <Game*> (model);
-    vector<Player*> players1 = game->players;
-    for(int i=0; i<players1.size(); i++)
+    Game* game = static_cast <Game*> (StatObserverDecorator::getStatObserver()->model);
+    vector<Player*> *players1 = game->getArrayPlayers();
+    for(int i=0; i < players1->size(); i++)
     {
-        cout << "Player " << players1[i]->getName() << "'s hand:" << endl;
-        players1[i]->getHand()->display();
+        cout << "Player " << players1->at(i)->getName() << "'s hand:" << endl;
+        players1->at(i)->getHand()->display();
     }
 }
 
@@ -68,25 +67,30 @@ void ContinentDecorator::update(int code)
         cin.ignore();
         cin.get();*/
     }
+    StatObserverDecorator::update(code);
 }
 
 void ContinentDecorator::display()
 {
-    statObserver->display();
-    Game* game = static_cast <Game*> (this->statObserver->model);
-    vector<Player*> players1 = game->players;
-    for(int i=0; i<players1.size(); i++)
+    Game* game = static_cast <Game*> (StatObserverDecorator::getStatObserver()->model);
+    vector<Player*> *players1 = game->getArrayPlayers();
+    for(int i=0; i < players1->size(); i++)
     {
-        vector<Continent*> *continentsOwned = players1[i]->getsContinentsOwned(game->getContinents());
+        vector<Continent*> *continentsOwned = players1->at(i)->getsContinentsOwned(game->getContinents());
+        cout << players1->at(i)->getName() << " owns " << std::to_string(continentsOwned->size()) << " continents." << endl;
         if (!(continentsOwned->size()== 0))
         {
-            cout << "Player " << players1[i]->getName() << " controls the following continents:" << endl;
-            for (int j = 0; i < continentsOwned->size(); j++)
+            cout << "\tContinents owned: " << endl;
+            for (int j = 0; j < continentsOwned->size(); j++)
             {
-               cout << continentsOwned->at(i)->getName() << endl;
+               cout << "\t\t" << continentsOwned->at(j)->getName() << endl;
             }
         }
     }
 
 
+}
+
+Observer* StatObserverDecorator::getStatObserver() {
+    return this->statObserver;
 }
